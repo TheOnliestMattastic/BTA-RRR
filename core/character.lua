@@ -61,11 +61,11 @@ function Character:update(dt)
 end
 
 -- Draw character --
-function Character:draw(tileSize)
+function Character:draw(tileSize, offsetX, offsetY)
     if not self.alive then return end
     if not self.anim or not self.spriteSheet then return end
     love.graphics.setColor(1, 1, 1, 1)
-    self.anim:draw(self.spriteSheet, self.x * tileSize, self.y * tileSize, nil, 2)
+    self.anim:draw(self.spriteSheet, self.x * tileSize + offsetX, self.y * tileSize + offsetY, nil, 2)
 end
 
 -- Take damage --

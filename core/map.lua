@@ -14,6 +14,10 @@ function Map.new(tileSize, layout, tilesetRegistry, tilesetTag)
     self.width = self.cols * self.tileSize
     self.height = self.rows * self.tileSize
 
+    -- Center the map on screen
+    self.offsetX = (winWidth - self.width) / 2
+    self.offsetY = (winHeight - self.height) / 2
+
     return self
 end
 
@@ -21,8 +25,8 @@ end
 function Map:draw(mouseX, mouseY)
     for rowIndex, row in ipairs(self.layout) do
         for colIndex, tileTag in ipairs(row) do
-            local x = (colIndex - 1) * self.tileSize
-            local y = (rowIndex - 1) * self.tileSize
+            local x = (colIndex - 1) * self.tileSize + self.offsetX
+            local y = (rowIndex - 1) * self.tileSize + self.offsetY
 
             -- Each tileTag corresponds to a frame in the tileset grid
             -- Example: "1,1" means column 1, row 1 in the grid
@@ -63,17 +67,17 @@ function Map:getHoveredTile(mouseX, mouseY)
 end
 
 function Map:highlightMovementRange(selectedChar, isOccupied)
-    if not selectedChar then return end
-    love.graphics.setColor(0, 1, 0, 0.3)
-    for row = 0, self.rows - 1 do
-        for col = 0, self.cols - 1 do
-            local dist = math.max(math.abs(col - selectedChar.x), math.abs(row - selectedChar.y))
-            if dist <= selectedChar.spd and not isOccupied(col, row) then
-                love.graphics.rectangle("fill", col * self.tileSize, row * self.tileSize, self.tileSize, self.tileSize)
-            end
-        end
-    end
-    love.graphics.setColor(1, 1, 1, 1)
+	if not selectedChar then return end
+	love.graphics.setColor(0, 1, 0, 0.3)
+	for row = 0, self.rows - 1 do
+		for col = 0, self.cols - 1 do
+			local dist = math.max(math.abs(col - selectedChar.x), math.abs(row - selectedChar.y))
+			if dist <= selectedChar.spd and not isOccupied(col, row) then
+				love.graphics.rectangle("fill", col * self.tileSize + self.offsetX, row * self.tileSize + self.offsetY, self.tileSize, self.tileSize)
+			end
+		end
+	end
 end
+love.graphics.setColor(1, 1, 1, 1)
 
 return Map

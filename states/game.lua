@@ -40,10 +40,10 @@ function game.load()
         return
     end
 
-    -- choose map size (fit to window or fixed size)
+    -- choose map size (fixed 8x8)
     local tileSize = 32
-    local mapCols = math.floor((winWidth or 960) / tileSize)
-    local mapRows = math.floor((winHeight or 640) / tileSize)
+    local mapCols = 16
+    local mapRows = 16
 
     -- seed rng once (optional)
     math.randomseed(os.time())
@@ -138,17 +138,17 @@ function game.draw()
 
     for _, character in ipairs(characters) do
         -- Character:draw will handle anim drawing if character has anim/sheet set
-        pcall(function() character:draw(map.tileSize) end)
+        pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
         -- highlight selected
         if game.selected == character then
-            love.graphics.setColor(1, 1, 0, 0.5)
-            love.graphics.rectangle("line", character.x * map.tileSize, character.y * map.tileSize, map.tileSize, map.tileSize)
-            love.graphics.setColor(1,1,1,1)
+        love.graphics.setColor(1, 1, 0, 0.5)
+        love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
+        love.graphics.setColor(1,1,1,1)
         end
     end
 
     for _,activeEffect in ipairs(activeFX) do
-        activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize, activeEffect.y * map.tileSize)
+        activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
     -- draw message --
@@ -207,6 +207,13 @@ function game.mousepressed(x, y, button)
 
     -- Perform attack
     GameHelpers.performAttack(game.selected, clicked)
+end
+
+function game.resize(w, h)
+    if map then
+        map.offsetX = (w - map.width) / 2
+        map.offsetY = (h - map.height) / 2
+    end
 end
 
 

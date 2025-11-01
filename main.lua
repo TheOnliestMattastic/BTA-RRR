@@ -42,4 +42,5 @@ end
 function love.resize(w, h)
     winWidth = w
     winHeight = h
+    States.resize(w, h)
 end

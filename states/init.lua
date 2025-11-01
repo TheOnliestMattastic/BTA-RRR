@@ -40,4 +40,8 @@ function StateManager.keypressed(key)
     if currentState and currentState.keypressed then currentState.keypressed(key) end
 end
 
+function StateManager.resize(w, h)
+    if currentState and currentState.resize then currentState.resize(w, h) end
+end
+
 return StateManager
