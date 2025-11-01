@@ -5,8 +5,8 @@ function love.load(args)
     States = require "states.init" -- loads States/init.lua
 
     -- setting window/resolution info
-    winWidth = 1280
-    winHeight = 720
+    winWidth = 1024
+    winHeight = 896
     love.window.setMode(winWidth, winHeight, {resizable = true})
     love.graphics.setDefaultFilter("nearest", "nearest")
 
