@@ -1,5 +1,3 @@
-local ui = require "core.ui"
-
 function love.load(args)
     -- loading libraries / modules
     States = require "states.init" -- loads States/init.lua
@@ -13,8 +11,6 @@ function love.load(args)
     -- setting game States
     States.setup()
     States.switch("menu")
-
-	ui.initialize(args)
 end
 
 function love.draw()
@@ -23,12 +19,10 @@ function love.draw()
     love.graphics.setBackgroundColor(.3, .4, .4)
     -- drawing current state
     if States and States.draw then States.draw() end
-	ui.draw()
 end
 
 function love.update(dt)
     if States and States.update then States.update(dt) end
-	ui.update(dt)
 end
 
 function love.mousepressed(x, y, button, istouch)
