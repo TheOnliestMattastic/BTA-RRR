@@ -1,6 +1,15 @@
 local Slab = require "lib.Slab.Slab"
 
 local ui = {}
+local options = {
+	ConstrainPosition = false,
+	X = 0,
+	Y = 0,
+	W = winWidth,
+	H = winHeight,
+	ContentW = winWidth,
+	ContentH = winHeight
+}
 
 function ui.initialize(args)
     Slab.Initialize(args)
@@ -8,8 +17,8 @@ end
 
 function ui.update(dt)
     Slab.Update(dt)
-    Slab.BeginWindow('MyFirstWindow', {Title = "My First Window"})
-    Slab.Text("Hello World")
+    Slab.BeginWindow('Background', options)
+    Slab.Text("Hello")
     Slab.EndWindow()
 end
 

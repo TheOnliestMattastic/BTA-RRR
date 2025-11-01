@@ -5,9 +5,9 @@ function love.load(args)
     States = require "states.init" -- loads States/init.lua
 
     -- setting window/resolution info
-    winWidth = 960
-    winHeight = 640
-    love.window.setMode(winWidth, winHeight)
+    winWidth = 1280
+    winHeight = 720
+    love.window.setMode(winWidth, winHeight, {resizable = true})
     love.graphics.setDefaultFilter("nearest", "nearest")
 
     -- setting game States
@@ -37,4 +37,9 @@ end
 
 function love.keypressed(key)
     if States and States.keypressed then States.keypressed(key) end
+end
+
+function love.resize(w, h)
+    winWidth = w
+    winHeight = h
 end
