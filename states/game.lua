@@ -14,7 +14,7 @@ local registry = gameInit.registry
 local tilesets = gameInit.tilesets
 local activeFX = gameInit.activeFX
 local ui = gameInit.ui
-local GameHelpers = gameInit.GameHelpers
+local GameHelpers = gameInit.GameLogic.GameHelpers
 
 function game.load()
     -- Build map layout from a tileset spritesheet (use TilesetRegistry)

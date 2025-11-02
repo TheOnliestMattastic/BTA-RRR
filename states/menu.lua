@@ -40,6 +40,7 @@ function menu.update(dt)
 	local textY = winHeight / 4
 	Slab.SetCursorPos(textX, textY)
 	Slab.Text("Battle Tactics Arena")
+	Slab.PopFont()
 
 	-- Button Config: Set up button image properties
 	local button = {
