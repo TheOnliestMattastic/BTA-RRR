@@ -146,15 +146,25 @@ function game.update(dt)
 		AutoSizeWindow = false,
 		AllowResize = false,
 		AllowFocus = false,
+		NoOutline = true,
 		X = 0,
 		Y = 0,
 		W = winWidth / 3,
 		H = 3 * winHeight / 4,
 		ConstrainPosition = true,
-		BgColor = {0.3, 0.4, 0.4},
+		BgColor = {0, 0, 0, 0},
 	}
+	Slab.PushFont(font.smaller)
 	Slab.BeginWindow("Turn Tracker", window)
+	Slab.BeginLayout("Title", {AlignX = "center"})
+	Slab.Text("Turn Tracker")
+	Slab.EndLayout()
+	Slab.BeginLayout("Turn Tracker")
+	Slab.EndLayout()
 	Slab.EndWindow()
+	Slab.PopFont()
+
+
 
 	-- Character Menu
 	window = {
@@ -166,23 +176,23 @@ function game.update(dt)
 		W = winWidth,
 		H = winHeight / 4,
 		ConstrainPosition = true,
-		BgColor = {0.3, 0.4, 0.4},
+		BgColor = {0, 0, 0, 0},
 	}
 	local layout = {
 		Columns = 2,
 		AlignX = "center",
 		AlignRowY = "center"
 	}
+	Slab.PushFont(font.small)
 	Slab.BeginWindow("Character Menu", window)
 	Slab.BeginLayout("Character Card", layout)
-	Slab.PushFont(font.small)
 	Slab.SetLayoutColumn(1)
 	Slab.Text("Character Stats")
 	Slab.SetLayoutColumn(2)
 	Slab.Text("Target Stats")
-	Slab.PopFont()
 	Slab.EndLayout()
 	Slab.EndWindow()
+	Slab.PopFont()
 
 
 
@@ -190,17 +200,16 @@ function game.update(dt)
 	window = {
 		X = winWidth / 2,
 		Y = 0,
-		AllowMove = false,
 		AllowResize = false,
 		BgColor = {0, 0, 0, 0},
 		NoOutline = true,
 	}
     if game.message then
-        Slab.BeginWindow('MessageOverlay', window)
         Slab.PushFont(font.smaller)
+        Slab.BeginWindow('MessageOverlay', window)
         Slab.Text(game.message)
-        Slab.PopFont()
         Slab.EndWindow()
+        Slab.PopFont()
     end
 
 end
