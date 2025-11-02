@@ -9,6 +9,7 @@
 --        spd = influences movement speed and turn order
 --        rng = range of attack
 return {
+  -- Ninjas
   ninjaBlack = {
     path="assets/sprites/chars/ninjaBlack/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
@@ -18,18 +19,6 @@ return {
       attack = { cols=5, duration=0.005 },
     }
   },
-
-  gladiatorBlue = {
-    path="assets/sprites/chars/gladiatorBlue/SpriteSheet.png", frameW=16, frameH=16,
-    stats = { hp=25, pwr=7, def=5, dex=2, spd=2, rng=1 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.025 },
-    }
-  },
-
-  -- Ninjas
   ninjaBlue = {
     path="assets/sprites/chars/ninjaBlue/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
@@ -380,6 +369,15 @@ return {
   },
 
   -- Gladiators
+  gladiatorBlue = {
+    path="assets/sprites/chars/gladiatorBlue/SpriteSheet.png", frameW=16, frameH=16,
+    stats = { hp=25, pwr=7, def=5, dex=2, spd=2, rng=1 },
+    animations = {
+      idle   = { cols=1, duration=1 },
+      walk   = { cols="1-4", duration=0.15 },
+      attack = { cols=5, duration=0.025 },
+    }
+  },
   gladiatorRed = {
     path="assets/sprites/chars/gladiatorRed/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=25, pwr=7, def=5, dex=2, spd=2, rng=1 },
