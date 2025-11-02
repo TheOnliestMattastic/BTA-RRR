@@ -16,11 +16,11 @@ end
 -- Switch to a named state (calls load if present)
 function StateManager.switch(stateName, ...)
     local state = states[stateName]
-if not state then
-    error("Unknown state: " .. tostring(stateName))
-end
-currentState = state
-if currentState.load then currentState.load(...) end
+	if not state then
+    	error("Unknown state: " .. tostring(stateName))
+	end
+	currentState = state
+	if currentState.load then currentState.load(...) end
 end
 
 -- Delegation helpers

@@ -1,4 +1,5 @@
-function love.load(args)
+-- main.lua
+function love.load()
     -- loading libraries / modules
     States = require "states.init" -- loads States/init.lua
 
@@ -36,5 +37,5 @@ end
 function love.resize(w, h)
     winWidth = w
     winHeight = h
-    States.resize(w, h)
+    if States and States.resize then States.resize(w, h) end
 end
