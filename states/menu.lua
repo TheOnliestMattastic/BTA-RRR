@@ -17,12 +17,13 @@ function menu.update(dt)
 		Y = 0,
 		W = winWidth,
 		H = winHeight,
+		BgColor = {.3, .4, .4},
 	}
 	local textX = winWidth / 2 - (Slab.GetTextWidth("Battle Tactics Arena") / 2)
 	local textY = winHeight / 4
 	local button = {
-		W = winWidth / 8,
-		H = winHeight / 16,
+		W = winWidth / 2,
+		H = winHeight / 4,
 	}
 	local buttonX = winWidth / 2 - button.W / 2
 	local buttonY = 3 * winHeight / 4 - button.H / 2
