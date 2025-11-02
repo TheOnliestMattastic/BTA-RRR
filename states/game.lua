@@ -10,6 +10,17 @@ local state
 game.selected = nil
 game.message = nil
 
+local VIRTUAL_WIDTH = 1024
+local VIRTUAL_HEIGHT = 768
+local gameCanvas
+local scale, translateX, translateY
+
+local function computeScale()
+    scale = math.min(winWidth / VIRTUAL_WIDTH, winHeight / VIRTUAL_HEIGHT)
+    translateX = (winWidth - VIRTUAL_WIDTH * scale) / 2
+    translateY = (winHeight - VIRTUAL_HEIGHT * scale) / 2
+end
+
 -- Initialize dependencies
 local registry = gameInit.registry
 local tilesets = gameInit.tilesets
@@ -40,9 +51,9 @@ function game.load(args)
         return
     end
 
-    -- choose map size (fixed 8x8)
+    -- choose map size
     local tileSize = 32
-    local mapCols = 16
+    local mapCols = 18
     local mapRows = 16
 
     -- seed rng once (optional)
@@ -69,6 +80,7 @@ function game.load(args)
 
     -- Initialize map and handle potential errors
     map = Map.new(tileSize, layout, tilesets, tilesetTag)
+    gameCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
     state = GameState.new()
 
     gameInit.init(game, characters, state)
@@ -103,8 +115,6 @@ end
 
 function game.update(dt)
 
-	Slab.Update(dt)
-    
     -- Check win/loss and clamp AP --
     state:clampAP()
     state:checkWin()
@@ -130,6 +140,21 @@ function game.update(dt)
         table.remove(activeFX, i)
     end
 
+	-- Compute scaling for virtual screen
+	computeScale()
+
+	-- Override mouse position for Slab to use virtual coords
+	local originalGetPosition = love.mouse.getPosition
+	love.mouse.getPosition = function()
+		local mx, my = originalGetPosition()
+		return (mx - translateX) / scale, (my - translateY) / scale
+	end
+
+	Slab.Update(dt)
+
+	-- Restore
+	love.mouse.getPosition = originalGetPosition
+
 	-- Fonts: Load and set up fonts
 	local font = {
 		smaller = love.graphics.newFont("assets/fonts/alagard.ttf", 24),
@@ -138,8 +163,8 @@ function game.update(dt)
 		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
 	}
 
-	-- Dimensions: Get current window size
-	local winWidth, winHeight = love.graphics.getDimensions()
+	-- Dimensions: Use virtual size
+	local winWidth, winHeight = VIRTUAL_WIDTH, VIRTUAL_HEIGHT
 
 	-- Turn Tracker
 	local window = {
@@ -225,36 +250,66 @@ end
 
 function game.draw()
 
-    -- Draw map --
-    local mx, my = love.mouse.getPosition()
-    map:draw(mx, my)
+    computeScale()
 
-    -- Highlight movement range for selected character --
-    map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
+-- Draw to canvas
+love.graphics.setCanvas(gameCanvas)
+love.graphics.clear(0.3, 0.4, 0.4)  -- game background
 
-    for _, character in ipairs(characters) do
-        -- Character:draw will handle anim drawing if character has anim/sheet set
-        pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
+-- Draw map --
+local mx, my = love.mouse.getPosition()
+    -- Adjust mouse for virtual coords
+local vmx = (mx - translateX) / scale
+local vmy = (my - translateY) / scale
+map:draw(vmx, vmy)
+
+-- Highlight movement range for selected character --
+map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
+
+for _, character in ipairs(characters) do
+-- Character:draw will handle anim drawing if character has anim/sheet set
+    pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
         -- highlight selected
-        if game.selected == character then
-        love.graphics.setColor(1, 1, 0, 0.5)
-        love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
+    if game.selected == character then
+love.graphics.setColor(1, 1, 0, 0.5)
+    love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
         love.graphics.setColor(1,1,1,1)
-        end
+       end
     end
 
     for _,activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
-	Slab.Draw()
+    -- Draw Slab UI to canvas
+    -- Mouse already overridden in update, but for draw, override again if needed
+    local originalGetPosition2 = love.mouse.getPosition
+    love.mouse.getPosition = function()
+        local mx, my = originalGetPosition2()
+        return (mx - translateX) / scale, (my - translateY) / scale
+    end
+
+    Slab.Draw()
+
+    love.mouse.getPosition = originalGetPosition2
+
+    love.graphics.setCanvas()
+
+    -- Draw scaled canvas centered
+    if scale and scale > 0 then
+        love.graphics.draw(gameCanvas, translateX, translateY, 0, scale, scale)
+    end
 end
 
 function game.mousepressed(x, y, button)
     if state.over then return end
-    if button ~= 1 then return end
+    computeScale()
+    if button ~= 1 or scale <= 0 then return end
 
-    local hovered = map:getHoveredTile(x, y)
+    -- Convert to virtual coordinates
+    local vx = (x - translateX) / scale
+    local vy = (y - translateY) / scale
+    local hovered = map:getHoveredTile(vx, vy)
     if not hovered then return end
     local col, row = hovered[1], hovered[2]
 
@@ -300,16 +355,5 @@ function game.mousepressed(x, y, button)
     -- Perform attack
     GameHelpers.performAttack(game.selected, clicked)
 end
-
-function game.resize(w, h)
-    if map then
-        map.offsetX = w - map.width - map.tileSize
-        map.offsetY = map.tileSize
-    end
-end
-
-
-
-
 
 return game

@@ -15,7 +15,8 @@ function Map.new(tileSize, layout, tilesetRegistry, tilesetTag)
     self.height = self.rows * self.tileSize
 
     -- Position map in top-right with one tile padding
-    self.offsetX = love.graphics.getWidth() - self.width - self.tileSize
+    local VIRTUAL_WIDTH = 1024
+    self.offsetX = VIRTUAL_WIDTH - self.width - self.tileSize
     self.offsetY = self.tileSize
 
     return self

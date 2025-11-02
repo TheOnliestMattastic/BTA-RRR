@@ -17,7 +17,7 @@ end
 function love.draw()
 
     --drawing background
-    love.graphics.setBackgroundColor(.3, .4, .4)
+    love.graphics.setBackgroundColor(0, 0, 0)
     -- drawing current state
     if States and States.draw then States.draw() end
 end
