@@ -1,5 +1,6 @@
 -- states/game.lua
 local gameInit = require "core.gameInit"
+local Slab = require "lib.Slab"
 
 local game = {}
 local characters = {}
@@ -15,7 +16,7 @@ local tilesets = gameInit.tilesets
 local activeFX = gameInit.activeFX
 local GameHelpers = gameInit.GameLogic.GameHelpers
 
-function game.load()
+function game.load(args)
     -- Build map layout from a tileset spritesheet (use TilesetRegistry)
     -- Get the tileset (tag must match config/tilesets.lua)
     local tilesetTag = "grass"
@@ -77,6 +78,8 @@ function game.load()
         return
     end
 
+	Slab.Initialize(args)
+
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
@@ -99,6 +102,8 @@ function game.load()
 end
 
 function game.update(dt)
+
+	Slab.Update(dt)
     
     -- Check win/loss and clamp AP --
     state:clampAP()
@@ -124,6 +129,25 @@ function game.update(dt)
     for _, i in ipairs(toRemove) do
         table.remove(activeFX, i)
     end
+
+	-- Dimensions: Get current window size
+	local winWidth, winHeight = love.graphics.getDimensions()
+
+	-- Window Config: Set up full-screen window
+	local window = {
+		AutoSizeWindow = false,
+		X = 0,
+		Y = 3 * winHeight / 4,
+		W = winWidth,
+		H = winHeight / 2,
+		ConstrainPosition = true,
+		BgColor = {0.3, 0.4, 0.4},
+	}
+
+	Slab.BeginWindow("Actions Menu", window)
+	Slab.Text("Actions Menu")
+	Slab.EndWindow()
+
 end
 
 function game.draw()
@@ -155,6 +179,7 @@ function game.draw()
         love.graphics.setColor(1,1,1,1)
         love.graphics.print(game.message, 1, 1, 0, 3)
     end
+	Slab.Draw()
 end
 
 function game.mousepressed(x, y, button)

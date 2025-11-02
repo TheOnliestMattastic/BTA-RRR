@@ -24,8 +24,8 @@ function StateManager.switch(stateName, ...)
 end
 
 -- Delegation helpers
-function StateManager.update(deltaTime)
-    if currentState and currentState.update then currentState.update(deltaTime) end
+function StateManager.update(dt)
+    if currentState and currentState.update then currentState.update(dt) end
 end
 
 function StateManager.draw()
