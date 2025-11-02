@@ -78,14 +78,14 @@ function game.load()
     end
 
     -- Create characters
-    local ninjaStats = CharactersConfig.ninjaDark.stats
+    local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
     for k, v in pairs(ninjaStats) do stats[k] = v end
     stats.team = 0
-    local ninjaDark = Character.new("ninjaDark", 2, 4, stats)
-    ninjaDark:setAnimations(registry:getCharacter("ninjaDark"))
-    table.insert(characters, ninjaDark)
-    charsByName.ninjaDark = ninjaDark
+    local ninjaBlack = Character.new("ninjaBlack", 2, 4, stats)
+    ninjaBlack:setAnimations(registry:getCharacter("ninjaBlack"))
+    table.insert(characters, ninjaBlack)
+    charsByName.ninjaBlack = ninjaBlack
 
     local gladiatorStats = CharactersConfig.gladiatorBlue.stats
     stats = {}
