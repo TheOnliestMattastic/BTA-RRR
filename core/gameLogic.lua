@@ -1,6 +1,4 @@
 -- core/gameLogic.lua
--- Combines combat and game helper functions
-
 local GameLogic = {}
 
 -- Combat module content
