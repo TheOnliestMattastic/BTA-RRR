@@ -18,6 +18,7 @@ function menu.update(dt)
 		W = winWidth,
 		H = winHeight,
 		BgColor = {.3, .4, .4},
+		ConstrainPosition = true,
 	}
 	local textX = winWidth / 2 - (Slab.GetTextWidth("Battle Tactics Arena") / 2)
 	local textY = winHeight / 4
