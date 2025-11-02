@@ -66,37 +66,15 @@ function Combat.applyHeal(target, amount)
     return target.hp - before
 end
 
--- Class tags for special behavior (example)
-local CLASS = {
-    isHealer = {
-        white_mage = true,
-    },
-    slash = {
-        ninjaBlue = true, knight = true,
-    },
-    bash = {
-        gladiatorBlue = true, dark_knight = true, battlemage = true,
-    },
-    projectile = {
-        scout = true, marksman = true, ranger = true,
-    },
-    fire = {
-        black_mage = true,
-    },
-    dual = {
-        assassin = true,
-    },
-}
-
 -- Pick animation tag (consumer maps tag → actual anim/sprite)
 function Combat.pickAnimTag(attacker, action)
-    if action == "heal" then return "heal" end
-    if CLASS.fire[attacker.class] then return "fire" end
-    if CLASS.projectile[attacker.class] then return "pierce" end
-    if CLASS.slash[attacker.class] then return "slash" end
-    if CLASS.bash[attacker.class] then return "bash" end
-    if CLASS.dual[attacker.class] then return "dslash" end
-    return "slash"
+if action == "heal" then return "heal" end
+if attacker.tags.fire then return "fire" end
+if attacker.tags.projectile then return "pierce" end
+if attacker.tags.slash then return "slash" end
+if attacker.tags.bash then return "bash" end
+if attacker.tags.dual then return "dslash" end
+return "slash"
 end
 
 -- Attempt a heal (same-team, in range). Returns a result table.

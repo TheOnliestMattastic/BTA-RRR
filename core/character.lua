@@ -5,12 +5,13 @@ local Character = {}
 Character.__index = Character
 
 -- Constructor
-function Character.new(class, x, y, stats)
+function Character.new(class, x, y, stats, tags)
     local self = setmetatable({}, Character)
 
     -- Basic identity
     self.class = class
     self.x, self.y = x, y
+    self.tags = tags or {}
 
     -- Stats (hp, pwr, def, dex, spd, rng, alignment)
     self.hp   = stats.hp or 25

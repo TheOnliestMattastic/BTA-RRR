@@ -22,6 +22,7 @@ return {
   ninjaBlue = {
     path="assets/sprites/chars/ninjaBlue/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+    tags = { slash = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -192,6 +193,7 @@ return {
   knightSilver = {
     path="assets/sprites/chars/knightSilver/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=30, pwr=7, def=7, dex=2, spd=2, rng=1 },
+    tags = { slash = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -201,6 +203,7 @@ return {
   knightGold = {
     path="assets/sprites/chars/knightGold/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=35, pwr=8, def=8, dex=2, spd=2, rng=1 },
+    tags = { slash = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -232,6 +235,7 @@ return {
   sorcererBlack = {
     path="assets/sprites/chars/sorcererBlack/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=20, pwr=5, def=1, dex=4, spd=3, rng=4 },
+    tags = { fire = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -241,6 +245,7 @@ return {
   sorcererOrange = {
     path="assets/sprites/chars/sorcererOrange/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=20, pwr=5, def=1, dex=4, spd=3, rng=4 },
+    tags = { fire = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -272,6 +277,7 @@ return {
   scout = {
     path="assets/sprites/chars/scout/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=20, pwr=4, def=1, dex=6, spd=5, rng=2 },
+    tags = { projectile = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -372,6 +378,7 @@ return {
   gladiatorBlue = {
     path="assets/sprites/chars/gladiatorBlue/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=25, pwr=7, def=5, dex=2, spd=2, rng=1 },
+    tags = { bash = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
@@ -381,6 +388,7 @@ return {
   gladiatorRed = {
     path="assets/sprites/chars/gladiatorRed/SpriteSheet.png", frameW=16, frameH=16,
     stats = { hp=25, pwr=7, def=5, dex=2, spd=2, rng=1 },
+    tags = { bash = true },
     animations = {
       idle   = { cols=1, duration=1 },
       walk   = { cols="1-4", duration=0.15 },
