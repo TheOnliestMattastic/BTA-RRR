@@ -41,4 +41,23 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **Scalability**: Adding new classes, maps, or abilities will be data‑driven, not hard‑coded.
 - **Professionalism**: The repo will include a polished `README.md` and this `devlog.md` to show my growth and thought process.
 
+## November 1, 2025
+
+### Window and UI Improvements
+
+- **Dynamic Window Resizing**: Enabled resizable windows and updated the default resolution to 1280x720 for better modern display compatibility. Added resize callbacks to dynamically update global window dimensions.
+- **Window Constraints**: Set minimum window sizes and disabled auto-sizing to prevent UI elements from becoming too small or misaligned.
+- **UI Module Refactoring**: Removed the separate `ui.lua` module and integrated Slab UI initialization directly into the menu state for cleaner separation of concerns.
+- **Menu State Overhaul**: Refactored `states/menu.lua` to use Slab UI components, including proper window setup, background colors, and button sizing relative to window dimensions.
+- **Slab Integration**: Began integrating the Slab immediate-mode GUI library into the menu state, replacing basic LÖVE drawing with more flexible UI elements.
+
+## November 2, 2025
+
+### Advanced Menu UI Features
+
+- **Button Image and Hover Effects**: Added sprite-based buttons with hover state changes using SubX offsets in the button image for visual feedback.
+- **Menu Button Rendering**: Improved button image loading and rendering logic, ensuring buttons are centered and scale properly with window size.
+- **Slab UI Elements**: Fully transitioned the menu state to use Slab UI elements, including proper layout management and font handling.
+- **UI Initialization and Rendering**: Refactored menu state UI initialization to load fonts and styles dynamically, and optimized rendering for better performance and maintainability.
+
 ---
