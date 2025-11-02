@@ -235,8 +235,8 @@ end
 
 function game.resize(w, h)
     if map then
-        map.offsetX = (w - map.width) / 2
-        map.offsetY = (h - map.height) / 2
+        map.offsetX = 2 * map.tileSize
+        map.offsetY = 2 * map.tileSize
     end
 end
 

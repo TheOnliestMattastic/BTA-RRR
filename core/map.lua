@@ -14,15 +14,16 @@ function Map.new(tileSize, layout, tilesetRegistry, tilesetTag)
     self.width = self.cols * self.tileSize
     self.height = self.rows * self.tileSize
 
-    -- Center the map on screen
-    self.offsetX = (winWidth - self.width) / 2
-    self.offsetY = (winHeight - self.height) / 2
+    -- Position map in top-left with padding
+    self.offsetX = 2 * self.tileSize
+    self.offsetY = 2 * self.tileSize
 
     return self
 end
 
 -- Draw the map
 function Map:draw(mouseX, mouseY)
+    self.hoveredTile = nil
     for rowIndex, row in ipairs(self.layout) do
         for colIndex, tileTag in ipairs(row) do
             local x = (colIndex - 1) * self.tileSize + self.offsetX
@@ -49,9 +50,8 @@ function Map:draw(mouseX, mouseY)
 
             -- Highlight hovered tile
             if self:isHovered(x, y, mouseX, mouseY) then
-                love.graphics.setColor(1, 1, 1, 0.4)
-                love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
-                self.hoveredTile = {colIndex - 1, rowIndex - 1}
+            love.graphics.setColor(1, 1, 1, 0.4)
+            love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
             end
         end
     end
@@ -63,7 +63,16 @@ function Map:isHovered(x, y, mouseX, mouseY)
 end
 
 function Map:getHoveredTile(mouseX, mouseY)
-    return self.hoveredTile
+    for rowIndex = 1, self.rows do
+        for colIndex = 1, self.cols do
+            local x = (colIndex - 1) * self.tileSize + self.offsetX
+            local y = (rowIndex - 1) * self.tileSize + self.offsetY
+            if self:isHovered(x, y, mouseX, mouseY) then
+                return {colIndex - 1, rowIndex - 1}
+            end
+        end
+    end
+    return nil
 end
 
 function Map:highlightMovementRange(selectedChar, isOccupied)
