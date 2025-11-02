@@ -130,9 +130,15 @@ function game.update(dt)
         table.remove(activeFX, i)
     end
 
+	-- Fonts: Load and set up fonts
+	local font = {
+		small = love.graphics.newFont("assets/fonts/alagard.ttf", 36),
+		med = love.graphics.newFont("assets/fonts/alagard.ttf", 48),
+		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
+	}
+
 	-- Dimensions: Get current window size
 	local winWidth, winHeight = love.graphics.getDimensions()
-
 	-- Window Config: Set up full-screen window
 	local window = {
 		AutoSizeWindow = false,
@@ -143,10 +149,40 @@ function game.update(dt)
 		ConstrainPosition = true,
 		BgColor = {0.3, 0.4, 0.4},
 	}
-
+	local layout = {
+		Columns = 2,
+		AlignX = "center",
+		AlignRowY = "center"
+	}
 	Slab.BeginWindow("Actions Menu", window)
-	Slab.Text("Actions Menu")
+	Slab.BeginLayout("Character Card", layout)
+	Slab.PushFont(font.small)
+	Slab.SetLayoutColumn(1)
+	Slab.Text("Character Stats")
+	Slab.SetLayoutColumn(2)
+	Slab.Text("Character Actions")
+	Slab.PopFont()
+	Slab.EndLayout()
 	Slab.EndWindow()
+
+    -- Draw message overlay
+	window = {
+		X = 0,
+		Y = 0,
+		W = winWidth,
+		H = 50,
+		AllowMove = false,
+		AllowResize = false,
+		BgColor = {0, 0, 0, 0},
+		NoOutline = true,
+	}
+    if game.message then
+        Slab.BeginWindow('MessageOverlay', window)
+        Slab.PushFont(font.small)
+        Slab.Text(game.message)
+        Slab.PopFont()
+        Slab.EndWindow()
+    end
 
 end
 
@@ -174,11 +210,6 @@ function game.draw()
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
-    -- draw message --
-    if game.message then
-        love.graphics.setColor(1,1,1,1)
-        love.graphics.print(game.message, 1, 1, 0, 3)
-    end
 	Slab.Draw()
 end
 
