@@ -1,17 +1,17 @@
 -- main.lua
 function love.load()
-    -- loading libraries / modules
-    States = require "states.init" -- loads States/init.lua
+-- loading libraries / modules
+States = require "states.init" -- loads States/init.lua
 
-    -- setting window/resolution info
-    winWidth = 1024
-    winHeight = 896
-    love.window.setMode(winWidth, winHeight, {resizable = true})
-    love.graphics.setDefaultFilter("nearest", "nearest")
+-- setting window/resolution info
+winWidth = 1024
+winHeight = 768
+love.window.setMode(winWidth, winHeight, {resizable = true, minwidth=1024, minheight=768})
+love.graphics.setDefaultFilter("nearest", "nearest")
 
-    -- setting game States
-    States.setup()
-    States.switch("menu")
+-- setting game States
+States.setup()
+States.switch("menu")
 end
 
 function love.draw()

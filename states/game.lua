@@ -132,6 +132,7 @@ function game.update(dt)
 
 	-- Fonts: Load and set up fonts
 	local font = {
+		smaller = love.graphics.newFont("assets/fonts/alagard.ttf", 24),
 		small = love.graphics.newFont("assets/fonts/alagard.ttf", 36),
 		med = love.graphics.newFont("assets/fonts/alagard.ttf", 48),
 		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
@@ -139,13 +140,31 @@ function game.update(dt)
 
 	-- Dimensions: Get current window size
 	local winWidth, winHeight = love.graphics.getDimensions()
-	-- Window Config: Set up full-screen window
+
+	-- Turn Tracker
 	local window = {
 		AutoSizeWindow = false,
+		AllowResize = false,
+		AllowFocus = false,
+		X = 0,
+		Y = 0,
+		W = winWidth / 3,
+		H = 3 * winHeight / 4,
+		ConstrainPosition = true,
+		BgColor = {0.3, 0.4, 0.4},
+	}
+	Slab.BeginWindow("Turn Tracker", window)
+	Slab.EndWindow()
+
+	-- Character Menu
+	window = {
+		AutoSizeWindow = false,
+		AllowResize = false,
+		AllowFocus = false,
 		X = 0,
 		Y = 3 * winHeight / 4,
 		W = winWidth,
-		H = winHeight / 2,
+		H = winHeight / 4,
 		ConstrainPosition = true,
 		BgColor = {0.3, 0.4, 0.4},
 	}
@@ -154,23 +173,23 @@ function game.update(dt)
 		AlignX = "center",
 		AlignRowY = "center"
 	}
-	Slab.BeginWindow("Actions Menu", window)
+	Slab.BeginWindow("Character Menu", window)
 	Slab.BeginLayout("Character Card", layout)
 	Slab.PushFont(font.small)
 	Slab.SetLayoutColumn(1)
 	Slab.Text("Character Stats")
 	Slab.SetLayoutColumn(2)
-	Slab.Text("Character Actions")
+	Slab.Text("Target Stats")
 	Slab.PopFont()
 	Slab.EndLayout()
 	Slab.EndWindow()
 
+
+
     -- Draw message overlay
 	window = {
-		X = 0,
+		X = winWidth / 2,
 		Y = 0,
-		W = winWidth,
-		H = 50,
 		AllowMove = false,
 		AllowResize = false,
 		BgColor = {0, 0, 0, 0},
@@ -178,7 +197,7 @@ function game.update(dt)
 	}
     if game.message then
         Slab.BeginWindow('MessageOverlay', window)
-        Slab.PushFont(font.small)
+        Slab.PushFont(font.smaller)
         Slab.Text(game.message)
         Slab.PopFont()
         Slab.EndWindow()
@@ -266,8 +285,8 @@ end
 
 function game.resize(w, h)
     if map then
-        map.offsetX = 2 * map.tileSize
-        map.offsetY = 2 * map.tileSize
+        map.offsetX = w - map.width - map.tileSize
+        map.offsetY = map.tileSize
     end
 end
 

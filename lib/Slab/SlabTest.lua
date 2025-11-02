@@ -2128,7 +2128,7 @@ local function DrawStats()
 	Slab.Separator()
 
 	if not DrawStats_SetPosition then
-		SlabDebug.Performance_SetPosition(800.0, 175.0)
+		SlabDebug.Performance_SetPosition(1024.0, 175.0)
 		DrawStats_SetPosition = true
 	end
 
@@ -2453,7 +2453,7 @@ local function DrawMessages()
 	Slab.EndLayout()
 end
 
-local SlabTest_Options = {Title = "Slab", AutoSizeWindow = false, W = 800.0, H = 600.0, IsOpen = true}
+local SlabTest_Options = {Title = "Slab", AutoSizeWindow = false, W = 1024.0, H = 600.0, IsOpen = true}
 
 function SlabTest.MainMenuBar()
 	if Slab.BeginMainMenuBar() then
