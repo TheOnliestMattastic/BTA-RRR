@@ -147,7 +147,7 @@ function game.update(dt)
 		AllowResize = false,
 		AllowFocus = false,
 		NoOutline = true,
-		X = 0,
+		X = map.tileSize,
 		Y = 0,
 		W = winWidth / 3,
 		H = 3 * winHeight / 4,
@@ -156,10 +156,18 @@ function game.update(dt)
 	}
 	Slab.PushFont(font.smaller)
 	Slab.BeginWindow("Turn Tracker", window)
-	Slab.BeginLayout("Title", {AlignX = "center"})
-	Slab.Text("Turn Tracker")
-	Slab.EndLayout()
 	Slab.BeginLayout("Turn Tracker")
+	Slab.Text("Turn Tracker")
+	Slab.Separator()
+
+	Slab.Image("Second Character", {Path = "assets/sprites/chars/gladiatorBlue/Faceset.png", Scale = 2.5})
+	Slab.SameLine()
+	Slab.Text("Character Name")
+
+	Slab.Image("Next Character", {Path = "assets/sprites/chars/ninjaBlack/Faceset.png", Scale = 2.5})
+	Slab.SameLine()
+	Slab.Text("Character Name")
+
 	Slab.EndLayout()
 	Slab.EndWindow()
 	Slab.PopFont()
@@ -177,6 +185,7 @@ function game.update(dt)
 		H = winHeight / 4,
 		ConstrainPosition = true,
 		BgColor = {0, 0, 0, 0},
+		NoOutline = true,
 	}
 	local layout = {
 		Columns = 2,
