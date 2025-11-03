@@ -1,12 +1,12 @@
 -- states/game.lua
 local gameInit = require "core.gameInit"
 local Slab = require "lib.Slab"
-
 local game = {}
 local characters = {}
 local charsByName = {}
 local map
 local state
+local chatBox
 game.selected = nil
 game.message = nil
 
@@ -90,7 +90,7 @@ function game.load(args)
         return
     end
 
-    Slab.Initialize(args)
+	Slab.Initialize(args)
 
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
