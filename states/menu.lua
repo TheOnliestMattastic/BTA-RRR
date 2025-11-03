@@ -93,7 +93,7 @@ function menu.draw()
 	local playW = fontMed:getWidth(playText)
 	local playH = fontMed:getHeight()
 	local playX = buttonX + (buttonW - playW) / 2
-	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 48 and 4 or 0)  -- Slight press offset
+	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 48 and 16 or 0)  -- Slight press offset
 	love.graphics.print(playText, playX, playY)
 
 	love.graphics.setCanvas()
