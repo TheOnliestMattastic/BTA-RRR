@@ -3,7 +3,7 @@ local menu = {}
 local btnState = 0  -- Button state: 0=normal, 16=hover, 48=pressed
 local buttonImg
 local buttonQuads = {}
-local wasPressed = false
+local isPressed = false
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
@@ -51,11 +51,6 @@ function menu.update(dt)
 	btnState = hovered and 16 or 0
 	if love.mouse.isDown(1) and hovered then
 		btnState = 48
-		wasPressed = true
-	end
-	if wasPressed and not love.mouse.isDown(1) and hovered then
-		States.switch("game")
-		wasPressed = false
 	end
 end
 
@@ -106,6 +101,35 @@ end
 
 function menu.resize(w, h)
     computeScale()
+end
+
+function menu.mousepressed(x, y, button)
+    if button ~= 1 then return end
+    computeScale()
+    local vx = (x - translateX) / scale
+    local vy = (y - translateY) / scale
+    local buttonW = VIRTUAL_WIDTH / 2
+    local buttonH = VIRTUAL_HEIGHT / 4
+    local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
+    local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
+    if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
+        isPressed = true
+    end
+end
+
+function menu.mousereleased(x, y, button)
+    if button ~= 1 or not isPressed then return end
+    computeScale()
+    local vx = (x - translateX) / scale
+    local vy = (y - translateY) / scale
+    local buttonW = VIRTUAL_WIDTH / 2
+    local buttonH = VIRTUAL_HEIGHT / 4
+    local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
+    local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
+    if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
+        switchState("game")
+    end
+    isPressed = false
 end
 
 return menu

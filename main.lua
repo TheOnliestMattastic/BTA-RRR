@@ -1,41 +1,61 @@
 -- main.lua
+local Window = {
+	width = 1024,
+	height = 768
+}
+
+local menu = require "states.menu"
+local game = require "states.game"
+local currentState = nil
+
+function switchState(stateName)
+if stateName == "menu" then
+ currentState = menu
+		if menu.load then menu.load() end
+elseif stateName == "game" then
+ currentState = game
+ if game.load then game.load() end
+	else
+		error("Unknown state: " .. tostring(stateName))
+	end
+end
+
 function love.load()
--- loading libraries / modules
-States = require "states.init" -- loads States/init.lua
+	-- loading libraries / modules
 
--- setting window/resolution info
-winWidth = 1024
-winHeight = 768
-love.window.setMode(winWidth, winHeight, {resizable = true, minwidth=1024, minheight=768})
-love.graphics.setDefaultFilter("nearest", "nearest")
+	-- setting window/resolution info
+	love.window.setMode(Window.width, Window.height, {resizable = true, minwidth=1024, minheight=768})
+	love.graphics.setDefaultFilter("nearest", "nearest")
 
--- setting game States
-States.setup()
-States.switch("menu")
+	-- setting game States
+	switchState("menu")
 end
 
 function love.draw()
-
     --drawing background
     love.graphics.setBackgroundColor(0, 0, 0)
     -- drawing current state
-    if States and States.draw then States.draw() end
+    if currentState and currentState.draw then currentState.draw() end
 end
 
 function love.update(dt)
-    if States and States.update then States.update(dt) end
+    if currentState and currentState.update then currentState.update(dt) end
 end
 
 function love.mousepressed(x, y, button, istouch)
-    if States and States.mousepressed then States.mousepressed(x, y, button, istouch) end
+    if currentState and currentState.mousepressed then currentState.mousepressed(x, y, button, istouch) end
+end
+
+function love.mousereleased(x, y, button, istouch)
+    if currentState and currentState.mousereleased then currentState.mousereleased(x, y, button, istouch) end
 end
 
 function love.keypressed(key)
-    if States and States.keypressed then States.keypressed(key) end
+    if currentState and currentState.keypressed then currentState.keypressed(key) end
 end
 
 function love.resize(w, h)
-    winWidth = w
-    winHeight = h
-    if States and States.resize then States.resize(w, h) end
+    Window.width = w
+    Window.height = h
+    if currentState and currentState.resize then currentState.resize(w, h) end
 end

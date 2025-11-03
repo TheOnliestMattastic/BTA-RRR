@@ -179,43 +179,58 @@ function game.draw()
 	}
 
 	-- Turn Menu --
-	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- for testing; don't forget to !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	local currentTeam = state:currentTeam()
+	local activeTeamNum = (currentTeam == "green") and 0 or 1
+	local activeChar = nil
+	for _, char in ipairs(characters) do
+		if char.team == activeTeamNum then
+			activeChar = char
+			break
+		end
+	end
+	local activeName = activeChar and activeChar.name
+	local targetName = game.selected and game.selected.name
+
+	-- For upcoming characters
+	local characterOrder = {"ninjaBlack", "gladiatorBlue"}
 	local function getCharForTurn(offset)
 		local turn = state.turn + offset
 		local index = (turn % 2 == 1) and 1 or 2
 		return characterOrder[index]
 	end
-
-	local activeName = getCharForTurn(0)
-	local targetName = getCharForTurn(1)
 	local nextName = getCharForTurn(2)
 	local secondName = getCharForTurn(3)
 	local thirdName = getCharForTurn(4)
 	local fourthName = getCharForTurn(5)
 
 	-- Active Character
-	local faceset = love.graphics.newImage("assets/sprites/chars/" .. activeName .. "/Faceset.png")
-	local offset = map.tileSize * 1.5
-	love.graphics.draw(
-		faceset,
-		map.tileSize,
-		3 * VIRTUAL_HEIGHT / 4 + offset,
-		0,
-		3,
-		3
-	)
+	if activeName then
+		local faceset = love.graphics.newImage("assets/sprites/chars/" .. activeName .. "/Faceset.png")
+		local offset = map.tileSize * 1.5
+		love.graphics.draw(
+			faceset,
+			map.tileSize,
+			3 * VIRTUAL_HEIGHT / 4 + offset,
+			0,
+			3,
+			3
+		)
+	end
 
 	-- Target
-	faceset = love.graphics.newImage("assets/sprites/chars/" .. targetName .. "/Faceset.png")
-	local rOffset = faceset:getWidth() * 3 + map.tileSize
-	love.graphics.draw(
-		faceset,
-		VIRTUAL_WIDTH - rOffset,
-		3 * VIRTUAL_HEIGHT / 4 + offset,
-		0,
-		3,
-		3
-	)
+	if targetName then
+		local faceset = love.graphics.newImage("assets/sprites/chars/" .. targetName .. "/Faceset.png")
+		local offsetH = map.tileSize * 1.5
+		local offsetW = faceset:getWidth() * 3 + map.tileSize
+		love.graphics.draw(
+			faceset,
+			VIRTUAL_WIDTH - offsetW,
+			3 * VIRTUAL_HEIGHT / 4 + offsetH,
+			0,
+			3,
+			3
+		)
+	end
 
 	-- Upcoming characters
 	local upcomingNames = {nextName, secondName, thirdName, fourthName}
