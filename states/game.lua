@@ -192,7 +192,7 @@ function game.draw()
 	local targetName = game.selected and game.selected.name
 
 	-- For upcoming characters
-	local characterOrder = {"ninjaBlack", "gladiatorBlue"}
+	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- !!!!!!! test chars; remember to change !!!!!!!
 	local function getCharForTurn(offset)
 		local turn = state.turn + offset
 		local index = (turn % 2 == 1) and 1 or 2
@@ -202,6 +202,7 @@ function game.draw()
 	local secondName = getCharForTurn(3)
 	local thirdName = getCharForTurn(4)
 	local fourthName = getCharForTurn(5)
+	local fifthName = getCharForTurn(6)
 
 	-- Active Character
 	if activeName then
@@ -233,21 +234,28 @@ function game.draw()
 	end
 
 	-- Upcoming characters
-	local upcomingNames = {nextName, secondName, thirdName, fourthName}
-	local offset
+	local upcomingNames = {nextName, secondName, thirdName, fourthName, fifthName}
+	local facesetHeight = 0
+	local previousY = 0
 	for i, name in ipairs(upcomingNames) do
 		local faceset = love.graphics.newImage("assets/sprites/chars/" .. name .. "/Faceset.png")
+		facesetHeight = faceset:getHeight() * 2.5
+		local spacing = (i == 1) and map.tileSize or (map.tileSize / 4)
+		local y
 		if i == 1 then
-			offset = faceset:getHeight() * 2.5 + map.tileSize
+			y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
+		else
+			y = previousY - (facesetHeight + spacing)
 		end
 		love.graphics.draw(
 			faceset,
 			map.tileSize,
-			3 * VIRTUAL_HEIGHT / 4 - offset * i,
+			y,
 			0,
 			2.5,
 			2.5
 		)
+		previousY = y
 	end
 
 	-- Character Menu
@@ -263,7 +271,7 @@ function game.draw()
 
     love.graphics.setCanvas()
 
-    -- Draw scaled canvas centered
+    -- Draw scaled canvas 
     if scale and scale > 0 then
         love.graphics.draw(gameCanvas, translateX, translateY, 0, scale, scale)
     end
