@@ -90,7 +90,7 @@ function game.load(args)
         return
     end
 
-	Slab.Initialize(args)
+    Slab.Initialize(args)
 
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
@@ -152,6 +152,7 @@ function game.update(dt)
 
 	Slab.Update(dt)
 
+
 	-- Restore
 	love.mouse.getPosition = originalGetPosition
 
@@ -173,86 +174,59 @@ function game.update(dt)
 		AllowFocus = false,
 		NoOutline = true,
 		X = map.tileSize,
-		Y = 0,
+		Y = map.tileSize,
 		W = winWidth / 3,
-		H = 3 * winHeight / 4,
+		H = 3 * winHeight / 4 - map.tileSize * 2,
 		ConstrainPosition = true,
 		BgColor = {0, 0, 0, 0},
 	}
 	Slab.PushFont(font.smaller)
-	Slab.BeginWindow("Turn Tracker", window)
-	Slab.BeginLayout("Title")
-	Slab.Text("Turn Tracker")
-	Slab.Separator()
+	Slab.BeginWindow("Turn Order", window)
+	Slab.BeginLayout("Order List")
 
-	Slab.BeginListBox("Turn Tracker List", {StretchW = true, StretchH = true,})
-	
-	Slab.BeginListBoxItem("Tenth")
 	Slab.Image("Tenth Character", {Path = "assets/sprites/chars/knightGold/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Ninth")
 	Slab.Image("Ninth Character", {Path = "assets/sprites/chars/ninjaMasked/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Eighth")
 	Slab.Image("Eighth Character", {Path = "assets/sprites/chars/tenguRed/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Seventh")
 	Slab.Image("Seventh Character", {Path = "assets/sprites/chars/samuraiArmoredBlue/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Sixth")
 	Slab.Image("Sixth Character", {Path = "assets/sprites/chars/mageBlack/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Fifth")
 	Slab.Image("Fifth Character", {Path = "assets/sprites/chars/lionBro/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Fourth")
 	Slab.Image("Fourth Character", {Path = "assets/sprites/chars/samuraiRed/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Third")
 	Slab.Image("Third Character", {Path = "assets/sprites/chars/fighterBlue/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Second")
 	Slab.Image("Second Character", {Path = "assets/sprites/chars/gladiatorBlue/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.BeginListBoxItem("Next")
 	Slab.Image("Next Character", {Path = "assets/sprites/chars/ninjaBlack/Faceset.png", Scale = 2.5})
 	Slab.SameLine()
 	Slab.Text("Character Name")
-	Slab.EndListBoxItem()
 
-	Slab.EndListBox()
 	Slab.EndLayout()
 	Slab.EndWindow()
 	Slab.PopFont()
-
-
 
 	-- Character Menu
 	window = {
@@ -300,6 +274,7 @@ function game.update(dt)
         Slab.EndWindow()
         Slab.PopFont()
     end
+
 
 end
 
