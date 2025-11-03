@@ -8,11 +8,11 @@ Battle Tactics Arena (BTAR-R) is a 2D turn-based tactical RPG prototype built wi
 
 Key folders:
 
-- `/core`: Game logic modules (character, map, gameState, etc.)
-- `/config`: Data-driven definitions (characters, fx, tilesets, ui)
+- `/core`: Game logic modules (character, map, gameState, ui, etc.)
+- `/config`: Data-driven definitions (characters, fx, tilesets)
 - `/states`: Game states (menu, game)
-- `/assets`: Sprites, tilesets, UI
-- `/lib`: Third-party libraries (anim8, timer)
+- `/assets`: Sprites, tilesets, UI elements, fonts
+- `/lib`: Third-party libraries (anim8)
 
 ## Code Style and Structure
 
@@ -72,11 +72,18 @@ These comments should be 1-2 words followed by a colon and brief description.
 - **Hover**: `-- Detect: Check mouse over tile`
 - **Highlight**: `-- Range: Show movement area for selected character`
 
+### states/menu.lua
+
+- **Load**: `-- Init: Load UI assets and canvas`
+- **Update**: `-- Logic: Handle button hover/press`
+- **Draw**: `-- UI: Render title, button, and background`
+- **Resize**: `-- Scale: Update virtual scaling`
+
 ### states/game.lua
 
 - **Load**: `-- Setup: Initialize map, characters, and state`
-- **Update**: `-- Tick: Update characters, FX, and win conditions`
-- **Draw**: `-- Display: Render map, characters, and messages`
+- **Update**: `-- Tick: Update characters, FX, and UI`
+- **Draw**: `-- Display: Render map, characters, and overlays`
 - **Input**: `-- Click: Handle mouse presses for selection/movement/attacks`
 
 ## Config Files
@@ -92,13 +99,13 @@ Use config files to define data without code changes.
 
 - `fx.lua`: Effect definitions
 - `tilesets.lua`: Tile assets
-- `ui.lua`: UI elements
 
 ## Commands and Scripts
 
 - **Run Game**: `./love.appimage .` (from project root)
 - **Debug**: Set LOCAL_LUA_DEBUGGER_VSCODE=1 and run with "debug" arg
 - **Build**: No build step; LÖVE runs directly from source
+- **UI**: Custom drawing with LÖVE functions; no external UI libs
 
 ## Next Steps
 

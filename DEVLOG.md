@@ -41,7 +41,7 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **Scalability**: Adding new classes, maps, or abilities will be data‑driven, not hard‑coded.
 - **Professionalism**: The repo will include a polished `README.md` and this `devlog.md` to show my growth and thought process.
 
-## November 1, 2025
+## October 31, 2025
 
 ### Window and UI Improvements
 
@@ -51,7 +51,7 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **Menu State Overhaul**: Refactored `states/menu.lua` to use Slab UI components, including proper window setup, background colors, and button sizing relative to window dimensions.
 - **Slab Integration**: Began integrating the Slab immediate-mode GUI library into the menu state, replacing basic LÖVE drawing with more flexible UI elements.
 
-## November 2, 2025
+## November 1, 2025
 
 ### Advanced Menu UI Features
 
@@ -61,3 +61,15 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **UI Initialization and Rendering**: Refactored menu state UI initialization to load fonts and styles dynamically, and optimized rendering for better performance and maintainability.
 
 ---
+
+## November 2, 2025
+
+### UI Refactoring and Slab Removal
+
+- **Removed Slab Dependency**: Completely removed the Slab UI library from the project to reduce external dependencies and gain full control over rendering. Deleted `lib/Slab/` and all Slab-related code.
+- **Custom UI Implementation**: Refactored `states/menu.lua` and `states/game.lua` to use LÖVE's built-in drawing functions (`love.graphics.printf`, `love.graphics.rectangle`, etc.) combined with custom UI sprites from `assets/sprites/ui/` (e.g., `button.png` for interactive elements).
+- **Menu State Overhaul**: Replaced Slab-based UI in the menu with direct sprite rendering for buttons (using quads for hover/press states) and text. Implemented custom mouse interaction for button clicks and state transitions.
+- **Game UI Simplification**: Removed Slab window and layout code from the game state. Updated character selection to use simple yellow outlines and range highlights with LÖVE primitives. Added basic text rendering for UI elements like stats.
+- **Bug Fixes**: Resolved a visual bug where selection boxes were drawing around every character instead of just the selected one by correcting the conditional logic in `game.lua`.
+- **Virtual Resolution Handling**: Ensured UI elements scale correctly with the virtual resolution system, including mouse coordinate transformations for accurate input.
+- **Documentation Updates**: Thoroughly reviewed and updated `AGENT.md` and `spec.md` to reflect the new UI architecture, remove outdated references, and accurately describe the current codebase structure and modules.

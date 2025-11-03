@@ -96,14 +96,15 @@
 
 ### Game States
 
-- **Menu**: Title screen with start option.
-- **Game**: Active battlefield with units and map.
-- **Win/Loss**: Game over screen.
+- **Menu**: Title screen with start button using custom UI sprites.
+- **Game**: Active battlefield with units, map, and turn tracker.
+- **Win/Loss**: Game over screen (planned).
 
 ### Visual Feedback
 
 - **Selection**: Yellow outline around selected character.
 - **Movement Range**: Highlighted tiles within movement distance.
+- **Attack Range**: Red-highlighted tiles for attackable enemies.
 - **Messages**: Text feedback for actions (movement, attacks, errors).
 - **FX**: Animated effects for attacks and abilities.
 
@@ -122,39 +123,49 @@
 
 ```
 /core          → Game logic modules
+  ├── assetRegistry.lua  → Asset loading and management
   ├── character.lua      → Unit entities and stats
+  ├── gameInit.lua       → Game initialization and setup
+  ├── gameLogic.lua      → Combat and helper functions
   ├── gameState.lua      → Turn and AP management
-  ├── combat.lua         → Attack/heal resolution
   ├── map.lua            → Grid and tile rendering
-  ├── gameHelpers.lua    → Utility functions
-  └── registries/        → Asset management
 /config        → Data definitions
   ├── characters.lua     → Class configs
   ├── tilesets.lua       → Map tile assets
   └── fx.lua             → Effect animations
 /states        → Game state management
-  ├── menu.lua           → Title screen
+  ├── menu.lua           → Title screen with custom UI
   └── game.lua           → Battlefield
 /assets        → Sprites and graphics
-/lib           → Third-party libraries (anim8, timer)
+  ├── sprites/ui/        → UI elements (buttons, panels)
+  ├── sprites/chars/     → Character sprites
+  ├── sprites/fx/        → Effect sprites
+  └── fonts/             → Font files
+/lib           → Third-party libraries (anim8)
 ```
 
 ### Key Modules
+
+#### Asset Registry Module
+
+- **Responsibilities**: Loading and managing game assets.
+- **Methods**: `loadAssets()`, `getAsset()`.
+- **Usage**: `assetRegistry.loadAssets()` at game start.
 
 #### Character Module
 
 - **Responsibilities**: Stats, position, animations, movement.
 - **Methods**: `new()`, `update()`, `draw()`, `moveTo()`, `takeDamage()`, `heal()`.
-- **Animation System**: Uses `anim8` library with directional sprites.
+- **Animation System**: Uses `anim8` library for directional sprites and states.
 
 #### GameState Module
 
 - **Responsibilities**: Turn progression, AP tracking, win conditions.
 - **AP Management**: Spend, reset, and clamp AP values.
 
-#### Combat Module
+#### GameLogic Module
 
-- **Responsibilities**: Hit resolution, damage calculation, range checking.
+- **Responsibilities**: Combat resolution, helper functions, hit calculation, range checking.
 - **Balance Config**: Tunable constants for accuracy, damage, AP costs.
 
 #### Map Module
@@ -162,18 +173,15 @@
 - **Responsibilities**: Tile rendering, hover detection, movement highlighting.
 - **Data Structure**: 2D array of tile coordinates.
 
-### Registries
+#### Asset Registry Module
 
-- **AnimationRegistry**: Loads character and FX animations.
-- **TilesetRegistry**: Manages map tile assets.
-- **UIRegistry**: Handles UI elements (planned).
+- **Responsibilities**: Loading and managing assets like animations, tilesets.
+- **Methods**: `loadAssets()`, `getAsset()`.
 
 ### Data-Driven Design
 
 - **Configuration Files**: Add content without code changes.
 - **Example**: New character class requires only config entry with stats and sprite path.
-
-## Animation and Effects
 
 ### Character Animations
 
@@ -213,7 +221,7 @@
 1. **More Character Classes**: Mage, Ranger, etc. with unique abilities.
 2. **Special Attacks**: Beyond basic attacks (skills, spells).
 3. **AI Opponent**: Computer-controlled enemy turns.
-4. **Enhanced UI**: In-game menus, health bars, ability buttons.
+4. **Enhanced UI**: Health bars, ability buttons, in-game menus.
 5. **Save/Load**: Persistent game state.
 6. **Multiplayer**: Network support.
 7. **Sound**: Audio effects and music.
