@@ -162,14 +162,8 @@ function game.draw()
 	map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
 
 	for _, character in ipairs(characters) do
-	-- Character:draw will handle anim drawing if character has anim/sheet set
-	pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
-	-- highlight selected
-	if game.selected == character then
-	love.graphics.setColor(1, 1, 0, 0.5)
-	    love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
-	    love.graphics.setColor(1,1,1,1)
-	end
+		-- Character:draw will handle anim drawing if character has anim/sheet set
+		pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
 	end
 
     for _,activeEffect in ipairs(activeFX) do
@@ -183,6 +177,76 @@ function game.draw()
 		med = love.graphics.newFont("assets/fonts/alagard.ttf", 48),
 		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
 	}
+
+	-- Turn Menu --
+	
+	-- Active Character
+	local faceset = love.graphics.newImage("assets/sprites/chars/gladiatorBlue/Faceset.png")
+	local offset = map.tileSize * 1.5
+	love.graphics.draw(
+		faceset,
+		map.tileSize,
+		3 * VIRTUAL_HEIGHT / 4 + offset,
+		0,
+		3,
+		3
+	)
+
+	-- Target
+	faceset = love.graphics.newImage("assets/sprites/chars/ninjaBlack/Faceset.png")
+	rOffset = faceset:getWidth() * 3 + map.tileSize
+	love.graphics.draw(
+		faceset,
+		VIRTUAL_WIDTH - rOffset,
+		3 * VIRTUAL_HEIGHT / 4 + offset,
+		0,
+		3,
+		3
+	)
+
+	-- Next (bottom)
+	faceset = love.graphics.newImage("assets/sprites/chars/ninjaBlack/Faceset.png")
+	offset = faceset:getHeight() * 2.5 + map.tileSize
+	love.graphics.draw(
+		faceset,
+		map.tileSize,
+		3 * VIRTUAL_HEIGHT / 4 - offset,
+		0,
+		2.5,
+		2.5
+	)
+
+	-- Second
+	faceset = love.graphics.newImage("assets/sprites/chars/gladiatorBlue/Faceset.png")
+	love.graphics.draw(
+		faceset,
+		map.tileSize,
+		3 * VIRTUAL_HEIGHT / 4 - offset * 2,
+		0,
+		2.5,
+		2.5
+	)
+	-- Third
+	faceset = love.graphics.newImage("assets/sprites/chars/ninjaBlack/Faceset.png")
+	love.graphics.draw(
+		faceset,
+		map.tileSize,
+		3 * VIRTUAL_HEIGHT / 4 - offset * 3,
+		0,
+		2.5,
+		2.5
+	)
+
+	-- Fourth
+	faceset = love.graphics.newImage("assets/sprites/chars/gladiatorBlue/Faceset.png")
+	love.graphics.draw(
+		faceset,
+		map.tileSize,
+		3 * VIRTUAL_HEIGHT / 4 - offset * 4,
+		0,
+		2.5,
+		2.5
+	)
 
 	-- Character Menu
 	love.graphics.setFont(font.small)
