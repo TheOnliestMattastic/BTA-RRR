@@ -20,7 +20,6 @@ local function computeScale()
     scale = math.min(w / VIRTUAL_WIDTH, h / VIRTUAL_HEIGHT)
     translateX = (w - VIRTUAL_WIDTH * scale) / 2
     translateY = (h - VIRTUAL_HEIGHT * scale) / 2
-
 end
 
 -- Initialize dependencies
@@ -92,8 +91,6 @@ function game.load(args)
         return
     end
 
-	
-
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
@@ -145,7 +142,6 @@ function game.update(dt)
 	-- Compute scaling for virtual screen
 	computeScale()
 
-
 	local originalGetPosition = love.mouse.getPosition
 	love.mouse.getPosition = function()
 		local mx, my = originalGetPosition()
@@ -155,24 +151,6 @@ function game.update(dt)
 	-- Restore
 	love.mouse.getPosition = originalGetPosition
 
-	-- Fonts: Load and set up fonts
-	local font = {
-		smaller = love.graphics.newFont("assets/fonts/alagard.ttf", 24),
-		small = love.graphics.newFont("assets/fonts/alagard.ttf", 36),
-		med = love.graphics.newFont("assets/fonts/alagard.ttf", 48),
-		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
-	}
-
-	-- Character Menu
-	love.graphics.setFont(font.small)
-	love.graphics.printf("Character Stats", 0, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
-	love.graphics.printf("Target Stats", VIRTUAL_WIDTH / 2, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
-
-    -- Draw message overlay
-    if game.message then
-        love.graphics.setFont(font.smaller)
-        love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
-    end
 end
 
 function game.draw()
@@ -194,18 +172,37 @@ function game.draw()
 	map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
 
 	for _, character in ipairs(characters) do
-		-- Character:draw will handle anim drawing if character has anim/sheet set
-    	pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
-        -- highlight selected
-    	if game.selected == character then
-    		love.graphics.setColor(1, 1, 0, 0.5)
-    	end
-    	love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
-    	love.graphics.setColor(1,1,1,1)
-    end
+	-- Character:draw will handle anim drawing if character has anim/sheet set
+	pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
+	-- highlight selected
+	if game.selected == character then
+	love.graphics.setColor(1, 1, 0, 0.5)
+	    love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
+	    love.graphics.setColor(1,1,1,1)
+	end
+	end
 
     for _,activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
+    end
+
+	-- Fonts: Load and set up fonts
+	local font = {
+		smaller = love.graphics.newFont("assets/fonts/alagard.ttf", 24),
+		small = love.graphics.newFont("assets/fonts/alagard.ttf", 36),
+		med = love.graphics.newFont("assets/fonts/alagard.ttf", 48),
+		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
+	}
+
+	-- Character Menu
+	love.graphics.setFont(font.small)
+	love.graphics.printf("Character Stats", 0, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
+	love.graphics.printf("Target Stats", VIRTUAL_WIDTH / 2, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
+
+    -- Draw message overlay
+    if game.message then
+        love.graphics.setFont(font.smaller)
+        love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
 
     love.graphics.setCanvas()
