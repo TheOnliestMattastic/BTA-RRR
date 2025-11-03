@@ -179,7 +179,7 @@ function game.draw()
 	}
 
 	-- Turn Menu --
-	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- for testing; don't forget to 
+	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- for testing; don't forget to !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	local function getCharForTurn(offset)
 		local turn = state.turn + offset
 		local index = (turn % 2 == 1) and 1 or 2
