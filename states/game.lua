@@ -1,12 +1,11 @@
 -- states/game.lua
 local gameInit = require "core.gameInit"
-local Slab = require "lib.Slab"
+
 local game = {}
 local characters = {}
 local charsByName = {}
 local map
 local state
-local chatBox
 game.selected = nil
 game.message = nil
 
@@ -16,9 +15,12 @@ local gameCanvas
 local scale, translateX, translateY
 
 local function computeScale()
-    scale = math.min(winWidth / VIRTUAL_WIDTH, winHeight / VIRTUAL_HEIGHT)
-    translateX = (winWidth - VIRTUAL_WIDTH * scale) / 2
-    translateY = (winHeight - VIRTUAL_HEIGHT * scale) / 2
+    local w = love.graphics.getWidth()
+    local h = love.graphics.getHeight()
+    scale = math.min(w / VIRTUAL_WIDTH, h / VIRTUAL_HEIGHT)
+    translateX = (w - VIRTUAL_WIDTH * scale) / 2
+    translateY = (h - VIRTUAL_HEIGHT * scale) / 2
+
 end
 
 -- Initialize dependencies
@@ -90,7 +92,7 @@ function game.load(args)
         return
     end
 
-	Slab.Initialize(args)
+	
 
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
@@ -143,15 +145,12 @@ function game.update(dt)
 	-- Compute scaling for virtual screen
 	computeScale()
 
-	-- Override mouse position for Slab to use virtual coords
+
 	local originalGetPosition = love.mouse.getPosition
 	love.mouse.getPosition = function()
 		local mx, my = originalGetPosition()
 		return (mx - translateX) / scale, (my - translateY) / scale
 	end
-
-	Slab.Update(dt)
-
 
 	-- Restore
 	love.mouse.getPosition = originalGetPosition
@@ -164,164 +163,50 @@ function game.update(dt)
 		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
 	}
 
-	-- Dimensions: Use virtual size
-	local winWidth, winHeight = VIRTUAL_WIDTH, VIRTUAL_HEIGHT
-
-	-- Turn Tracker
-	local window = {
-		AutoSizeWindow = false,
-		AllowResize = false,
-		AllowFocus = false,
-		NoOutline = true,
-		X = map.tileSize,
-		Y = map.tileSize,
-		W = winWidth / 3,
-		H = 3 * winHeight / 4 - map.tileSize * 2,
-		ConstrainPosition = true,
-		BgColor = {0, 0, 0, 0},
-	}
-	Slab.PushFont(font.smaller)
-	Slab.BeginWindow("Turn Order", window)
-	Slab.BeginLayout("Order List")
-
-	Slab.Image("Tenth Character", {Path = "assets/sprites/chars/knightGold/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Ninth Character", {Path = "assets/sprites/chars/ninjaMasked/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Eighth Character", {Path = "assets/sprites/chars/tenguRed/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Seventh Character", {Path = "assets/sprites/chars/samuraiArmoredBlue/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Sixth Character", {Path = "assets/sprites/chars/mageBlack/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Fifth Character", {Path = "assets/sprites/chars/lionBro/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Fourth Character", {Path = "assets/sprites/chars/samuraiRed/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Third Character", {Path = "assets/sprites/chars/fighterBlue/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Second Character", {Path = "assets/sprites/chars/gladiatorBlue/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.Image("Next Character", {Path = "assets/sprites/chars/ninjaBlack/Faceset.png", Scale = 2.5})
-	Slab.SameLine()
-	Slab.Text("Character Name")
-
-	Slab.EndLayout()
-	Slab.EndWindow()
-	Slab.PopFont()
-
 	-- Character Menu
-	window = {
-		AutoSizeWindow = false,
-		AllowResize = false,
-		AllowFocus = false,
-		X = 0,
-		Y = 3 * winHeight / 4,
-		W = winWidth,
-		H = winHeight / 4,
-		ConstrainPosition = true,
-		BgColor = {0, 0, 0, 0},
-		NoOutline = true,
-	}
-	local layout = {
-		Columns = 2,
-		AlignX = "center",
-		AlignRowY = "center"
-	}
-	Slab.PushFont(font.small)
-	Slab.BeginWindow("Character Menu", window)
-	Slab.BeginLayout("Character Card", layout)
-	Slab.SetLayoutColumn(1)
-	Slab.Text("Character Stats")
-	Slab.SetLayoutColumn(2)
-	Slab.Text("Target Stats")
-	Slab.EndLayout()
-	Slab.EndWindow()
-	Slab.PopFont()
-
-
+	love.graphics.setFont(font.small)
+	love.graphics.printf("Character Stats", 0, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
+	love.graphics.printf("Target Stats", VIRTUAL_WIDTH / 2, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
 
     -- Draw message overlay
-	window = {
-		X = winWidth / 2,
-		Y = 0,
-		AllowResize = false,
-		BgColor = {0, 0, 0, 0},
-		NoOutline = true,
-	}
     if game.message then
-        Slab.PushFont(font.smaller)
-        Slab.BeginWindow('MessageOverlay', window)
-        Slab.Text(game.message)
-        Slab.EndWindow()
-        Slab.PopFont()
+        love.graphics.setFont(font.smaller)
+        love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
-
-
 end
 
 function game.draw()
 
     computeScale()
 
--- Draw to canvas
-love.graphics.setCanvas(gameCanvas)
-love.graphics.clear(0.3, 0.4, 0.4)  -- game background
+	-- Draw to canvas
+	love.graphics.setCanvas(gameCanvas)
+	love.graphics.clear(0.3, 0.4, 0.4)  -- game background
 
--- Draw map --
-local mx, my = love.mouse.getPosition()
+	-- Draw map --
+	local mx, my = love.mouse.getPosition()
     -- Adjust mouse for virtual coords
-local vmx = (mx - translateX) / scale
-local vmy = (my - translateY) / scale
-map:draw(vmx, vmy)
+	local vmx = (mx - translateX) / scale
+	local vmy = (my - translateY) / scale
+	map:draw(vmx, vmy)
 
--- Highlight movement range for selected character --
-map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
+	-- Highlight movement range for selected character --
+	map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
 
-for _, character in ipairs(characters) do
--- Character:draw will handle anim drawing if character has anim/sheet set
-    pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
+	for _, character in ipairs(characters) do
+		-- Character:draw will handle anim drawing if character has anim/sheet set
+    	pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
         -- highlight selected
-    if game.selected == character then
-love.graphics.setColor(1, 1, 0, 0.5)
-    love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
-        love.graphics.setColor(1,1,1,1)
-       end
+    	if game.selected == character then
+    		love.graphics.setColor(1, 1, 0, 0.5)
+    	end
+    	love.graphics.rectangle("line", character.x * map.tileSize + map.offsetX, character.y * map.tileSize + map.offsetY, map.tileSize, map.tileSize)
+    	love.graphics.setColor(1,1,1,1)
     end
 
     for _,activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
-
-    -- Draw Slab UI to canvas
-    -- Mouse already overridden in update, but for draw, override again if needed
-    local originalGetPosition2 = love.mouse.getPosition
-    love.mouse.getPosition = function()
-        local mx, my = originalGetPosition2()
-        return (mx - translateX) / scale, (my - translateY) / scale
-    end
-
-    Slab.Draw()
-
-    love.mouse.getPosition = originalGetPosition2
 
     love.graphics.setCanvas()
 
@@ -331,10 +216,24 @@ love.graphics.setColor(1, 1, 0, 0.5)
     end
 end
 
+function game.mousereleased(x, y, button)
+    if button ~= 1 or scale <= 0 then return end
+    local vx = (x - translateX) / scale
+    local vy = (y - translateY) / scale
+end
+
+function game.resize(w, h)
+    computeScale()
+end
+
 function game.mousepressed(x, y, button)
     if state.over then return end
     computeScale()
     if button ~= 1 or scale <= 0 then return end
+
+    -- Handle scroll box input
+    local vx = (x - translateX) / scale
+    local vy = (y - translateY) / scale
 
     -- Convert to virtual coordinates
     local vx = (x - translateX) / scale
