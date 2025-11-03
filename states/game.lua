@@ -7,6 +7,8 @@ local charsByName = {}
 local map
 local state
 game.selected = nil
+game.activeChar = nil
+game.targetChar = nil
 game.message = nil
 
 local VIRTUAL_WIDTH = 1024
@@ -96,6 +98,7 @@ function game.load()
     local stats = {}
     for k, v in pairs(ninjaStats) do stats[k] = v end
     stats.team = 0
+    -- Create characters
     local ninjaBlack = Character.new("ninjaBlack", 2, 4, stats, CharactersConfig.ninjaBlack.tags)
     ninjaBlack:setAnimations(registry:getCharacter("ninjaBlack"))
     table.insert(characters, ninjaBlack)
@@ -109,7 +112,12 @@ function game.load()
     gladiatorBlue:setAnimations(registry:getCharacter("gladiatorBlue"))
     table.insert(characters, gladiatorBlue)
     charsByName.gladiatorBlue = gladiatorBlue
-    -- etc...
+
+    -- Calculate initiative and sort turn order
+    for _, char in ipairs(characters) do
+        char.initiative = char.spd + math.random(1, 20)
+    end
+    table.sort(characters, function(a, b) return a.initiative > b.initiative end)
 end
 
 function game.update(dt)
@@ -158,15 +166,23 @@ function game.draw()
 	local vmy = (my - translateY) / scale
 	map:draw(vmx, vmy)
 
-	-- Highlight movement range for selected character --
+	-- Highlight movement range for active character --
 	map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
+
+	-- Highlight attack range if target selected --
+	if game.targetChar then
+		map:highlightAttackRange(game.activeChar)
+	end
 
 	for _, character in ipairs(characters) do
 		-- Character:draw will handle anim drawing if character has anim/sheet set
 		pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
 	end
 
-    for _,activeEffect in ipairs(activeFX) do
+	-- Reset color for faceset rendering
+	love.graphics.setColor(1, 1, 1, 1)
+
+	   for _,activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
@@ -179,86 +195,62 @@ function game.draw()
 	}
 
 	-- Turn Menu --
-	-- Determine: Active character based on current team
-	local currentTeam = state:currentTeam()
-	local activeTeamNum = (currentTeam == "green") and 0 or 1
-	local activeChar = nil
-	for _, char in ipairs(characters) do
-		if char.team == activeTeamNum then
-			activeChar = char
-			break
-		end
-	end
-	local activeName = activeChar and activeChar.name
+	-- Determine: Active character based on initiative order
+	local turnIndex = (state.turn - 1) % #characters + 1
+	game.activeChar = characters[turnIndex]
+	game.selected = game.activeChar  -- Auto-select active character
+	local activeName = game.activeChar and game.activeChar.class
 
 	-- Determine: Target character from selection
-	local targetName = game.selected and game.selected.name
+	local targetName = game.targetChar and game.targetChar.class
 
 	-- Prepare: Upcoming characters order
-	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- !!!!!!! test chars; remember to change !!!!!!!
-	local function getCharForTurn(offset)
-		local turn = state.turn + offset
-		local index = (turn % 2 == 1) and 1 or 2
-		return characterOrder[index]
-	end
-	local nextName = getCharForTurn(2)
-	local secondName = getCharForTurn(3)
-	local thirdName = getCharForTurn(4)
-	local fourthName = getCharForTurn(5)
-	local fifthName = getCharForTurn(6)
+	local nextIndex = (turnIndex % #characters) + 1
+	local secondIndex = ((turnIndex + 1) % #characters) + 1
+	local thirdIndex = ((turnIndex + 2) % #characters) + 1
+	local fourthIndex = ((turnIndex + 3) % #characters) + 1
+	local fifthIndex = ((turnIndex + 4) % #characters) + 1
+	local nextName = characters[nextIndex] and characters[nextIndex].class
+	local secondName = characters[secondIndex] and characters[secondIndex].class
+	local thirdName = characters[thirdIndex] and characters[thirdIndex].class
+	local fourthName = characters[fourthIndex] and characters[fourthIndex].class
+	local fifthName = characters[fifthIndex] and characters[fifthIndex].class
 
-	-- Render: Active character faceset
+	-- Prepare: Faceset data for drawing
+	local activeFaceset, targetFaceset, upcomingFacesets, upcomingYs = nil, nil, {}, {}
+
 	if activeName then
-		local faceset = love.graphics.newImage("assets/sprites/chars/" .. activeName .. "/Faceset.png")
-		local offset = map.tileSize * 1.5
-		love.graphics.draw(
-			faceset,
-			map.tileSize,
-			3 * VIRTUAL_HEIGHT / 4 + offset,
-			0,
-			3,
-			3
-		)
+		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. activeName .. "/Faceset.png")
+		if success then
+			activeFaceset = faceset
+		end
 	end
 
-	-- Render: Target character faceset
 	if targetName then
-		local faceset = love.graphics.newImage("assets/sprites/chars/" .. targetName .. "/Faceset.png")
-		local offsetH = map.tileSize * 1.5
-		local offsetW = faceset:getWidth() * 3 + map.tileSize
-		love.graphics.draw(
-			faceset,
-			VIRTUAL_WIDTH - offsetW,
-			3 * VIRTUAL_HEIGHT / 4 + offsetH,
-			0,
-			3,
-			3
-		)
+		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. targetName .. "/Faceset.png")
+		if success then
+			targetFaceset = faceset
+		end
 	end
 
-	-- Render: Upcoming characters facesets
 	local upcomingNames = {nextName, secondName, thirdName, fourthName, fifthName}
 	local facesetHeight = 0
 	local previousY = 0
 	for i, name in ipairs(upcomingNames) do
-		local faceset = love.graphics.newImage("assets/sprites/chars/" .. name .. "/Faceset.png")
-		facesetHeight = faceset:getHeight() * 2.5
-		local spacing = (i == 1) and map.tileSize or (map.tileSize / 4)
-		local y
-		if i == 1 then
-			y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
-		else
-			y = previousY - (facesetHeight + spacing)
+		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. name .. "/Faceset.png")
+		if success then
+			upcomingFacesets[i] = faceset
+			facesetHeight = faceset:getHeight() * 2.5
+			local spacing = map.tileSize
+			local y
+			if i == 1 then
+				y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
+			else
+				y = previousY - (facesetHeight + spacing / 3)
+			end
+			upcomingYs[i] = y
+			previousY = y
 		end
-		love.graphics.draw(
-			faceset,
-			map.tileSize,
-			y,
-			0,
-			2.5,
-			2.5
-		)
-		previousY = y
 	end
 
 	-- Character Menu
@@ -272,12 +264,29 @@ function game.draw()
         love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
 
+	-- Draw facesets on canvas
+	if activeFaceset then
+		local offset = map.tileSize * 1.5
+		love.graphics.draw(activeFaceset, map.tileSize, 3 * VIRTUAL_HEIGHT / 4 + offset, 0, 3, 3)
+	end
+	if targetFaceset then
+		local offsetH = map.tileSize * 1.5
+		local offsetW = targetFaceset:getWidth() * 3 + map.tileSize
+		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offsetW, 3 * VIRTUAL_HEIGHT / 4 + offsetH, 0, 3, 3)
+	end
+	for i, faceset in ipairs(upcomingFacesets) do
+		if faceset then
+			love.graphics.draw(faceset, map.tileSize, upcomingYs[i], 0, 2.5, 2.5)
+		end
+	end
+
     love.graphics.setCanvas()
 
-    -- Draw scaled canvas 
+    -- Draw scaled canvas
     if scale and scale > 0 then
         love.graphics.draw(gameCanvas, translateX, translateY, 0, scale, scale)
     end
+
 end
 
 function game.mousereleased(x, y, button)
@@ -324,7 +333,7 @@ function game.mousepressed(x, y, button)
 
     -- Move selected character to empty tile
     if not clicked then
-        local dist = math.abs(col - game.selected.x) + math.abs(row - game.selected.y)
+        local dist = math.max(math.abs(col - game.selected.x), math.abs(row - game.selected.y))
         if dist <= game.selected.spd then
             game.selected:moveTo(col, row)
             game.message = "Moving to (" .. col .. ", " .. row .. ")"
@@ -341,7 +350,8 @@ function game.mousepressed(x, y, button)
         return
     end
 
-    -- Perform attack
+    -- Set target and perform attack
+    game.targetChar = clicked
     GameHelpers.performAttack(game.selected, clicked)
 end
 
