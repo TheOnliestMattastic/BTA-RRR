@@ -179,9 +179,22 @@ function game.draw()
 	}
 
 	-- Turn Menu --
-	
+	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- for testing; don't forget to 
+	local function getCharForTurn(offset)
+		local turn = state.turn + offset
+		local index = (turn % 2 == 1) and 1 or 2
+		return characterOrder[index]
+	end
+
+	local activeName = getCharForTurn(0)
+	local targetName = getCharForTurn(1)
+	local nextName = getCharForTurn(2)
+	local secondName = getCharForTurn(3)
+	local thirdName = getCharForTurn(4)
+	local fourthName = getCharForTurn(5)
+
 	-- Active Character
-	local faceset = love.graphics.newImage("assets/sprites/chars/gladiatorBlue/Faceset.png")
+	local faceset = love.graphics.newImage("assets/sprites/chars/" .. activeName .. "/Faceset.png")
 	local offset = map.tileSize * 1.5
 	love.graphics.draw(
 		faceset,
@@ -193,8 +206,8 @@ function game.draw()
 	)
 
 	-- Target
-	faceset = love.graphics.newImage("assets/sprites/chars/ninjaBlack/Faceset.png")
-	rOffset = faceset:getWidth() * 3 + map.tileSize
+	faceset = love.graphics.newImage("assets/sprites/chars/" .. targetName .. "/Faceset.png")
+	local rOffset = faceset:getWidth() * 3 + map.tileSize
 	love.graphics.draw(
 		faceset,
 		VIRTUAL_WIDTH - rOffset,
@@ -204,49 +217,23 @@ function game.draw()
 		3
 	)
 
-	-- Next (bottom)
-	faceset = love.graphics.newImage("assets/sprites/chars/ninjaBlack/Faceset.png")
-	offset = faceset:getHeight() * 2.5 + map.tileSize
-	love.graphics.draw(
-		faceset,
-		map.tileSize,
-		3 * VIRTUAL_HEIGHT / 4 - offset,
-		0,
-		2.5,
-		2.5
-	)
-
-	-- Second
-	faceset = love.graphics.newImage("assets/sprites/chars/gladiatorBlue/Faceset.png")
-	love.graphics.draw(
-		faceset,
-		map.tileSize,
-		3 * VIRTUAL_HEIGHT / 4 - offset * 2,
-		0,
-		2.5,
-		2.5
-	)
-	-- Third
-	faceset = love.graphics.newImage("assets/sprites/chars/ninjaBlack/Faceset.png")
-	love.graphics.draw(
-		faceset,
-		map.tileSize,
-		3 * VIRTUAL_HEIGHT / 4 - offset * 3,
-		0,
-		2.5,
-		2.5
-	)
-
-	-- Fourth
-	faceset = love.graphics.newImage("assets/sprites/chars/gladiatorBlue/Faceset.png")
-	love.graphics.draw(
-		faceset,
-		map.tileSize,
-		3 * VIRTUAL_HEIGHT / 4 - offset * 4,
-		0,
-		2.5,
-		2.5
-	)
+	-- Upcoming characters
+	local upcomingNames = {nextName, secondName, thirdName, fourthName}
+	local offset
+	for i, name in ipairs(upcomingNames) do
+		local faceset = love.graphics.newImage("assets/sprites/chars/" .. name .. "/Faceset.png")
+		if i == 1 then
+			offset = faceset:getHeight() * 2.5 + map.tileSize
+		end
+		love.graphics.draw(
+			faceset,
+			map.tileSize,
+			3 * VIRTUAL_HEIGHT / 4 - offset * i,
+			0,
+			2.5,
+			2.5
+		)
+	end
 
 	-- Character Menu
 	love.graphics.setFont(font.small)
