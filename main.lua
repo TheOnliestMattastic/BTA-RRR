@@ -54,6 +54,10 @@ function love.keypressed(key)
     if currentState and currentState.keypressed then currentState.keypressed(key) end
 end
 
+function love.keyreleased(key)
+    if currentState and currentState.keyreleased then currentState.keyreleased(key) end
+end
+
 function love.resize(w, h)
     Window.width = w
     Window.height = h

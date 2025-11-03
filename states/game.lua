@@ -334,4 +334,10 @@ function game.mousepressed(x, y, button)
     GameHelpers.performAttack(game.selected, clicked)
 end
 
+function game.keyreleased(key)
+    if key == "escape" then
+        love.event.quit()
+    end
+end
+
 return game

@@ -49,7 +49,7 @@ function menu.update(dt)
 	-- Determine button state
 	local hovered = vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH
 	btnState = hovered and 16 or 0
-	if love.mouse.isDown(1) and hovered then
+	if love.mouse.isDown(1) and hovered or love.keyboard.isDown("return") then
 		btnState = 48
 	end
 end
@@ -130,6 +130,15 @@ function menu.mousereleased(x, y, button)
         switchState("game")
     end
     isPressed = false
+end
+
+function menu.keyreleased(key)
+    if key == "escape" then
+        love.event.quit()
+    end	-- Determine button state
+    if key == "return" then
+        switchState("game")
+    end
 end
 
 return menu
