@@ -28,7 +28,7 @@ local tilesets = gameInit.tilesets
 local activeFX = gameInit.activeFX
 local GameHelpers = gameInit.GameLogic.GameHelpers
 
-function game.load(args)
+function game.load()
     -- Build map layout from a tileset spritesheet (use TilesetRegistry)
     -- Get the tileset (tag must match config/tilesets.lua)
     local tilesetTag = "grass"
@@ -142,15 +142,6 @@ function game.update(dt)
 	-- Compute scaling for virtual screen
 	computeScale()
 
-	local originalGetPosition = love.mouse.getPosition
-	love.mouse.getPosition = function()
-		local mx, my = originalGetPosition()
-		return (mx - translateX) / scale, (my - translateY) / scale
-	end
-
-	-- Restore
-	love.mouse.getPosition = originalGetPosition
-
 end
 
 function game.draw()
@@ -163,7 +154,6 @@ function game.draw()
 
 	-- Draw map --
 	local mx, my = love.mouse.getPosition()
-    -- Adjust mouse for virtual coords
 	local vmx = (mx - translateX) / scale
 	local vmy = (my - translateY) / scale
 	map:draw(vmx, vmy)
@@ -227,10 +217,6 @@ function game.mousepressed(x, y, button)
     if state.over then return end
     computeScale()
     if button ~= 1 or scale <= 0 then return end
-
-    -- Handle scroll box input
-    local vx = (x - translateX) / scale
-    local vy = (y - translateY) / scale
 
     -- Convert to virtual coordinates
     local vx = (x - translateX) / scale
