@@ -179,6 +179,7 @@ function game.draw()
 	}
 
 	-- Turn Menu --
+	-- Determine: Active character based on current team
 	local currentTeam = state:currentTeam()
 	local activeTeamNum = (currentTeam == "green") and 0 or 1
 	local activeChar = nil
@@ -189,9 +190,11 @@ function game.draw()
 		end
 	end
 	local activeName = activeChar and activeChar.name
+
+	-- Determine: Target character from selection
 	local targetName = game.selected and game.selected.name
 
-	-- For upcoming characters
+	-- Prepare: Upcoming characters order
 	local characterOrder = {"ninjaBlack", "gladiatorBlue"} -- !!!!!!! test chars; remember to change !!!!!!!
 	local function getCharForTurn(offset)
 		local turn = state.turn + offset
@@ -204,7 +207,7 @@ function game.draw()
 	local fourthName = getCharForTurn(5)
 	local fifthName = getCharForTurn(6)
 
-	-- Active Character
+	-- Render: Active character faceset
 	if activeName then
 		local faceset = love.graphics.newImage("assets/sprites/chars/" .. activeName .. "/Faceset.png")
 		local offset = map.tileSize * 1.5
@@ -218,7 +221,7 @@ function game.draw()
 		)
 	end
 
-	-- Target
+	-- Render: Target character faceset
 	if targetName then
 		local faceset = love.graphics.newImage("assets/sprites/chars/" .. targetName .. "/Faceset.png")
 		local offsetH = map.tileSize * 1.5
@@ -233,7 +236,7 @@ function game.draw()
 		)
 	end
 
-	-- Upcoming characters
+	-- Render: Upcoming characters facesets
 	local upcomingNames = {nextName, secondName, thirdName, fourthName, fifthName}
 	local facesetHeight = 0
 	local previousY = 0
@@ -321,7 +324,7 @@ function game.mousepressed(x, y, button)
 
     -- Move selected character to empty tile
     if not clicked then
-        local dist = math.max(math.abs(col - game.selected.x), math.abs(row - game.selected.y))
+        local dist = math.abs(col - game.selected.x) + math.abs(row - game.selected.y)
         if dist <= game.selected.spd then
             game.selected:moveTo(col, row)
             game.message = "Moving to (" .. col .. ", " .. row .. ")"
