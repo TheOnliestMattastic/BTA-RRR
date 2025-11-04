@@ -73,3 +73,17 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **Bug Fixes**: Resolved a visual bug where selection boxes were drawing around every character instead of just the selected one by correcting the conditional logic in `game.lua`.
 - **Virtual Resolution Handling**: Ensured UI elements scale correctly with the virtual resolution system, including mouse coordinate transformations for accurate input.
 - **Documentation Updates**: Thoroughly reviewed and updated `AGENT.md` and `spec.md` to reflect the new UI architecture, remove outdated references, and accurately describe the current codebase structure and modules.
+
+## November 3, 2025
+
+### Game UI Enhancements and Faceset Integration
+
+- **Faceset Drawing in Turn Menu**: Added character faceset sprites to the turn order display, providing visual representation of each character's portrait in the UI.
+- **Attack Range Highlighting**: Implemented `highlightAttackRange` function in the map module to visually indicate attackable tiles when selecting a character for combat.
+- **Dynamic Turn Order Display**: Refactored turn order UI to use dynamic character names instead of hardcoded labels, improving maintainability and scalability.
+- **Fifth Character Support**: Added drawing support for a fifth upcoming character in the game state, expanding team composition possibilities.
+- **Keyreleased Event Handling**: Added `keyreleased` callbacks to both game and menu states for better keyboard input management and responsiveness.
+- **Game State Refactoring**: Continued refactoring of game state initialization and drawing logic to improve code organization and performance.
+- **Menu Button Adjustments**: Fine-tuned button press offset calculations in the menu state for more precise interaction feedback.
+- **Slab Cleanup**: Removed remaining unused Slab UI elements and modules, including a temporary ReversedScrollBox implementation that was subsequently removed.
+- **Typo and Comment Fixes**: Corrected typos in game.lua comments and improved code documentation for better readability.
