@@ -253,10 +253,6 @@ function game.draw()
 		end
 	end
 
-	-- Character Menu
-	love.graphics.setFont(font.small)
-	love.graphics.printf("Target Stats", VIRTUAL_WIDTH / 2, 3 * VIRTUAL_HEIGHT / 4, VIRTUAL_WIDTH / 2, "center")
-
     -- Draw message overlay
     if game.message then
         love.graphics.setFont(font.smaller)
@@ -271,13 +267,11 @@ function game.draw()
 		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scale, scale)
 	end
 
-	love.graphics.setFont(font.small)
-	
-
+	-- Target Stats
 	if targetFaceset then
-		local offsetH = map.tileSize
-		local offsetW = targetFaceset:getWidth() * 3 + map.tileSize
-		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offsetW, 3 * VIRTUAL_HEIGHT / 4 + offsetH, 0, 3, 3)
+		local scale = 4
+		local offset = targetFaceset:getWidth() * scale + map.tileSize
+		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, scale, scale)
 	end
 
 	for i, faceset in ipairs(upcomingFacesets) do
