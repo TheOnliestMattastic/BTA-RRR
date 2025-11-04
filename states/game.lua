@@ -264,11 +264,15 @@ function game.draw()
     end
 
 	-- Draw facesets 
+
 	if activeFaceset then
 		local scale = 4
-		local offset = activeFaceset:getWidth() * scale + map.tileSize
+		local offset = activeFaceset:getWidth() * scale + map.tileSize	
 		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scale, scale)
 	end
+
+	love.graphics.setFont(font.small)
+	
 
 	if targetFaceset then
 		local offsetH = map.tileSize
