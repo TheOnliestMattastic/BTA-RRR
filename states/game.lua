@@ -182,7 +182,7 @@ function game.draw()
 	-- Reset color for faceset rendering
 	love.graphics.setColor(1, 1, 1, 1)
 
-	   for _,activeEffect in ipairs(activeFX) do
+	for _,activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
@@ -263,22 +263,26 @@ function game.draw()
         love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
 
-	-- Draw facesets on canvas
+	-- Draw facesets 
 	if activeFaceset then
-		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - map.tileSize, 0, 4, 4)
+		local scale = 4
+		local offset = activeFaceset:getWidth() * scale + map.tileSize
+		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scale, scale)
 	end
+
 	if targetFaceset then
 		local offsetH = map.tileSize
 		local offsetW = targetFaceset:getWidth() * 3 + map.tileSize
 		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offsetW, 3 * VIRTUAL_HEIGHT / 4 + offsetH, 0, 3, 3)
 	end
+
 	for i, faceset in ipairs(upcomingFacesets) do
 		if faceset then
 			love.graphics.draw(faceset, map.tileSize, upcomingYs[i], 0, 2.5, 2.5)
 		end
 	end
 
-    love.graphics.setCanvas()
+	love.graphics.setCanvas()
 
     -- Draw scaled canvas
     if scale and scale > 0 then
