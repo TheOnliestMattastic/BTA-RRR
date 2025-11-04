@@ -21,11 +21,12 @@ end
 -- Load: Initialize UI
 function menu.load(args)
 	menuCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
-	buttonImg = love.graphics.newImage("assets/sprites/ui/button.png")
+	buttonImg = love.graphics.newImage("assets/sprites/ui/buttonDragon_1.png")
 	-- Assume button.png has frames at x=0,16,48 for normal,hover,pressed
-	buttonQuads[0] = love.graphics.newQuad(0, 0, 16, 8, buttonImg)
-	buttonQuads[16] = love.graphics.newQuad(16, 0, 16, 8, buttonImg)
-	buttonQuads[48] = love.graphics.newQuad(48, 0, 16, 8, buttonImg)
+	buttonQuads[0] = love.graphics.newQuad(0, 0, 100, 35, buttonImg)
+	buttonQuads[1] = love.graphics.newQuad(100, 0, 100, 35, buttonImg)
+	buttonQuads[2] = love.graphics.newQuad(200, 0, 100, 35, buttonImg)
+	buttonQuads[3] = love.graphics.newQuad(300, 0, 100, 35, buttonImg)
 end
 
 -- Update: Handle UI logic
@@ -48,9 +49,9 @@ function menu.update(dt)
 
 	-- Determine button state
 	local hovered = vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH
-	btnState = hovered and 16 or 0
+	btnState = hovered and 1 or 0
 	if love.mouse.isDown(1) and hovered or love.keyboard.isDown("return") then
-		btnState = 48
+		btnState = 3
 	end
 end
 
@@ -80,7 +81,7 @@ function menu.draw()
 	local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
 
 	-- Draw button background (stretched quad)
-	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / 16, buttonH / 8)
+	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / 100, buttonH / 35)
 
 	-- Button text
 	love.graphics.setFont(fontMed)
@@ -88,7 +89,7 @@ function menu.draw()
 	local playW = fontMed:getWidth(playText)
 	local playH = fontMed:getHeight()
 	local playX = buttonX + (buttonW - playW) / 2
-	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 48 and 16 or 0)  -- Slight press offset
+	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 3 and 1 or 0)  -- Slight press offset
 	love.graphics.print(playText, playX, playY)
 
 	love.graphics.setCanvas()
