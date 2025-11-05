@@ -261,18 +261,22 @@ function game.draw()
 
 	-- Draw active char stats 
 	if activeFaceset then
-		local scale = 4
-		local offset = activeFaceset:getWidth() * scale + map.tileSize	
-		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scale, scale)
+		-- Draw faceset
+		local scaleFace = 4
+		local offset = activeFaceset:getWidth() * scaleFace + map.tileSize	
+		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
 		love.graphics.setFont(font.small)
+		
+		-- Draw stats
 		love.graphics.print(activeName, offset + map.tileSize / 2, VIRTUAL_HEIGHT - offset)
+		
 	end
 
 	-- Draw target stats
 	if targetFaceset then
-		local scale = 4
-		local offset = targetFaceset:getWidth() * scale + map.tileSize
-		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, scale, scale)
+		local scaleFace = 4
+		local offset = targetFaceset:getWidth() * scaleFace + map.tileSize
+		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
 		love.graphics.setFont(font.small)
 		local textX = font.small:getWidth(targetName) + offset + map.tileSize / 2
 		love.graphics.print(targetName, VIRTUAL_WIDTH - textX, VIRTUAL_HEIGHT - offset)
