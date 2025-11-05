@@ -90,11 +90,6 @@ function game.load()
 
     gameInit.init(game, characters, state)
 
-    if not map then
-        error("Map is nil after Map.new()")
-        return
-    end
-
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
@@ -210,11 +205,17 @@ function game.draw()
 	local thirdIndex = ((turnIndex + 2) % #characters) + 1
 	local fourthIndex = ((turnIndex + 3) % #characters) + 1
 	local fifthIndex = ((turnIndex + 4) % #characters) + 1
+	local sixthIndex = ((turnIndex + 5) % #characters) + 1
+	local seventhIndex = ((turnIndex + 6) % #characters) + 1
+	local eighthIndex = ((turnIndex + 7) % #characters) + 1
 	local nextName = characters[nextIndex] and characters[nextIndex].class
 	local secondName = characters[secondIndex] and characters[secondIndex].class
 	local thirdName = characters[thirdIndex] and characters[thirdIndex].class
 	local fourthName = characters[fourthIndex] and characters[fourthIndex].class
 	local fifthName = characters[fifthIndex] and characters[fifthIndex].class
+	local sixthName = characters[sixthIndex] and characters[sixthIndex].class
+	local seventhName = characters[seventhIndex] and characters[seventhIndex].class
+	local eighthName = characters[eighthIndex] and characters[eighthIndex].class
 
 	-- Prepare: Faceset data for drawing
 	local activeFaceset, targetFaceset, upcomingFacesets, upcomingYs = nil, nil, {}, {}
@@ -233,20 +234,20 @@ function game.draw()
 		end
 	end
 
-	local upcomingNames = {nextName, secondName, thirdName, fourthName, fifthName}
+	local upcomingNames = {nextName, secondName, thirdName, fourthName, fifthName, sixthName, seventhName, eighthName}
 	local facesetHeight = 0
 	local previousY = 0
 	for i, name in ipairs(upcomingNames) do
 		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. name .. "/Faceset.png")
 		if success then
 			upcomingFacesets[i] = faceset
-			facesetHeight = faceset:getHeight() * 2.5
+			facesetHeight = faceset:getHeight() * 1.5
 			local spacing = map.tileSize
 			local y
 			if i == 1 then
 				y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
 			else
-				y = previousY - (facesetHeight + spacing / 3)
+				y = previousY - (facesetHeight + spacing / 4)
 			end
 			upcomingYs[i] = y
 			previousY = y
@@ -284,7 +285,7 @@ function game.draw()
 
 	for i, faceset in ipairs(upcomingFacesets) do
 		if faceset then
-			love.graphics.draw(faceset, map.tileSize, upcomingYs[i], 0, 2.5, 2.5)
+			love.graphics.draw(faceset, map.tileSize, upcomingYs[i], 0, 1.5, 1.5)
 		end
 	end
 
