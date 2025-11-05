@@ -1,5 +1,6 @@
 -- states/game.lua
 local gameInit = require "core.gameInit"
+local ui = require "config.ui"
 
 local game = {}
 local characters = {}
@@ -10,6 +11,7 @@ game.selected = nil
 game.activeChar = nil
 game.targetChar = nil
 game.message = nil
+local fontLarge, fontMed, fontSmall, fontSmaller
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
@@ -118,6 +120,12 @@ function game.load()
         char.initiative = char.spd + math.random(1, 20)
     end
     table.sort(characters, function(a, b) return a.initiative > b.initiative end)
+
+    -- Load fonts from config
+    fontLarge = love.graphics.newFont(ui.fontLarge.path, ui.fontLarge.size)
+    fontMed = love.graphics.newFont(ui.fontMed.path, ui.fontMed.size)
+    fontSmall = love.graphics.newFont(ui.fontSmall.path, ui.fontSmall.size)
+    fontSmaller = love.graphics.newFont(ui.fontSmaller.path, ui.fontSmaller.size)
 end
 
 function game.update(dt)
@@ -186,14 +194,6 @@ function game.draw()
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
-	-- Fonts: Load and set up fonts
-	local font = {
-		smaller = love.graphics.newFont("assets/fonts/alagard.ttf", 24),
-		small = love.graphics.newFont("assets/fonts/alagard.ttf", 36),
-		med = love.graphics.newFont("assets/fonts/alagard.ttf", 48),
-		large = love.graphics.newFont("assets/fonts/alagard.ttf", 96),
-	}
-
 	-- Turn Menu --
 	-- Determine: Active character based on initiative order
 	local turnIndex = (state.turn - 1) % #characters + 1
@@ -255,8 +255,8 @@ function game.draw()
 
     -- Draw message overlay
     if game.message then
-        love.graphics.setFont(font.smaller)
-        love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
+    love.graphics.setFont(fontSmaller)
+    love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
 
 	-- Draw active char stats 
@@ -265,7 +265,7 @@ function game.draw()
 		local scaleFace = 4
 		local offset = activeFaceset:getWidth() * scaleFace + map.tileSize	
 		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
-		love.graphics.setFont(font.small)
+		love.graphics.setFont(fontSmall)
 		
 		-- Draw stats
 		love.graphics.print(activeName, offset + map.tileSize / 2, VIRTUAL_HEIGHT - offset)
@@ -277,8 +277,8 @@ function game.draw()
 		local scaleFace = 4
 		local offset = targetFaceset:getWidth() * scaleFace + map.tileSize
 		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
-		love.graphics.setFont(font.small)
-		local textX = font.small:getWidth(targetName) + offset + map.tileSize / 2
+		love.graphics.setFont(fontSmall)
+		local textX = fontSmall:getWidth(targetName) + offset + map.tileSize / 2
 		love.graphics.print(targetName, VIRTUAL_WIDTH - textX, VIRTUAL_HEIGHT - offset)
 	end
 

@@ -65,6 +65,8 @@ return {
 	-- Fonts: Text rendering
 	fontLarge 				= {path = "assets/fonts/alagard.ttf", 							size = 96},
 	fontMed 				= {path = "assets/fonts/alagard.ttf", 							size = 48},
-	fontSmall 				= {path = "assets/fonts/alagard.ttf", 							size = 24},
-	fontTiny 				= {path = "assets/fonts/alagard.ttf", 							size = 16},
+	fontSmall 				= {path = "assets/fonts/alagard.ttf", 							size = 36},
+	fontSmaller 			= {path = "assets/fonts/alagard.ttf", 							size = 24},
+	fontXSmall 				= {path = "assets/fonts/alagard.ttf", 							size = 16},
+	fontTiny 				= {path = "assets/fonts/alagard.ttf", 							size = 12},
 }
