@@ -6,6 +6,7 @@ local buttonImg
 local buttonQuads = {}
 local isPressed = false
 local buttonFrameW, buttonFrameH
+local fontLarge, fontMed
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
@@ -21,7 +22,7 @@ local function computeScale()
 end
 
 -- Load: Initialize UI
-function menu.load(args)
+function menu.load()
 	menuCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 	buttonImg = love.graphics.newImage(ui.button_2.path)
 	buttonFrameW = ui.button_2.frameW
@@ -30,6 +31,8 @@ function menu.load(args)
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonFrameW, 0, buttonFrameW, buttonFrameH, buttonImg)
 	end
+	fontLarge = love.graphics.newFont(ui.fontLarge.path, ui.fontLarge.size)
+	fontMed = love.graphics.newFont(ui.fontMed.path, ui.fontMed.size)
 end
 
 -- Update: Handle UI logic
@@ -64,10 +67,6 @@ function menu.draw()
 
 	love.graphics.setCanvas(menuCanvas)
 	love.graphics.clear(0.3, 0.4, 0.4)  -- menu background
-
-	-- Fonts
-	local fontLarge = love.graphics.newFont("assets/fonts/alagard.ttf", 96)
-	local fontMed = love.graphics.newFont("assets/fonts/alagard.ttf", 48)
 
 	-- Title
 	love.graphics.setFont(fontLarge)
