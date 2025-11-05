@@ -16,8 +16,8 @@ return {
 	patternPanelTop = 		{path = uiDir .. "TopPatternPanel_01_33x15.png", 			frameW = 67, frameH = 15},
 
 	-- Buttons: Interactive buttons
-	button_1 = 				{path = uiDir .. "button_1.png", 							frameW = 100, frameH = 35, frames = { "1-4", 1}},
-	button_2 = 				{path = uiDir .. "button_2.png", 							frameW = 104, frameH = 35, frames = { "1-4", 1}},
+	button_1 = 				{path = uiDir .. "buttonDragon_1.png", 							frameW = 100, frameH = 35, frames = { "1-4", 1}},
+	button_2 = 				{path = uiDir .. "buttonDragon_2.png", 							frameW = 104, frameH = 35, frames = { "1-4", 1}},
 	buttonClose = 			{path = uiDir .. "buttonClose.png", 						frameW = 24, frameH = 24, frames = { "1-4", 1 }},
 	buttonExit = 			{path = uiDir .. "buttonExit.png", 							frameW = 24, frameH = 24, frames = { "1-4", 1 }},
 	buttonHelp = 			{path = uiDir .. "buttonHelp.png", 							frameW = 24, frameH = 24, frames = { "1-4", 1 }},

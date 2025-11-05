@@ -1,9 +1,11 @@
 -- states/menu.lua
 local menu = {}
-local btnState = 0  -- Button state: 0=normal, 16=hover, 48=pressed
+local ui = require("config.ui")
+local btnState = 0  -- Button state: 0=normal, 1=hover, 3=pressed
 local buttonImg
 local buttonQuads = {}
 local isPressed = false
+local buttonFrameW, buttonFrameH
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
@@ -21,12 +23,13 @@ end
 -- Load: Initialize UI
 function menu.load(args)
 	menuCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
-	buttonImg = love.graphics.newImage("assets/sprites/ui/buttonDragon_1.png")
-	-- Assume button.png has frames at x=0,16,48 for normal,hover,pressed
-	buttonQuads[0] = love.graphics.newQuad(0, 0, 100, 35, buttonImg)
-	buttonQuads[1] = love.graphics.newQuad(100, 0, 100, 35, buttonImg)
-	buttonQuads[2] = love.graphics.newQuad(200, 0, 100, 35, buttonImg)
-	buttonQuads[3] = love.graphics.newQuad(300, 0, 100, 35, buttonImg)
+	buttonImg = love.graphics.newImage(ui.button_2.path)
+	buttonFrameW = ui.button_2.frameW
+	buttonFrameH = ui.button_2.frameH
+	-- Create quads for button frames (assuming horizontal layout)
+	for i = 0, 3 do
+		buttonQuads[i] = love.graphics.newQuad(i * buttonFrameW, 0, buttonFrameW, buttonFrameH, buttonImg)
+	end
 end
 
 -- Update: Handle UI logic
@@ -81,7 +84,7 @@ function menu.draw()
 	local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
 
 	-- Draw button background (stretched quad)
-	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / 100, buttonH / 35)
+	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / buttonFrameW, buttonH / buttonFrameH)
 
 	-- Button text
 	love.graphics.setFont(fontMed)
