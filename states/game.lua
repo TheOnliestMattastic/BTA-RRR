@@ -1,5 +1,7 @@
 -- states/game.lua
 local gameInit = require "core.gameInit"
+local TurnManager = require "core.turnManager"
+local GameUI = require "core.gameUI"
 
 local game = {}
 local characters = {}
@@ -186,83 +188,23 @@ function game.draw()
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
-	-- Turn Menu --
-	-- Determine: Active character based on initiative order
-	local turnIndex = (state.turn - 1) % #characters + 1
-	game.activeChar = characters[turnIndex]
+	-- Turn Management
+	game.activeChar = TurnManager.getActiveCharacter(state, characters)
 	game.selected = game.activeChar  -- Auto-select active character
 	local activeName = game.activeChar and game.activeChar.class
-
-	-- Determine: Target character from selection
 	local targetName = game.targetChar and game.targetChar.class
-
-	-- Prepare: Upcoming characters order
-	local upcomingNames = {}
-	for i = 1, 8 do
-		local idx = ((turnIndex + i - 1) % #characters) + 1
-		upcomingNames[i] = characters[idx] and characters[idx].class
-	end
+	local upcomingNames = TurnManager.getUpcomingNames(state, characters, 8)
 
 	-- Prepare: Faceset data for drawing
-	local activeFaceset, targetFaceset, upcomingFacesets, upcomingYs = nil, nil, {}, {}
+	local activeFaceset = facesets[activeName]
+	local targetFaceset = facesets[targetName]
+	local upcomingFacesets, upcomingYs = GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
 
-	activeFaceset = facesets[activeName]
-	targetFaceset = facesets[targetName]
-
-	local facesetHeight = 0
-	local previousY = 0
-	for i, name in ipairs(upcomingNames) do
-	local faceset = facesets[name]
-	if faceset then
-	upcomingFacesets[i] = faceset
-	facesetHeight = faceset:getHeight() * 1.5
-	local spacing = map.tileSize
-	local y
-	if i == 1 then
-	y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
-	else
-	y = previousY - (facesetHeight + spacing / 4)
-	end
-	upcomingYs[i] = y
-	previousY = y
-	end
-	end
-
-    -- Draw message overlay
-    if game.message then
-		love.graphics.setFont(fontSmaller)
-		love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
-    end
-
-	-- Draw active char stats 
-	if activeFaceset then
-		-- Draw faceset
-		local scaleFace = 4
-		local offset = activeFaceset:getWidth() * scaleFace + map.tileSize	
-		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
-		love.graphics.setFont(fontSmall)
-
-		-- Draw stats
-		local offsetStats = offset + map.tileSize / 2
-		love.graphics.print(activeName, offsetStats, VIRTUAL_HEIGHT - offset)
-		love.graphics.draw(uiImages.bar_1, offsetStats, VIRTUAL_HEIGHT - offset + fontSmall:getHeight(activeName))
-	end
-
-	-- Draw target stats
-	if targetFaceset then
-		local scaleFace = 4
-		local offset = targetFaceset:getWidth() * scaleFace + map.tileSize
-		love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
-		love.graphics.setFont(fontSmall)
-		local textX = fontSmall:getWidth(targetName) + offset + map.tileSize / 2
-		love.graphics.print(targetName, VIRTUAL_WIDTH - textX, VIRTUAL_HEIGHT - offset)
-	end
-
-	for i, faceset in ipairs(upcomingFacesets) do
-		if faceset then
-			love.graphics.draw(faceset, map.tileSize, upcomingYs[i], 0, 1.5, 1.5)
-		end
-	end
+    -- Draw UI elements
+    GameUI.drawMessage(game, fontSmaller)
+    GameUI.drawActiveStats(activeFaceset, activeName, fontSmall, uiImages)
+    GameUI.drawTargetStats(targetFaceset, targetName, fontSmall)
+    GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
 
 	love.graphics.setCanvas()
 

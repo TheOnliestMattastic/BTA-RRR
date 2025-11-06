@@ -72,6 +72,18 @@ These comments should be 1-2 words followed by a colon and brief description.
 - **Hover**: `-- Detect: Check mouse over tile`
 - **Highlight**: `-- Range: Show movement area for selected character`
 
+### core/turnManager.lua
+
+- **Active Index**: `-- Get: Current turn's active character index`
+- **Active Character**: `-- Retrieve: Active character based on turn`
+- **Upcoming Names**: `-- List: Names of upcoming characters in turn order`
+
+### core/gameUI.lua
+
+- **Draw Message**: `-- Overlay: Display game messages`
+- **Draw Character Stats**: `-- UI: Render faceset and stats for characters`
+- **Draw Active/Target/Upcoming**: `-- Display: Turn-based UI elements`
+
 ### states/menu.lua
 
 - **Load**: `-- Init: Load UI assets and canvas`
