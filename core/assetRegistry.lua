@@ -105,10 +105,10 @@ end
 
 -- Load fonts from config/ui.lua
 function AssetRegistry:loadFonts(configModule)
-    local cfg = require(configModule or "config.ui")
-    for tag, def in pairs(cfg) do
-        if def.path and def.size then
-            self.fonts[tag] = love.graphics.newFont(def.path, def.size)
+	local cfg = require(configModule or "config.ui")
+	for tag, def in pairs(cfg) do
+		if def.path and def.size then
+			self.fonts[tag] = love.graphics.newFont(def.path, def.size)
         end
     end
 end

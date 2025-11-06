@@ -12,8 +12,8 @@ function GameUI.drawMessage(game, fontSmall)
     end
 end
 
--- Draw character stats with faceset
-function GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
+-- Draw active character stats
+function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, uiImages)
     if activeFaceset then
         -- Draw faceset
         local offset = activeFaceset:getWidth() * 4 + 32  -- map.tileSize
@@ -22,12 +22,31 @@ function GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
 
         -- Draw name
         local offsetStats = offset + 8  -- map.tileSize / 4
-        love.graphics.print(activeName, offsetStats, VIRTUAL_HEIGHT - offset)
+        love.graphics.print(activeChar.class, offsetStats, VIRTUAL_HEIGHT - offset)
 
-        -- Draw bar (if provided)
+        -- Draw bars
+		local offsetY = offset - fontMed:getHeight(activeChar.class)
         if uiImages then
-            love.graphics.draw(uiImages.bar_1, offsetStats, VIRTUAL_HEIGHT - offset + fontMed:getHeight(activeName))
-        end
+			-- Health bar
+            love.graphics.draw(uiImages.bar_1, offsetStats, VIRTUAL_HEIGHT - offsetY, 0, 2, 1.5)
+			-- Action points
+            love.graphics.draw(uiImages.bar_2, offsetStats, VIRTUAL_HEIGHT - offsetY + 22, 0, 1.6, 1)
+			-- Panel - top
+			love.graphics.setColor(0.75, 0.75, 0.75, 1)
+			love.graphics.draw(uiImages.patternPanelTop, offsetStats, VIRTUAL_HEIGHT - offsetY + 40, 0, 2.3, 1)
+			love.graphics.setColor(1, 1, 1, 1)
+			-- Stats
+			love.graphics.setFont(fontTiny)
+			love.graphics.print("PWR:" .. activeChar.pwr, offsetStats, VIRTUAL_HEIGHT - offsetY + 60)
+			love.graphics.print("DEF:" .. activeChar.def, offsetStats, VIRTUAL_HEIGHT - offsetY + 75)
+			love.graphics.print("DEX:" .. activeChar.dex, offsetStats, VIRTUAL_HEIGHT - offsetY + 90)
+			love.graphics.print("SPD:" .. activeChar.spd, offsetStats, VIRTUAL_HEIGHT - offsetY + 105)
+			love.graphics.print("RNG:" .. activeChar.rng, offsetStats, VIRTUAL_HEIGHT - offsetY + 120)
+			-- Panel - bottom
+			love.graphics.setColor(0.75, 0.75, 0.75, 1)
+			love.graphics.draw(uiImages.patternPanelBottom, offsetStats, VIRTUAL_HEIGHT - 49, 0, 1.29, 1)
+			love.graphics.setColor(1, 1, 1, 1)
+		end
     end
 end
 

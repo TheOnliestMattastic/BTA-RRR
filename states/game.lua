@@ -12,7 +12,7 @@ game.selected = nil
 game.activeChar = nil
 game.targetChar = nil
 game.message = nil
-local fontXLarge, fontLarge, fontMed, fontSmall
+local fontXLarge, fontLarge, fontMed, fontSmall, fontTiny_2
 local CharactersConfig
 
 local VIRTUAL_WIDTH = 1024
@@ -119,6 +119,7 @@ function game.load()
     fontLarge = fonts.fontLarge
     fontMed = fonts.fontMed
     fontSmall = fonts.fontSmall
+	fontTiny_2 = fonts.fontTiny_2
 end
 
 -- Update: Handle game logic and animations
@@ -203,7 +204,7 @@ function game.draw()
     -- Draw UI elements
     GameUI.drawMessage(game, fontSmall)
 	if activeFaceset then
-		GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
+		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontMed, uiImages)
 	end
 	if targetFaceset then
 		GameUI.drawTargetStats(targetFaceset, targetName, fontMed)
