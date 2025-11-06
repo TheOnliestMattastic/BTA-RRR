@@ -12,6 +12,7 @@ game.activeChar = nil
 game.targetChar = nil
 game.message = nil
 local fontLarge, fontMed, fontSmall, fontSmaller
+local CharactersConfig
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
@@ -32,18 +33,19 @@ local tilesets = gameInit.tilesets
 local activeFX = gameInit.activeFX
 local GameHelpers = gameInit.GameLogic.GameHelpers
 
+-- Load: Initialize game state, map, and characters
 function game.load()
-    -- Build map layout from a tileset spritesheet (use TilesetRegistry)
-    -- Get the tileset (tag must match config/tilesets.lua)
-    local tilesetTag = "grass"
-    local tileset = tilesets:getTileset(tilesetTag)
-    local CharactersConfig = gameInit.CharactersConfig
-    local Character = gameInit.Character
-    local GameState = gameInit.GameState
-    local Map = gameInit.Map
+	-- Build map layout from a tileset spritesheet (use TilesetRegistry)
+	-- Get the tileset (tag must match config/tilesets.lua)
+	local tilesetTag = "grass"
+	local tileset = tilesets:getTileset(tilesetTag)
+	CharactersConfig = gameInit.CharactersConfig
+	local Character = gameInit.Character
+	local GameState = gameInit.GameState
+	local Map = gameInit.Map
 
-    -- Check for tileset.image
-    if not tileset or not tileset.image then
+	-- Validate tileset
+	if not tileset or not tileset.image then
         error("Tileset or tileset.image is nil for " .. tilesetTag)
         return
     end
@@ -74,15 +76,6 @@ function game.load()
         end
     end
 
-    if not tileset then
-        error("Tileset not found: " .. tostring(tilesetTag))
-    end
-
-     if not tileset then
-        error("Tileset is nil after tilesets:getTileset()")
-        return
-    end
-
     -- Initialize map and handle potential errors
     map = Map.new(tileSize, layout, tilesets, tilesetTag)
     gameCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
@@ -93,8 +86,9 @@ function game.load()
     -- Create characters
     local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
-    for k, v in pairs(ninjaStats) do stats[k] = v end
+	for k, v in pairs(ninjaStats) do stats[k] = v end
     stats.team = 0
+
     -- Create characters
     local ninjaBlack = Character.new("ninjaBlack", 2, 4, stats, CharactersConfig.ninjaBlack.tags)
     ninjaBlack:setAnimations(registry:getCharacter("ninjaBlack"))
@@ -123,41 +117,42 @@ function game.load()
     fontSmaller = love.graphics.newFont(ui.fontSmaller.path, ui.fontSmaller.size)
 end
 
+-- Update: Handle game logic and animations
 function game.update(dt)
+	-- Check win/loss and clamp AP
+	state:clampAP()
+	state:checkWin()
 
-    -- Check win/loss and clamp AP --
-    state:clampAP()
-    state:checkWin()
+	-- Update characters
+	for _, character in ipairs(characters) do
+		if character.update then pcall(character.update, character, dt) end
+	end
 
-    -- Update char and anim --
-    for _, character in ipairs(characters) do
-        if character.update then pcall(character.update, character, dt) end
-    end
+	-- Update FX
+	for _, activeEffect in ipairs(activeFX) do
+		if activeEffect.fx and activeEffect.fx.anim and activeEffect.fx.anim.update then pcall(activeEffect.fx.anim.update, activeEffect.fx.anim, dt) end
+	end
 
-    -- Update FX--
-    for _, activeEffect in ipairs(activeFX) do
-    	if activeEffect.fx and activeEffect.fx.anim and activeEffect.fx.anim.update then pcall(activeEffect.fx.anim.update, activeEffect.fx.anim, dt) end
-    end
+	-- Remove completed FX
+	local toRemove = {}
+	for i, activeEffect in ipairs(activeFX) do
+		if activeEffect.fx.anim.status == "paused" then
+			table.insert(toRemove, 1, i)
+		end
+	end
 
-    -- Remove completed FX
-    local toRemove = {}
-    for i, activeEffect in ipairs(activeFX) do
-        if activeEffect.fx.anim.status == "paused" then
-            table.insert(toRemove, 1, i)
-        end
-    end
-    for _, i in ipairs(toRemove) do
-        table.remove(activeFX, i)
-    end
+	for _, i in ipairs(toRemove) do
+		table.remove(activeFX, i)
+	end
 
 	-- Compute scaling for virtual screen
 	computeScale()
-
 end
 
 function game.draw()
 
-    computeScale()
+	-- Compute scaling for virtual screen
+	computeScale()
 
 	-- Draw to canvas
 	love.graphics.setCanvas(gameCanvas)
@@ -200,64 +195,54 @@ function game.draw()
 	local targetName = game.targetChar and game.targetChar.class
 
 	-- Prepare: Upcoming characters order
-	local nextIndex = (turnIndex % #characters) + 1
-	local secondIndex = ((turnIndex + 1) % #characters) + 1
-	local thirdIndex = ((turnIndex + 2) % #characters) + 1
-	local fourthIndex = ((turnIndex + 3) % #characters) + 1
-	local fifthIndex = ((turnIndex + 4) % #characters) + 1
-	local sixthIndex = ((turnIndex + 5) % #characters) + 1
-	local seventhIndex = ((turnIndex + 6) % #characters) + 1
-	local eighthIndex = ((turnIndex + 7) % #characters) + 1
-	local nextName = characters[nextIndex] and characters[nextIndex].class
-	local secondName = characters[secondIndex] and characters[secondIndex].class
-	local thirdName = characters[thirdIndex] and characters[thirdIndex].class
-	local fourthName = characters[fourthIndex] and characters[fourthIndex].class
-	local fifthName = characters[fifthIndex] and characters[fifthIndex].class
-	local sixthName = characters[sixthIndex] and characters[sixthIndex].class
-	local seventhName = characters[seventhIndex] and characters[seventhIndex].class
-	local eighthName = characters[eighthIndex] and characters[eighthIndex].class
+	local upcomingNames = {}
+	for i = 1, 8 do
+		local idx = ((turnIndex + i - 1) % #characters) + 1
+		upcomingNames[i] = characters[idx] and characters[idx].class
+	end
 
 	-- Prepare: Faceset data for drawing
 	local activeFaceset, targetFaceset, upcomingFacesets, upcomingYs = nil, nil, {}, {}
 
-	if activeName then
-		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. activeName .. "/Faceset.png")
+	if activeName and CharactersConfig[activeName] and CharactersConfig[activeName].faceset then
+		local success, faceset = pcall(love.graphics.newImage, CharactersConfig[activeName].faceset)
 		if success then
 			activeFaceset = faceset
 		end
 	end
 
-	if targetName then
-		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. targetName .. "/Faceset.png")
+	if targetName and CharactersConfig[targetName] and CharactersConfig[targetName].faceset then
+		local success, faceset = pcall(love.graphics.newImage, CharactersConfig[targetName].faceset)
 		if success then
 			targetFaceset = faceset
 		end
 	end
 
-	local upcomingNames = {nextName, secondName, thirdName, fourthName, fifthName, sixthName, seventhName, eighthName}
 	local facesetHeight = 0
 	local previousY = 0
 	for i, name in ipairs(upcomingNames) do
-		local success, faceset = pcall(love.graphics.newImage, "assets/sprites/chars/" .. name .. "/Faceset.png")
-		if success then
-			upcomingFacesets[i] = faceset
-			facesetHeight = faceset:getHeight() * 1.5
-			local spacing = map.tileSize
-			local y
-			if i == 1 then
-				y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
-			else
-				y = previousY - (facesetHeight + spacing / 4)
+		if name and CharactersConfig[name] and CharactersConfig[name].faceset then
+			local success, faceset = pcall(love.graphics.newImage, CharactersConfig[name].faceset)
+			if success then
+				upcomingFacesets[i] = faceset
+				facesetHeight = faceset:getHeight() * 1.5
+				local spacing = map.tileSize
+				local y
+				if i == 1 then
+				  y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
+				else
+				  y = previousY - (facesetHeight + spacing / 4)
+				end
+				upcomingYs[i] = y
+				previousY = y
 			end
-			upcomingYs[i] = y
-			previousY = y
 		end
 	end
 
     -- Draw message overlay
     if game.message then
-    love.graphics.setFont(fontSmaller)
-    love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
+		love.graphics.setFont(fontSmaller)
+		love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
 
 	-- Draw active char stats 
@@ -267,10 +252,10 @@ function game.draw()
 		local offset = activeFaceset:getWidth() * scaleFace + map.tileSize	
 		love.graphics.draw(activeFaceset, map.tileSize, VIRTUAL_HEIGHT - offset, 0, scaleFace, scaleFace)
 		love.graphics.setFont(fontSmall)
-		
+
 		-- Draw stats
-		love.graphics.print(activeName, offset + map.tileSize / 2, VIRTUAL_HEIGHT - offset)
-		
+		local offsetStats = offset + map.tileSize / 2
+		love.graphics.print(activeName, offsetStats, VIRTUAL_HEIGHT - offset)
 	end
 
 	-- Draw target stats
@@ -298,11 +283,11 @@ function game.draw()
 
 end
 
-function game.mousereleased(x, y, button)
-    if button ~= 1 or scale <= 0 then return end
-    local vx = (x - translateX) / scale
-    local vy = (y - translateY) / scale
-end
+-- function game.mousereleased(x, y, button)
+--     if button ~= 1 or scale <= 0 then return end
+--     local vx = (x - translateX) / scale
+--     local vy = (y - translateY) / scale
+-- end
 
 function game.resize(w, h)
     computeScale()
@@ -324,25 +309,9 @@ function game.mousepressed(x, y, button)
 
     if GameHelpers.handleSelection(clicked) then return end
 
-    -- If clicked same as selected -> deselect
-    if clicked == game.selected then
-        game.selected = nil
-        game.message = nil
-        return
-    end
-
-    -- If clicked an ally -> select them
-    if clicked and game.selected:isAllyOf(clicked) then
-        game.selected = clicked
-        game.message = "Selected buddy: " .. tostring(clicked.class or "unit")
-        return
-    end
-
-    -- At this point, either clicked is enemy (attack target) or empty tile
-
-    -- Move selected character to empty tile
+    -- Move selected character to empty tile (only if within highlighted movement range)
     if not clicked then
-        local dist = math.max(math.abs(col - game.selected.x), math.abs(row - game.selected.y))
+        local dist = math.abs(col - game.selected.x) + math.abs(row - game.selected.y)
         if dist <= game.selected.spd then
             game.selected:moveTo(col, row)
             game.message = "Moving to (" .. col .. ", " .. row .. ")"
