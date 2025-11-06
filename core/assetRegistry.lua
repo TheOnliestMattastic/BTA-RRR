@@ -25,6 +25,9 @@ function AssetRegistry.new()
     self.tilesets = {}
     self.fx = {}         -- tag -> { image, protoAnim }
     self.characters = {} -- class -> { image, grid, animDefs }
+    self.facesets = {}   -- class -> image
+    self.ui = {}         -- tag -> image
+    self.fonts = {}      -- tag -> font
     return self
 end
 
@@ -66,16 +69,46 @@ end
 
 -- Load character animations from config/characters.lua
 function AssetRegistry:loadCharacters(configModule)
-    local cfg = require(configModule or "config.characters")
-    for class, def in pairs(cfg) do
-        local image = loadImage(def.path)
-        local grid = anim8.newGrid(def.frameW, def.frameH, image:getWidth(), image:getHeight())
-        -- Store animation definitions to create them dynamically based on direction
-        self.characters[class] = {
-            image=image,
-            grid=grid,
-            animDefs=def.animations
-        }
+local cfg = require(configModule or "config.characters")
+for class, def in pairs(cfg) do
+local image = loadImage(def.path)
+local grid = anim8.newGrid(def.frameW, def.frameH, image:getWidth(), image:getHeight())
+-- Store animation definitions to create them dynamically based on direction
+self.characters[class] = {
+image=image,
+grid=grid,
+animDefs=def.animations
+}
+end
+end
+
+-- Load facesets from config/characters.lua
+function AssetRegistry:loadFacesets(configModule)
+local cfg = require(configModule or "config.characters")
+for class, def in pairs(cfg) do
+if def.faceset then
+self.facesets[class] = loadImage(def.faceset)
+end
+end
+end
+
+-- Load UI elements from config/ui.lua
+function AssetRegistry:loadUI(configModule)
+    local cfg = require(configModule or "config.ui")
+    for tag, def in pairs(cfg) do
+        if def.path and (def.frameW or def.frames) then
+            self.ui[tag] = loadImage(def.path)
+        end
+    end
+end
+
+-- Load fonts from config/ui.lua
+function AssetRegistry:loadFonts(configModule)
+    local cfg = require(configModule or "config.ui")
+    for tag, def in pairs(cfg) do
+        if def.path and def.size then
+            self.fonts[tag] = love.graphics.newFont(def.path, def.size)
+        end
     end
 end
 
@@ -95,6 +128,21 @@ function AssetRegistry:getCharacter(class)
         grid=entry.grid,
         animDefs=entry.animDefs
     }
+end
+
+-- Get faceset image by class
+function AssetRegistry:getFaceset(class)
+    return self.facesets[class]
+end
+
+-- Get UI image by tag
+function AssetRegistry:getUI(tag)
+    return self.ui[tag]
+end
+
+-- Get font by tag
+function AssetRegistry:getFont(tag)
+    return self.fonts[tag]
 end
 
 return AssetRegistry

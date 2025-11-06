@@ -1,6 +1,5 @@
 -- states/game.lua
 local gameInit = require "core.gameInit"
-local ui = require "config.ui"
 
 local game = {}
 local characters = {}
@@ -32,6 +31,9 @@ local registry = gameInit.registry
 local tilesets = gameInit.tilesets
 local activeFX = gameInit.activeFX
 local GameHelpers = gameInit.GameLogic.GameHelpers
+local facesets = registry.facesets
+local uiImages = registry.ui
+local fonts = registry.fonts
 
 -- Load: Initialize game state, map, and characters
 function game.load()
@@ -110,11 +112,11 @@ function game.load()
     end
     table.sort(characters, function(a, b) return a.initiative > b.initiative end)
 
-    -- Load fonts from config
-    fontLarge = love.graphics.newFont(ui.fontLarge.path, ui.fontLarge.size)
-    fontMed = love.graphics.newFont(ui.fontMed.path, ui.fontMed.size)
-    fontSmall = love.graphics.newFont(ui.fontSmall.path, ui.fontSmall.size)
-    fontSmaller = love.graphics.newFont(ui.fontSmaller.path, ui.fontSmaller.size)
+    -- Get fonts from registry
+    fontLarge = fonts.fontLarge
+    fontMed = fonts.fontMed
+    fontSmall = fonts.fontSmall
+    fontSmaller = fonts.fontSmaller
 end
 
 -- Update: Handle game logic and animations
@@ -204,39 +206,26 @@ function game.draw()
 	-- Prepare: Faceset data for drawing
 	local activeFaceset, targetFaceset, upcomingFacesets, upcomingYs = nil, nil, {}, {}
 
-	if activeName and CharactersConfig[activeName] and CharactersConfig[activeName].faceset then
-		local success, faceset = pcall(love.graphics.newImage, CharactersConfig[activeName].faceset)
-		if success then
-			activeFaceset = faceset
-		end
-	end
-
-	if targetName and CharactersConfig[targetName] and CharactersConfig[targetName].faceset then
-		local success, faceset = pcall(love.graphics.newImage, CharactersConfig[targetName].faceset)
-		if success then
-			targetFaceset = faceset
-		end
-	end
+	activeFaceset = facesets[activeName]
+	targetFaceset = facesets[targetName]
 
 	local facesetHeight = 0
 	local previousY = 0
 	for i, name in ipairs(upcomingNames) do
-		if name and CharactersConfig[name] and CharactersConfig[name].faceset then
-			local success, faceset = pcall(love.graphics.newImage, CharactersConfig[name].faceset)
-			if success then
-				upcomingFacesets[i] = faceset
-				facesetHeight = faceset:getHeight() * 1.5
-				local spacing = map.tileSize
-				local y
-				if i == 1 then
-				  y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
-				else
-				  y = previousY - (facesetHeight + spacing / 4)
-				end
-				upcomingYs[i] = y
-				previousY = y
-			end
-		end
+	local faceset = facesets[name]
+	if faceset then
+	upcomingFacesets[i] = faceset
+	facesetHeight = faceset:getHeight() * 1.5
+	local spacing = map.tileSize
+	local y
+	if i == 1 then
+	y = 3 * VIRTUAL_HEIGHT / 4 - (facesetHeight + spacing)
+	else
+	y = previousY - (facesetHeight + spacing / 4)
+	end
+	upcomingYs[i] = y
+	previousY = y
+	end
 	end
 
     -- Draw message overlay
@@ -256,6 +245,7 @@ function game.draw()
 		-- Draw stats
 		local offsetStats = offset + map.tileSize / 2
 		love.graphics.print(activeName, offsetStats, VIRTUAL_HEIGHT - offset)
+		love.graphics.draw(uiImages.bar_1, offsetStats, VIRTUAL_HEIGHT - offset + fontSmall:getHeight(activeName))
 	end
 
 	-- Draw target stats

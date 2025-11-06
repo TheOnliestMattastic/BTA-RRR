@@ -9,7 +9,7 @@ return {
 
 	-- Patterns: Background patterns
 	patternBGbottom 		= {path = uiDir .. "BottomPatternBG_128x112.png", 		frameW = 128, 	frameH = 112, 	frames = { "1-3", 1 }},
-	patternBGmid 			= {path = uiDir .. "PatternMiddleBottomBG_199x48",		frameW = 199, 	frameH = 48},
+	patternBGmid 			= {path = uiDir .. "PatternMiddleBottomBG_199x48.png",		frameW = 199, 	frameH = 48},
 	patternBGtop 			= {path = uiDir .. "TopPatternBG_116x67.png", 			frameW = 112, 	frameH = 67, 	frames = { "1-2", 1 }},
 	patternPanelBottom 		= {path = uiDir .. "BottomPatternPanel_119x17.png", 	frameW = 119, 	frameH = 17},
 	patternPanelMid 		= {path = uiDir .. "TopPatternPanel_02_33x15.png", 		frameW = 83, 	frameH = 8},

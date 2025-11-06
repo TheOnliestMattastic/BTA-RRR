@@ -23,6 +23,9 @@ gameInit.activeFX = {}
 -- Load them
 gameInit.registry:loadFX()
 gameInit.registry:loadCharacters()
+gameInit.registry:loadFacesets()
+gameInit.registry:loadUI()
+gameInit.registry:loadFonts()
 gameInit.registry:loadTilesets()
 
 function gameInit.init(game, characters, state)

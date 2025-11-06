@@ -1,11 +1,12 @@
 -- states/menu.lua
 local menu = {}
-local ui = require("config.ui")
+local gameInit = require("core.gameInit")
 local btnState = 0  -- Button state: 0=normal, 1=hover, 3=pressed
 local buttonImg
 local buttonQuads = {}
 local isPressed = false
 local buttonFrameW, buttonFrameH
+local fonts = gameInit.registry.fonts
 local fontLarge, fontMed
 
 local VIRTUAL_WIDTH = 1024
@@ -24,15 +25,16 @@ end
 -- Load: Initialize UI
 function menu.load()
 	menuCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
-	buttonImg = love.graphics.newImage(ui.button_2.path)
-	buttonFrameW = ui.button_2.frameW
-	buttonFrameH = ui.button_2.frameH
+	local uiConfig = require("config.ui")
+	buttonImg = love.graphics.newImage(uiConfig.button_2.path)
+	buttonFrameW = uiConfig.button_2.frameW
+	buttonFrameH = uiConfig.button_2.frameH
 	-- Create quads for button frames (assuming horizontal layout)
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonFrameW, 0, buttonFrameW, buttonFrameH, buttonImg)
 	end
-	fontLarge = love.graphics.newFont(ui.fontLarge.path, ui.fontLarge.size)
-	fontMed = love.graphics.newFont(ui.fontMed.path, ui.fontMed.size)
+	fontLarge = fonts.fontLarge
+	fontMed = fonts.fontMed
 end
 
 -- Update: Handle UI logic
