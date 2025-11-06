@@ -15,37 +15,55 @@ end
 -- Draw active character stats
 function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, uiImages)
     if activeFaceset then
+        -- Layout constants
+        local facesetScale = 4
+        local facesetMargin = 32
+        local panelMargin = 8
+        local barSpacing = 22
+        local panelTopOffset = 40
+        local statsStartOffset = 60
+        local statLineHeight = 15
+        local statColumnWidth = 80
+
+        -- Calculate faceset dimensions and position
+        local facesetWidth = activeFaceset:getWidth() * facesetScale
+        local facesetHeight = activeFaceset:getHeight() * facesetScale
+        local facesetX = facesetMargin
+        local facesetY = VIRTUAL_HEIGHT - facesetHeight - facesetMargin
+
         -- Draw faceset
-        local offset = activeFaceset:getWidth() * 4 + 32  -- map.tileSize
-        love.graphics.draw(activeFaceset, 32, VIRTUAL_HEIGHT - offset, 0, 4, 4)
+        love.graphics.draw(activeFaceset, facesetX, facesetY, 0, facesetScale, facesetScale)
         love.graphics.setFont(fontMed)
 
-        -- Draw name
-        local offsetStats = offset + 8  -- map.tileSize / 4
-        love.graphics.print(activeChar.class, offsetStats, VIRTUAL_HEIGHT - offset)
+        -- Calculate stats panel position
+        local statsX = facesetX + facesetWidth + panelMargin
+        local nameY = facesetY
+        love.graphics.print(activeChar.class, statsX, nameY)
 
         -- Draw bars
-		local offsetY = offset - fontMed:getHeight(activeChar.class)
+        local barsY = facesetY + fontMed:getHeight(activeChar.class)
         if uiImages then
-			-- Health bar
-            love.graphics.draw(uiImages.bar_1, offsetStats, VIRTUAL_HEIGHT - offsetY, 0, 2, 1.5)
-			-- Action points
-            love.graphics.draw(uiImages.bar_2, offsetStats, VIRTUAL_HEIGHT - offsetY + 22, 0, 1.6, 1)
-			-- Panel - top
-			love.graphics.setColor(0.75, 0.75, 0.75, 1)
-			love.graphics.draw(uiImages.patternPanelTop, offsetStats, VIRTUAL_HEIGHT - offsetY + 40, 0, 2.3, 1)
-			love.graphics.setColor(1, 1, 1, 1)
-			-- Stats
-			love.graphics.setFont(fontTiny)
-			love.graphics.print("PWR:" .. activeChar.pwr, offsetStats, VIRTUAL_HEIGHT - offsetY + 60)
-			love.graphics.print("DEF:" .. activeChar.def, offsetStats, VIRTUAL_HEIGHT - offsetY + 75)
-			love.graphics.print("DEX:" .. activeChar.dex, offsetStats, VIRTUAL_HEIGHT - offsetY + 90)
-			love.graphics.print("SPD:" .. activeChar.spd, offsetStats, VIRTUAL_HEIGHT - offsetY + 105)
-			love.graphics.print("RNG:" .. activeChar.rng, offsetStats, VIRTUAL_HEIGHT - offsetY + 120)
-			-- Panel - bottom
-			love.graphics.setColor(0.75, 0.75, 0.75, 1)
-			love.graphics.draw(uiImages.patternPanelBottom, offsetStats, VIRTUAL_HEIGHT - 49, 0, 1.29, 1)
-			love.graphics.setColor(1, 1, 1, 1)
+            -- Health bar
+            love.graphics.draw(uiImages.bar_1, statsX, barsY, 0, 2, 1.5)
+            -- Action points
+            love.graphics.draw(uiImages.bar_2, statsX, barsY + barSpacing, 0, 1.6, 1)
+            -- Panel - top
+            love.graphics.setColor(0.75, 0.75, 0.75, 1)
+            love.graphics.draw(uiImages.patternPanelTop, statsX, barsY + panelTopOffset, 0, 2.3, 1)
+            love.graphics.setColor(1, 1, 1, 1)
+
+            -- Stats
+            love.graphics.setFont(fontTiny)
+            local statsY = barsY + statsStartOffset
+            love.graphics.print("PWR:" .. activeChar.pwr, statsX + 0 * statColumnWidth, statsY + 0 * statLineHeight)
+            love.graphics.print("DEF:" .. activeChar.def, statsX + 0 * statColumnWidth, statsY + 1 * statLineHeight)
+            love.graphics.print("DEX:" .. activeChar.dex, statsX + 1 * statColumnWidth, statsY + 0 * statLineHeight)
+            love.graphics.print("SPD:" .. activeChar.spd, statsX + 1 * statColumnWidth, statsY + 1 * statLineHeight)
+
+            -- Panel - bottom
+            love.graphics.setColor(0.75, 0.75, 0.75, 1)
+            love.graphics.draw(uiImages.patternPanelBottom, statsX, VIRTUAL_HEIGHT - 49, 0, 1.29, 1)
+            love.graphics.setColor(1, 1, 1, 1)
 		end
     end
 end
