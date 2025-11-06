@@ -9,15 +9,15 @@ return {
 
 	-- Patterns: Background patterns
 	patternBGbottom 		= {path = uiDir .. "BottomPatternBG_128x112.png", 		frameW = 128, 	frameH = 112, 	frames = { "1-3", 1 }},
-	patternBGmid 			= {path = uiDir .. "PatternMiddleBottomBG_199x48.png",		frameW = 199, 	frameH = 48},
+	patternBGmid 			= {path = uiDir .. "PatternMiddleBottomBG_199x48.png",	frameW = 199, 	frameH = 48},
 	patternBGtop 			= {path = uiDir .. "TopPatternBG_116x67.png", 			frameW = 112, 	frameH = 67, 	frames = { "1-2", 1 }},
 	patternPanelBottom 		= {path = uiDir .. "BottomPatternPanel_119x17.png", 	frameW = 119, 	frameH = 17},
 	patternPanelMid 		= {path = uiDir .. "TopPatternPanel_02_33x15.png", 		frameW = 83, 	frameH = 8},
 	patternPanelTop 		= {path = uiDir .. "TopPatternPanel_01_33x15.png", 		frameW = 67, 	frameH = 15},
 
 	-- Buttons: Interactive buttons
-	button_1 				= {path = uiDir .. "buttonDragon_1.png", 				frameW = 100, 	frameH = 35, 	frames = { "1-4", 1}},
-	button_2 				= {path = uiDir .. "buttonDragon_2.png", 				frameW = 104, 	frameH = 35, 	frames = { "1-4", 1}},
+	button_1 				= {path = uiDir .. "buttonDragon_1.png", 				frameW = 100, 	frameH = 35, 	frames = { "1-4", 1 }},
+	button_2 				= {path = uiDir .. "buttonDragon_2.png", 				frameW = 104, 	frameH = 35, 	frames = { "1-4", 1 }},
 	buttonClose 			= {path = uiDir .. "buttonClose.png", 					frameW = 24, 	frameH = 24, 	frames = { "1-4", 1 }},
 	buttonExit 				= {path = uiDir .. "buttonExit.png", 					frameW = 24, 	frameH = 24, 	frames = { "1-4", 1 }},
 	buttonHelp 				= {path = uiDir .. "buttonHelp.png", 					frameW = 24, 	frameH = 24, 	frames = { "1-4", 1 }},
@@ -63,10 +63,17 @@ return {
 	tab_5 					= {path = uiDir .. "tab_5.png", 						frameW = 42, 	frameH = 22, 	frames = { "1-4", 1 }},
 
 	-- Fonts: Text rendering
-	fontLarge 				= {path = "assets/fonts/alagard.ttf", 							size = 96},
-	fontMed 				= {path = "assets/fonts/alagard.ttf", 							size = 48},
-	fontSmall 				= {path = "assets/fonts/alagard.ttf", 							size = 36},
-	fontSmaller 			= {path = "assets/fonts/alagard.ttf", 							size = 24},
+	fontXLarge 				= {path = "assets/fonts/alagard.ttf", 							size = 96},
+	fontLarge 				= {path = "assets/fonts/alagard.ttf", 							size = 48},
+	fontMed 				= {path = "assets/fonts/alagard.ttf", 							size = 36},
+	fontSmall 				= {path = "assets/fonts/alagard.ttf", 							size = 24},
 	fontXSmall 				= {path = "assets/fonts/alagard.ttf", 							size = 16},
 	fontTiny 				= {path = "assets/fonts/alagard.ttf", 							size = 12},
+
+	fontXLarge_2 			= {path = "assets/fonts/NormalFont.ttf", 						size = 96},
+	fontLarge_2 			= {path = "assets/fonts/NormalFont.ttf", 						size = 48},
+	fontMed_2 				= {path = "assets/fonts/NormalFont.ttf", 						size = 36},
+	fontSmall_2 			= {path = "assets/fonts/NormalFont.ttf", 						size = 24},
+	fontXSmall_2 			= {path = "assets/fonts/NormalFont.ttf", 						size = 16},
+	fontTiny_2 				= {path = "assets/fonts/NormalFont.ttf", 						size = 12},
 }

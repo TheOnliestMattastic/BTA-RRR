@@ -7,7 +7,7 @@ local buttonQuads = {}
 local isPressed = false
 local buttonFrameW, buttonFrameH
 local fonts = gameInit.registry.fonts
-local fontLarge, fontMed
+local fontXLarge, fontLarge
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
@@ -33,8 +33,8 @@ function menu.load()
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonFrameW, 0, buttonFrameW, buttonFrameH, buttonImg)
 	end
+	fontXLarge = fonts.fontXLarge
 	fontLarge = fonts.fontLarge
-	fontMed = fonts.fontMed
 end
 
 -- Update: Handle UI logic
@@ -71,9 +71,9 @@ function menu.draw()
 	love.graphics.clear(0.3, 0.4, 0.4)  -- menu background
 
 	-- Title
-	love.graphics.setFont(fontLarge)
+	love.graphics.setFont(fontXLarge)
 	local title = "Battle Tactics Arena"
-	local textW = fontLarge:getWidth(title)
+	local textW = fontXLarge:getWidth(title)
 	local textX = VIRTUAL_WIDTH / 2 - textW / 2
 	local textY = VIRTUAL_HEIGHT / 4
 	love.graphics.print(title, textX, textY)
@@ -88,10 +88,10 @@ function menu.draw()
 	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / buttonFrameW, buttonH / buttonFrameH)
 
 	-- Button text
-	love.graphics.setFont(fontMed)
+	love.graphics.setFont(fontLarge)
 	local playText = "Play"
-	local playW = fontMed:getWidth(playText)
-	local playH = fontMed:getHeight()
+	local playW = fontLarge:getWidth(playText)
+	local playH = fontLarge:getHeight()
 	local playX = buttonX + (buttonW - playW) / 2
 	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 3 and 1 or 0)  -- Slight press offset
 	love.graphics.print(playText, playX, playY)

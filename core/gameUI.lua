@@ -5,20 +5,20 @@ local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 
 -- Draw message overlay
-function GameUI.drawMessage(game, fontSmaller)
+function GameUI.drawMessage(game, fontSmall)
     if game.message then
-        love.graphics.setFont(fontSmaller)
+        love.graphics.setFont(fontSmall)
         love.graphics.printf(game.message, VIRTUAL_WIDTH / 4, 0, VIRTUAL_WIDTH / 2, "center")
     end
 end
 
 -- Draw character stats with faceset
-function GameUI.drawCharacterStats(faceset, name, x, y, scaleFace, fontSmall, uiImages, barImage)
+function GameUI.drawCharacterStats(faceset, name, x, y, scaleFace, fontMed, uiImages, barImage)
     if faceset then
         -- Draw faceset
         local offset = faceset:getWidth() * scaleFace + 32  -- map.tileSize
         love.graphics.draw(faceset, x, y - offset, 0, scaleFace, scaleFace)
-        love.graphics.setFont(fontSmall)
+        love.graphics.setFont(fontMed)
 
         -- Draw name
         local offsetStats = offset + 16  -- map.tileSize / 2
@@ -26,22 +26,22 @@ function GameUI.drawCharacterStats(faceset, name, x, y, scaleFace, fontSmall, ui
 
         -- Draw bar (if provided)
         if barImage then
-            love.graphics.draw(barImage, x + offsetStats, y - offset + fontSmall:getHeight(name))
+            love.graphics.draw(barImage, x + offsetStats, y - offset + fontMed:getHeight(name))
         end
     end
 end
 
 -- Draw active character stats
-function GameUI.drawActiveStats(activeFaceset, activeName, fontSmall, uiImages)
-    GameUI.drawCharacterStats(activeFaceset, activeName, 32, VIRTUAL_HEIGHT, 4, fontSmall, uiImages, uiImages.bar_1)
+function GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
+    GameUI.drawCharacterStats(activeFaceset, activeName, 32, VIRTUAL_HEIGHT, 4, fontMed, uiImages, uiImages.bar_1)
 end
 
 -- Draw target character stats
-function GameUI.drawTargetStats(targetFaceset, targetName, fontSmall)
+function GameUI.drawTargetStats(targetFaceset, targetName, fontMed)
     local offset = targetFaceset:getWidth() * 4 + 32
     love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, 4, 4)
-    love.graphics.setFont(fontSmall)
-    local textX = fontSmall:getWidth(targetName) + offset + 16
+    love.graphics.setFont(fontMed)
+    local textX = fontMed:getWidth(targetName) + offset + 16
     love.graphics.print(targetName, VIRTUAL_WIDTH - textX, VIRTUAL_HEIGHT - offset)
 end
 

@@ -12,7 +12,7 @@ game.selected = nil
 game.activeChar = nil
 game.targetChar = nil
 game.message = nil
-local fontLarge, fontMed, fontSmall, fontSmaller
+local fontXLarge, fontLarge, fontMed, fontSmall
 local CharactersConfig
 
 local VIRTUAL_WIDTH = 1024
@@ -115,10 +115,10 @@ function game.load()
     table.sort(characters, function(a, b) return a.initiative > b.initiative end)
 
     -- Get fonts from registry
+    fontXLarge = fonts.fontXLarge
     fontLarge = fonts.fontLarge
     fontMed = fonts.fontMed
     fontSmall = fonts.fontSmall
-    fontSmaller = fonts.fontSmaller
 end
 
 -- Update: Handle game logic and animations
@@ -201,10 +201,16 @@ function game.draw()
 	local upcomingFacesets, upcomingYs = GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
 
     -- Draw UI elements
-    GameUI.drawMessage(game, fontSmaller)
-    GameUI.drawActiveStats(activeFaceset, activeName, fontSmall, uiImages)
-    GameUI.drawTargetStats(targetFaceset, targetName, fontSmall)
-    GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
+    GameUI.drawMessage(game, fontSmall)
+	if activeFaceset then
+		GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
+	end
+	if targetFaceset then
+		GameUI.drawTargetStats(targetFaceset, targetName, fontMed)
+	end
+	if upcomingFacesets then
+		GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
+	end
 
 	love.graphics.setCanvas()
 
