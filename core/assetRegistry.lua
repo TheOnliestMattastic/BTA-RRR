@@ -69,27 +69,28 @@ end
 
 -- Load character animations from config/characters.lua
 function AssetRegistry:loadCharacters(configModule)
-local cfg = require(configModule or "config.characters")
-for class, def in pairs(cfg) do
-local image = loadImage(def.path)
-local grid = anim8.newGrid(def.frameW, def.frameH, image:getWidth(), image:getHeight())
--- Store animation definitions to create them dynamically based on direction
-self.characters[class] = {
-image=image,
-grid=grid,
-animDefs=def.animations
-}
-end
+	local cfg = require(configModule or "config.characters")
+	for class, def in pairs(cfg) do
+		local image = loadImage(def.path)
+		local grid = anim8.newGrid(def.frameW, def.frameH, image:getWidth(), image:getHeight())
+
+		-- Store animation definitions to create them dynamically based on direction
+		self.characters[class] = {
+			image=image,
+			grid=grid,
+			animDefs=def.animations
+		}
+	end
 end
 
 -- Load facesets from config/characters.lua
 function AssetRegistry:loadFacesets(configModule)
-local cfg = require(configModule or "config.characters")
-for class, def in pairs(cfg) do
-if def.faceset then
-self.facesets[class] = loadImage(def.faceset)
-end
-end
+	local cfg = require(configModule or "config.characters")
+	for class, def in pairs(cfg) do
+		if def.faceset then
+			self.facesets[class] = loadImage(def.faceset)
+		end
+	end
 end
 
 -- Load UI elements from config/ui.lua
