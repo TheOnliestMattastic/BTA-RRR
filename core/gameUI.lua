@@ -13,27 +13,22 @@ function GameUI.drawMessage(game, fontSmall)
 end
 
 -- Draw character stats with faceset
-function GameUI.drawCharacterStats(faceset, name, x, y, scaleFace, fontMed, uiImages, barImage)
-    if faceset then
+function GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
+    if activeFaceset then
         -- Draw faceset
-        local offset = faceset:getWidth() * scaleFace + 32  -- map.tileSize
-        love.graphics.draw(faceset, x, y - offset, 0, scaleFace, scaleFace)
+        local offset = activeFaceset:getWidth() * 4 + 32  -- map.tileSize
+        love.graphics.draw(activeFaceset, 32, VIRTUAL_HEIGHT - offset, 0, 4, 4)
         love.graphics.setFont(fontMed)
 
         -- Draw name
-        local offsetStats = offset + 16  -- map.tileSize / 2
-        love.graphics.print(name, x + offsetStats, y - offset)
+        local offsetStats = offset + 8  -- map.tileSize / 4
+        love.graphics.print(activeName, offsetStats, VIRTUAL_HEIGHT - offset)
 
         -- Draw bar (if provided)
-        if barImage then
-            love.graphics.draw(barImage, x + offsetStats, y - offset + fontMed:getHeight(name))
+        if uiImages then
+            love.graphics.draw(uiImages.bar_1, offsetStats, VIRTUAL_HEIGHT - offset + fontMed:getHeight(activeName))
         end
     end
-end
-
--- Draw active character stats
-function GameUI.drawActiveStats(activeFaceset, activeName, fontMed, uiImages)
-    GameUI.drawCharacterStats(activeFaceset, activeName, 32, VIRTUAL_HEIGHT, 4, fontMed, uiImages, uiImages.bar_1)
 end
 
 -- Draw target character stats
@@ -41,7 +36,7 @@ function GameUI.drawTargetStats(targetFaceset, targetName, fontMed)
     local offset = targetFaceset:getWidth() * 4 + 32
     love.graphics.draw(targetFaceset, VIRTUAL_WIDTH - offset, VIRTUAL_HEIGHT - offset, 0, 4, 4)
     love.graphics.setFont(fontMed)
-    local textX = fontMed:getWidth(targetName) + offset + 16
+    local textX = fontMed:getWidth(targetName) + offset + 8
     love.graphics.print(targetName, VIRTUAL_WIDTH - textX, VIRTUAL_HEIGHT - offset)
 end
 

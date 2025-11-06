@@ -9,68 +9,68 @@
 --        spd = influences movement speed and turn order
 --        rng = range of attack
 return {
-  -- Ninjas
-  ninjaBlack = {
-  path="assets/sprites/chars/ninjaBlack/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaBlack/Faceset.png",
-  stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
-  animations = {
-  idle   = { cols=1, duration=1 },
-  walk   = { cols="1-4", duration=0.15 },
-    attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaBlue = {
-  path="assets/sprites/chars/ninjaBlue/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaBlue/Faceset.png",
-    stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
-    tags = { slash = true },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaRed = {
-  path="assets/sprites/chars/ninjaRed/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaRed/Faceset.png",
-    stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaGreen = {
-  path="assets/sprites/chars/ninjaGreen/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaGreen/Faceset.png",
-    stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaGray = {
-  path="assets/sprites/chars/ninjaGray/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaGray/Faceset.png",
-    stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaYellow = {
-  path="assets/sprites/chars/ninjaYellow/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaYellow/Faceset.png",
-    stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
+	-- Ninjas
+	ninjaBlack = { 
+		path="assets/sprites/chars/ninjaBlack/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaBlack/Faceset.png",
+		stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+    	}
+  	},
+	ninjaBlue = {
+		path="assets/sprites/chars/ninjaBlue/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaBlue/Faceset.png",
+		stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+		tags = { slash = true },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+		}
+	},
+	ninjaRed = {
+		path="assets/sprites/chars/ninjaRed/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaRed/Faceset.png",
+		stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+		}
+	},
+	ninjaGreen = {
+		path="assets/sprites/chars/ninjaGreen/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaGreen/Faceset.png",
+    	stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+    	}
+  	},
+	ninjaGray = {
+		path="assets/sprites/chars/ninjaGray/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaGray/Faceset.png",
+    	stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+    	animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+		}
+	},
+	ninjaYellow = {
+		path="assets/sprites/chars/ninjaYellow/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaYellow/Faceset.png",
+    	stats = { hp=25, pwr=5, def=2, dex=5, spd=4, rng=2 },
+    	animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+    	}
+	},
   ninjaMasked = {
   path="assets/sprites/chars/ninjaMasked/SpriteSheet.png", frameW=16, frameH=16,
   faceset="assets/sprites/chars/ninjaMasked/Faceset.png",
