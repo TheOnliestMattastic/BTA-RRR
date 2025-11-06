@@ -6,6 +6,10 @@ return {
 	bar_2 					= {path = uiDir .. "bar_2.png", 						frameW = 77, 	frameH = 13},
 	bar_3 					= {path = uiDir .. "bar_3.png", 						frameW = 77, 	frameH = 16},
 	filler 					= {path = uiDir .. "filler.png", 						frameW = 16, 	frameH = 16, 	frames = { "1-2", 1 }},
+	heart 					= {path = uiDir .. "heart_16x16.png", 					frameW = 16, 	frameH = 16, 	frames = { "1-5", 1 }},
+	receptacle 				= {path = uiDir .. "receptacle_38x66.png", 				frameW = 38, 	frameH = 66},
+	actionPointRectangle 	= {path = uiDir .. "actionPointRectangle_22x10.png", 	frameW = 22, 	frameH = 10},
+	actionPointRound		= {path = uiDir .. "actionPointRound_11x10.png", 			frameW = 11, 	frameH = 10},
 
 	-- Patterns: Background patterns
 	patternBGbottom 		= {path = uiDir .. "BottomPatternBG_128x112.png", 		frameW = 128, 	frameH = 112, 	frames = { "1-3", 1 }},

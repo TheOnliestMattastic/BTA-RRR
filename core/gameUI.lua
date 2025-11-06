@@ -20,10 +20,8 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, ui
         local facesetMargin = 32
         local panelMargin = 8
         local barSpacing = 22
-        local panelTopOffset = 40
-        local statsStartOffset = 60
+        local statsStartOffset = 40
         local statLineHeight = 15
-        local statColumnWidth = 80
 
         -- Calculate faceset dimensions and position
         local facesetWidth = activeFaceset:getWidth() * facesetScale
@@ -47,23 +45,15 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, ui
             love.graphics.draw(uiImages.bar_1, statsX, barsY, 0, 2, 1.5)
             -- Action points
             love.graphics.draw(uiImages.bar_2, statsX, barsY + barSpacing, 0, 1.6, 1)
-            -- Panel - top
-            love.graphics.setColor(0.75, 0.75, 0.75, 1)
-            love.graphics.draw(uiImages.patternPanelTop, statsX, barsY + panelTopOffset, 0, 2.3, 1)
-            love.graphics.setColor(1, 1, 1, 1)
 
-            -- Stats
+            -- Attributes
             love.graphics.setFont(fontTiny)
             local statsY = barsY + statsStartOffset
-            love.graphics.print("PWR:" .. activeChar.pwr, statsX + 0 * statColumnWidth, statsY + 0 * statLineHeight)
-            love.graphics.print("DEF:" .. activeChar.def, statsX + 0 * statColumnWidth, statsY + 1 * statLineHeight)
-            love.graphics.print("DEX:" .. activeChar.dex, statsX + 1 * statColumnWidth, statsY + 0 * statLineHeight)
-            love.graphics.print("SPD:" .. activeChar.spd, statsX + 1 * statColumnWidth, statsY + 1 * statLineHeight)
-
-            -- Panel - bottom
-            love.graphics.setColor(0.75, 0.75, 0.75, 1)
-            love.graphics.draw(uiImages.patternPanelBottom, statsX, VIRTUAL_HEIGHT - 49, 0, 1.29, 1)
-            love.graphics.setColor(1, 1, 1, 1)
+            love.graphics.print("PWR: " .. activeChar.pwr, statsX, statsY + 0 * statLineHeight)
+            love.graphics.print("DEF: " .. activeChar.def, statsX, statsY + 1 * statLineHeight)
+            love.graphics.print("DEX: " .. activeChar.dex, statsX, statsY + 2 * statLineHeight)
+            love.graphics.print("SPD: " .. activeChar.spd, statsX, statsY + 3 * statLineHeight)
+			love.graphics.print("RNG: " .. activeChar.rng, statsX, statsY + 4 * statLineHeight)
 		end
     end
 end
