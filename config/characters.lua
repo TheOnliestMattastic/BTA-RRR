@@ -71,48 +71,48 @@ return {
 			attack = { cols=5, duration=0.005 },
     	}
 	},
-  ninjaMasked = {
-  path="assets/sprites/chars/ninjaMasked/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaMasked/Faceset.png",
-    stats = { hp=20, pwr=6, def=2, dex=4, spd=3, rng=1 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaBomb = {
-  path="assets/sprites/chars/ninjaBomb/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaBomb/Faceset.png",
-    stats = { hp=12, pwr=7, def=1, dex=5, spd=4, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
-  ninjaEskimo = {
-  path="assets/sprites/chars/ninjaEskimo/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/ninjaEskimo/Faceset.png",
-    stats = { hp=16, pwr=5, def=3, dex=5, spd=3, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.005 },
-    }
-  },
+	ninjaMasked = {
+		path="assets/sprites/chars/ninjaMasked/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaMasked/Faceset.png",
+		stats = { hp=20, pwr=6, def=2, dex=4, spd=3, rng=1 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+		}
+	},
+	ninjaBomb = {
+		path="assets/sprites/chars/ninjaBomb/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaBomb/Faceset.png",
+		stats = { hp=12, pwr=7, def=1, dex=5, spd=4, rng=2 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+		}
+	},
+	ninjaEskimo = {
+		path="assets/sprites/chars/ninjaEskimo/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/ninjaEskimo/Faceset.png",
+		stats = { hp=16, pwr=5, def=3, dex=5, spd=3, rng=2 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.005 },
+		}
+	},
 
-  -- Samurai
-  samuraiBlue = {
-  path="assets/sprites/chars/samuraiBlue/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/samuraiBlue/Faceset.png",
-    stats = { hp=24, pwr=6, def=3, dex=4, spd=3, rng=1 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.01 },
-    }
-  },
+	-- Samurai
+	samuraiBlue = {
+		path="assets/sprites/chars/samuraiBlue/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/samuraiBlue/Faceset.png",
+		stats = { hp=24, pwr=6, def=3, dex=4, spd=3, rng=1 },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.01 },
+		}
+	},
   samuraiRed = {
   path="assets/sprites/chars/samuraiRed/SpriteSheet.png", frameW=16, frameH=16,
   faceset="assets/sprites/chars/samuraiRed/Faceset.png",
@@ -400,29 +400,29 @@ return {
       attack = { cols=5, duration=0.02 },
     }
   },
-  lionBro = {
-  path="assets/sprites/chars/lionBro/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/lionBro/Faceset.png",
-    stats = { hp=24, pwr=6, def=4, dex=3, spd=3, rng=2 },
-    animations = {
-      idle   = { cols=1, duration=1 },
-      walk   = { cols="1-4", duration=0.15 },
-      attack = { cols=5, duration=0.02 },
-    }
-  },
+	lionBro = {
+		path="assets/sprites/chars/lionBro/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/lionBro/Faceset.png",
+    	stats = { hp=24, pwr=6, def=4, dex=3, spd=3, rng=2 },
+    	animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.02 },
+		}
+	},
 
   -- Gladiators
-  gladiatorBlue = {
-  path="assets/sprites/chars/gladiatorBlue/SpriteSheet.png", frameW=16, frameH=16,
-  faceset="assets/sprites/chars/gladiatorBlue/Faceset.png",
-  stats = { hp=24, pwr=7, def=5, dex=2, spd=2, rng=1 },
-  tags = { bash = true },
-  animations = {
-  idle   = { cols=1, duration=1 },
-  walk   = { cols="1-4", duration=0.15 },
-    attack = { cols=5, duration=0.025 },
-    }
-  },
+	gladiatorBlue = {
+		path="assets/sprites/chars/gladiatorBlue/SpriteSheet.png", frameW=16, frameH=16,
+		faceset="assets/sprites/chars/gladiatorBlue/Faceset.png",
+		stats = { hp=24, pwr=7, def=5, dex=2, spd=2, rng=1 },
+		tags = { bash = true },
+		animations = {
+			idle   = { cols=1, duration=1 },
+			walk   = { cols="1-4", duration=0.15 },
+			attack = { cols=5, duration=0.025 },
+		}
+	},
   gladiatorRed = {
   path="assets/sprites/chars/gladiatorRed/SpriteSheet.png", frameW=16, frameH=16,
   faceset="assets/sprites/chars/gladiatorRed/Faceset.png",

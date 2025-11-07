@@ -21,10 +21,10 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, ui
         -- Layout constants
         local facesetScale = 4
         local facesetMargin = 32
-        local panelMargin = 8
-        local barSpacing = 22
-        local statsStartOffset = 40
+        local margin = 8
         local statLineHeight = 15
+        local heartSpacing = 18
+        local heartsPerRow = 4
 
         -- Calculate faceset dimensions and position
         local facesetWidth = activeFaceset:getWidth() * facesetScale
@@ -37,39 +37,52 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, ui
         love.graphics.setFont(fontMed)
 
         -- Calculate stats panel position
-        local statsX = facesetX + facesetWidth + panelMargin
+        local statsX = facesetX + facesetWidth + margin
         local nameY = facesetY
         love.graphics.print(activeChar.class, statsX, nameY)
 
-        -- Draw bars
-        local barsY = facesetY + fontMed:getHeight(activeChar.class)
         if uiImages then
-            -- Health bar (hearts)
+            -- Draw receptacle (scaled by 2)
+            local receptacleScale = 1.75
+            local receptacleWidth = 38 * receptacleScale
+            local receptacleHeight = 66 * receptacleScale
+            local receptacleX = facesetX + facesetWidth + margin
+            local receptacleY = facesetY + facesetHeight - receptacleHeight
+            love.graphics.draw(uiImages.receptacle, receptacleX, receptacleY, 0, receptacleScale, receptacleScale)
+
+            -- Health bar (hearts) - two rows of 4 containers each
             local heartImage = uiImages.heart
             if #heartQuads == 0 then
                 for i = 1, 5 do
                     heartQuads[i] = love.graphics.newQuad((i-1)*16, 0, 16, 16, heartImage:getDimensions())
                 end
             end
-            local numHearts = math.ceil(activeChar.maxHP / 4)
+            local numHearts = math.min(8, math.ceil(activeChar.maxHP / 4))
+            local heartsX = receptacleX + receptacleWidth + margin
+            local heartsY = nameY + fontMed:getHeight(activeChar.class) + margin
             for i = 1, numHearts do
                 local hpRemaining = activeChar.hp - (i-1)*4
                 local fillLevel = math.max(0, math.min(4, hpRemaining))
                 local frame = math.floor(fillLevel) + 1
-                love.graphics.draw(heartImage, heartQuads[frame], statsX + (i-1)*18, barsY)
+                local row = math.floor((i-1) / heartsPerRow) + 1
+                local col = ((i-1) % heartsPerRow) + 1
+                local x = heartsX + (col-1) * heartSpacing
+                local y = heartsY + (row-1) * heartSpacing
+                love.graphics.draw(heartImage, heartQuads[frame], x, y)
             end
-            -- Action points
-            love.graphics.draw(uiImages.bar_2, statsX, barsY + barSpacing, 0, 1.6, 1)
 
-            -- Attributes
+            -- Attributes (positioned below hearts, to the right of receptacle, last row aligned to faceset bottom)
             love.graphics.setFont(fontTiny)
-            local statsY = barsY + statsStartOffset
-            love.graphics.print("PWR: " .. activeChar.pwr, statsX, statsY + 0 * statLineHeight)
-            love.graphics.print("DEF: " .. activeChar.def, statsX, statsY + 1 * statLineHeight)
-            love.graphics.print("DEX: " .. activeChar.dex, statsX, statsY + 2 * statLineHeight)
-            love.graphics.print("SPD: " .. activeChar.spd, statsX, statsY + 3 * statLineHeight)
-			love.graphics.print("RNG: " .. activeChar.rng, statsX, statsY + 4 * statLineHeight)
-		end
+            local fontHeight = fontTiny:getHeight()
+            local lastTextY = facesetY + facesetHeight - fontHeight
+            local statsY = lastTextY - 4 * statLineHeight
+            local attrX = receptacleX + receptacleWidth + margin
+            love.graphics.print("PWR: " .. activeChar.pwr, attrX, statsY + 0 * statLineHeight)
+            love.graphics.print("DEF: " .. activeChar.def, attrX, statsY + 1 * statLineHeight)
+            love.graphics.print("DEX: " .. activeChar.dex, attrX, statsY + 2 * statLineHeight)
+            love.graphics.print("SPD: " .. activeChar.spd, attrX, statsY + 3 * statLineHeight)
+            love.graphics.print("RNG: " .. activeChar.rng, attrX, statsY + 4 * statLineHeight)
+        end
     end
 end
 
