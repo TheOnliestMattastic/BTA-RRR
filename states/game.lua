@@ -211,7 +211,7 @@ function game.draw()
 		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontMed, uiImages)
 	end
 	if targetFaceset then
-		GameUI.drawTargetStats(targetFaceset, targetName, fontMed)
+		GameUI.drawTargetStats(targetFaceset, game.targetChar, fontTiny_2, fontMed, uiImages)
 	end
 	if upcomingFacesets then
 		GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
