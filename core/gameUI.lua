@@ -50,6 +50,16 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, ui
             local receptacleY = facesetY + facesetHeight - receptacleHeight
             love.graphics.draw(uiImages.receptacle, receptacleX, receptacleY, 0, receptacleScale, receptacleScale)
 
+            -- Draw action points
+            local apRectWidth = 38.5
+            local apRectHeight = 14
+            local apX = receptacleX + 3 * (receptacleWidth - apRectWidth) / 4 - 1
+            local apStartY = receptacleY + receptacleHeight - apRectHeight - 24
+            for i = 1, activeChar.ap do
+                local y = apStartY - (i-1) * apRectHeight
+                love.graphics.draw(uiImages.actionPointRect, apX, y, 0, 1.75, 1.4)
+            end
+
             -- Health bar (hearts) - two rows of 4 containers each
             local heartImage = uiImages.heart
             if #heartQuads == 0 then

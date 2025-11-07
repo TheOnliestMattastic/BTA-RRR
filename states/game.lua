@@ -190,7 +190,11 @@ function game.draw()
     end
 
 	-- Turn Management
+	local previousActive = game.activeChar
 	game.activeChar = TurnManager.getActiveCharacter(state, characters)
+	if game.activeChar ~= previousActive and game.activeChar then
+		game.activeChar:gainAP()
+	end
 	game.selected = game.activeChar  -- Auto-select active character
 	local activeName = game.activeChar and game.activeChar.class
 	local targetName = game.targetChar and game.targetChar.class

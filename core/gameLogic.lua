@@ -85,7 +85,7 @@ function Combat.heal(attacker, target, state)
     if not Combat.inRange(attacker, target) then
         return { ok=false, reason="out_of_range" }
     end
-    if not state:spendAP(CONFIG.apCostHeal) then
+    if not attacker:spendAP(CONFIG.apCostHeal) then
         return { ok=false, reason="not_enough_ap" }
     end
     local healed = Combat.applyHeal(target, attacker.pwr)
@@ -103,7 +103,7 @@ function Combat.attack(attacker, defender, state)
     if not Combat.inRange(attacker, defender) then
         return { ok=false, reason="out_of_range" }
     end
-    if not state:spendAP(CONFIG.apCostAttack) then
+    if not attacker:spendAP(CONFIG.apCostAttack) then
         return { ok=false, reason="not_enough_ap" }
     end
 

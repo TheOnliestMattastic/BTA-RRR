@@ -16,6 +16,8 @@ function Character.new(class, x, y, stats, tags)
     -- Stats (hp, pwr, def, dex, spd, rng, alignment)
     self.maxHP = stats.hp or 12
     self.hp    = stats.hp or 12
+    self.maxAP = 5
+    self.ap    = 0
     self.pwr   = stats.pwr or 5
     self.def  = stats.def or 2
     self.dex  = stats.dex or 2
@@ -81,6 +83,20 @@ end
 -- Heal
 function Character:heal(amount)
     self.hp = math.min(self.hp + amount, self.maxHP)
+end
+
+-- Gain action points per turn
+function Character:gainAP(amount)
+    self.ap = math.min(self.ap + (amount or 3), self.maxAP)
+end
+
+-- Spend action points
+function Character:spendAP(amount)
+    if self.ap >= amount then
+        self.ap = self.ap - amount
+        return true
+    end
+    return false
 end
 
 -- Move with animation
