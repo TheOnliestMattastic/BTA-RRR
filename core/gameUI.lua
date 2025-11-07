@@ -4,6 +4,9 @@ local GameUI = {}
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 
+-- Heart display quads (created once)
+local heartQuads = {}
+
 -- Draw message overlay
 function GameUI.drawMessage(game, fontSmall)
     if game.message then
@@ -41,8 +44,20 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, ui
         -- Draw bars
         local barsY = facesetY + fontMed:getHeight(activeChar.class)
         if uiImages then
-            -- Health bar
-            love.graphics.draw(uiImages.bar_1, statsX, barsY, 0, 2, 1.5)
+            -- Health bar (hearts)
+            local heartImage = uiImages.heart
+            if #heartQuads == 0 then
+                for i = 1, 5 do
+                    heartQuads[i] = love.graphics.newQuad((i-1)*16, 0, 16, 16, heartImage:getDimensions())
+                end
+            end
+            local numHearts = math.ceil(activeChar.maxHP / 4)
+            for i = 1, numHearts do
+                local hpRemaining = activeChar.hp - (i-1)*4
+                local fillLevel = math.max(0, math.min(4, hpRemaining))
+                local frame = math.floor(fillLevel) + 1
+                love.graphics.draw(heartImage, heartQuads[frame], statsX + (i-1)*18, barsY)
+            end
             -- Action points
             love.graphics.draw(uiImages.bar_2, statsX, barsY + barSpacing, 0, 1.6, 1)
 

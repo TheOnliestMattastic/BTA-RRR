@@ -62,7 +62,7 @@ end
 -- Apply heal (clamped)
 function Combat.applyHeal(target, amount)
     local before = target.hp
-    target.hp = math.min(target.hp + amount, CONFIG.maxHP)
+    target:heal(amount)
     return target.hp - before
 end
 

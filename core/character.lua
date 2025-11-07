@@ -14,8 +14,9 @@ function Character.new(class, x, y, stats, tags)
     self.tags = tags or {}
 
     -- Stats (hp, pwr, def, dex, spd, rng, alignment)
-    self.hp   = stats.hp or 25
-    self.pwr  = stats.pwr or 5
+    self.maxHP = stats.hp or 12
+    self.hp    = stats.hp or 12
+    self.pwr   = stats.pwr or 5
     self.def  = stats.def or 2
     self.dex  = stats.dex or 2
     self.spd  = stats.spd or 2
@@ -78,8 +79,8 @@ function Character:takeDamage(amount)
 end
 
 -- Heal
-function Character:heal(amount, maxHP)
-    self.hp = math.min(self.hp + amount, maxHP or 25)
+function Character:heal(amount)
+    self.hp = math.min(self.hp + amount, self.maxHP)
 end
 
 -- Move with animation
