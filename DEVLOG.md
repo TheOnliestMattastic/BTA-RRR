@@ -87,3 +87,14 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **Menu Button Adjustments**: Fine-tuned button press offset calculations in the menu state for more precise interaction feedback.
 - **Slab Cleanup**: Removed remaining unused Slab UI elements and modules, including a temporary ReversedScrollBox implementation that was subsequently removed.
 - **Typo and Comment Fixes**: Corrected typos in game.lua comments and improved code documentation for better readability.
+
+## November 8, 2025
+
+### UI Stat Panel Refactoring and Consolidation
+
+- **Stat Panel Architecture**: Refactored the stat display UI into a more modular structure with dedicated panel rendering in `gameUI.lua`. Stats, AP, and character info now draw within isolated panels rather than scattered across game state.
+- **Character Stats Display**: Reorganized `drawCharacterStats` and related functions to properly render active character stats, target stats, and upcoming turn order with consistent formatting and positioning.
+- **AP Economy Visualization**: Improved action point display to clearly show current vs. maximum AP, making the turn economy more transparent to the player.
+- **Configuration Consolidation**: Updated `config/ui.lua` with refined panel dimensions, spacing, and font references to centralize UI layout constants.
+- **Game State Input Refactoring**: Streamlined input handling in `states/game.lua` to work more cleanly with the refactored UI drawing logic, improving code readability and separation of concerns.
+- **Turn Manager Integration**: Leveraged the existing `core/turnManager.lua` module more effectively to feed character data to UI rendering functions, reducing duplication.
