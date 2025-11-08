@@ -3,9 +3,7 @@ local GameUI = {}
 
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
-
--- Heart display quads (created once)
-local heartQuads = {}
+local TILESIZE = 32
 
 -- Draw message overlay
 function GameUI.drawMessage(game, fontSmall)
@@ -16,210 +14,223 @@ function GameUI.drawMessage(game, fontSmall)
 end
 
 -- Draw active character stats
-function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontMed, uiImages)
+function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, uiImages)
+	-- Faceset
+	local facesetScale = 4
+	local facesetX = TILESIZE
+	local facesetY = VIRTUAL_HEIGHT - TILESIZE - activeFaceset:getHeight() * facesetScale
     if activeFaceset then
-        -- Layout constants
-        local facesetScale = 4
-        local facesetMargin = 32
-        local margin = 8
-        local statLineHeight = 15
-        local heartSpacing = 18
-        local heartsPerRow = 4
+       love.graphics.draw(activeFaceset, facesetX, facesetY, 0, facesetScale, facesetScale)
+	end
 
-        -- Calculate faceset dimensions and position
-        local facesetWidth = activeFaceset:getWidth() * facesetScale
-        local facesetHeight = activeFaceset:getHeight() * facesetScale
-        local facesetX = facesetMargin
-        local facesetY = VIRTUAL_HEIGHT - facesetHeight - facesetMargin
+	-- Name
+	local nameX = facesetX + activeFaceset:getWidth() * facesetScale + TILESIZE / 4
+	love.graphics.setFont(fontSmall)
+	if activeChar.class then
+		love.graphics.print(activeChar.class, nameX, facesetY)
+	end
 
-        -- Calculate stats panel position
-        local statsX = facesetX + facesetWidth + margin
-        local nameY = facesetY
+	-- AP
+	local apScale = 1.9
+	local apX = facesetX + activeFaceset:getWidth() * facesetScale
+	local apY = VIRTUAL_HEIGHT - TILESIZE - uiImages.receptacle:getHeight() * apScale
+	if uiImages then
+		love.graphics.draw(uiImages.receptacle, apX, apY, 0, apScale, apScale)
+	end
 
-        if uiImages then
-            -- Draw receptacle (scaled by 2)
-            local receptacleScale = 1.75
-            local receptacleWidth = 38 * receptacleScale
-            local receptacleHeight = 66 * receptacleScale
-            local receptacleX = facesetX + facesetWidth + margin
-            local receptacleY = facesetY + facesetHeight - receptacleHeight
+	-- Hearts
+	local heartsX = apX + uiImages.receptacle:getWidth() * apScale + TILESIZE / 8
+	local heartsY = apY
+	local heartSpacing = 4
+	local heartsPerRow = 4
 
-            -- Draw action points
-            local apRectWidth = 38.5
-            local apRectHeight = 14
-            local apX = receptacleX + 3 * (receptacleWidth - apRectWidth) / 4 - 1
-            local apStartY = receptacleY + receptacleHeight - apRectHeight - 24
+	if uiImages.heart and activeChar then
+		-- Calculate number of heart containers based on maxHP (1 heart = 4 HP)
+		local heartsToShow = math.ceil(activeChar.maxHP / 4)
 
-            -- Health bar (hearts) - two rows of 4 containers each
-            local heartImage = uiImages.heart
-            if #heartQuads == 0 then
-                for i = 1, 5 do
-                    heartQuads[i] = love.graphics.newQuad((i-1)*16, 0, 16, 16, heartImage:getDimensions())
-                end
-            end
-            local numHearts = math.min(8, math.ceil(activeChar.maxHP / 4))
-            local heartsX = receptacleX + receptacleWidth + margin
-            local heartsY = nameY + fontMed:getHeight(activeChar.class) + margin
+		-- Create quads for each frame (5 frames: empty, 1/4, 1/2, 3/4, full)
+		local heartW = 16
+		local heartH = 16
+		local heartQuads = {
+			love.graphics.newQuad(0, 0, heartW, heartH, uiImages.heart:getDimensions()),      -- Frame 1: empty
+			love.graphics.newQuad(16, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 2: 1/4
+			love.graphics.newQuad(32, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 3: 1/2
+			love.graphics.newQuad(48, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 4: 3/4
+			love.graphics.newQuad(64, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 5: full
+		}
 
-            -- Attributes (positioned below hearts, to the right of receptacle, last row aligned to faceset bottom)
-            local fontHeight = fontTiny:getHeight()
-            local lastTextY = facesetY + facesetHeight - fontHeight
-            local statsY = lastTextY - 4 * statLineHeight
-            local attrX = receptacleX + receptacleWidth + margin
+		-- Draw each heart container
+		for i = 1, heartsToShow do
+			-- Calculate row and column for grid layout
+			local row = math.floor((i - 1) / heartsPerRow)
+			local col = (i - 1) % heartsPerRow
+			local x = heartsX + col * (heartW + heartSpacing)
+			local y = heartsY + row * (heartH + heartSpacing)
 
-            -- Draw background panel
-            if uiImages.panel_1 then
-                local panelImage = uiImages.panel_1
-                local panelW, panelH = 144, 144  -- from config
-                -- Calculate bounding box
-                local padding = 32  -- tilesize padding inside panel
-                local approxTextWidth = fontTiny:getWidth("SPD: 99")  -- approximate max text width
-                local activeLeft = facesetX
-                local activeRight = math.max(facesetX + facesetWidth, receptacleX + receptacleWidth, heartsX + heartSpacing * 4, attrX + approxTextWidth)
-                local activeTop = nameY
-                local activeBottom = facesetY + facesetHeight
-                -- Ensure panel doesn't enter the center gap (leave square gap centered)
-                local centerX = VIRTUAL_WIDTH / 2
-                local gapSize = 144  -- square gap
-                local gapLeft = centerX - gapSize / 2
-                activeRight = math.min(activeRight, gapLeft - margin)
-                -- Add padding to the panel area
-                local panelLeft = activeLeft - margin - padding
-                local panelTop = activeTop - margin - padding
-                local panelRight = activeRight + margin + padding
-                local panelBottom = activeBottom + margin + padding
-                local panelScaleX = (panelRight - panelLeft) / panelW
-                local panelScaleY = (panelBottom - panelTop) / panelH
-                love.graphics.setColor(1, 1, 1, 0.6)  -- increased transparency
-                love.graphics.draw(panelImage, panelLeft, panelTop, 0, panelScaleX, panelScaleY)
-                love.graphics.setColor(1, 1, 1, 1)
-            end
+			-- Determine heart frame based on HP
+			-- 1 HP = 1/4 heart, so 4 HP = 1 full heart
+			local hpPerHeart = 4
+			local hpThreshold = (i - 1) * hpPerHeart
+			local heartFrame = 1  -- Default empty frame
 
-            -- Draw receptacle
-            love.graphics.draw(uiImages.receptacle, receptacleX, receptacleY, 0, receptacleScale, receptacleScale)
+			if activeChar.hp > hpThreshold then
+				-- Heart has some HP
+				local hpInThisHeart = activeChar.hp - hpThreshold
+				if hpInThisHeart >= 4 then
+					heartFrame = 5  -- Full heart
+				elseif hpInThisHeart >= 3 then
+					heartFrame = 4  -- 3/4 full
+				elseif hpInThisHeart >= 2 then
+					heartFrame = 3  -- Half heart
+				elseif hpInThisHeart >= 1 then
+					heartFrame = 2  -- 1/4 full
+				end
+			end
 
-            -- Draw action points
-            for i = 1, activeChar.ap do
-                local y = apStartY - (i-1) * apRectHeight
-                love.graphics.draw(uiImages.actionPointRect, apX, y, 0, 1.75, 1.4)
-            end
+			-- Draw the heart with the appropriate frame quad
+			love.graphics.draw(uiImages.heart, heartQuads[heartFrame], x, y, 0)
+		end
 
-            -- Draw hearts
-            for i = 1, numHearts do
-            local hpRemaining = activeChar.hp - (i-1)*4
-            local fillLevel = math.max(0, math.min(4, hpRemaining))
-            local frame = math.floor(fillLevel) + 1
-            local row = math.floor((i-1) / heartsPerRow) + 1
-            local col = ((i-1) % heartsPerRow) + 1
-            local x = heartsX + (col-1) * heartSpacing
-            local y = heartsY + (row-1) * heartSpacing
-            love.graphics.draw(heartImage, heartQuads[frame], x, y)
-            end
+		-- Stats text below hearts
+		local statsX = heartsX
+		local heartRows = math.ceil(heartsToShow / heartsPerRow)
+		-- local heartsBottomY = heartsY + (heartRows - 1) * (heartH + heartSpacing) + heartH
 
-            -- Draw attributes
-            love.graphics.setFont(fontTiny)
-            love.graphics.print("PWR: " .. activeChar.pwr, attrX, statsY + 0 * statLineHeight)
-            love.graphics.print("DEF: " .. activeChar.def, attrX, statsY + 1 * statLineHeight)
-            love.graphics.print("DEX: " .. activeChar.dex, attrX, statsY + 2 * statLineHeight)
-            love.graphics.print("SPD: " .. activeChar.spd, attrX, statsY + 3 * statLineHeight)
-            love.graphics.print("RNG: " .. activeChar.rng, attrX, statsY + 4 * statLineHeight)
-        end
-
-        -- Draw faceset
-        love.graphics.draw(activeFaceset, facesetX, facesetY, 0, facesetScale, facesetScale)
-        love.graphics.setFont(fontMed)
-        love.graphics.print(activeChar.class, statsX, nameY)
-    end
+		-- Determine bottom alignment point (same as faceset/receptacle)
+		local bottomY = VIRTUAL_HEIGHT - TILESIZE
+		
+		-- Build stats lines
+		local statsLines = {
+			string.format("PWR: %d", activeChar.pwr or 0),
+			string.format("DEF: %d", activeChar.def or 0),
+			string.format("DEX: %d", activeChar.dex or 0),
+			string.format("SPD: %d", activeChar.spd or 0),
+			string.format("RNG: %d", activeChar.rng or 0),
+		}
+		
+		-- Calculate line height and total height needed
+		love.graphics.setFont(fontTiny)
+		local lineHeight = fontTiny:getHeight() + 2
+		local totalStatsHeight = #statsLines * lineHeight
+		
+		-- Calculate starting Y so last line aligns to bottomY
+		local startY = bottomY - totalStatsHeight
+		
+		-- Draw each stat line
+		for idx, line in ipairs(statsLines) do
+			local y = startY + (idx - 1) * lineHeight
+			love.graphics.print(line, statsX, y)
+		end
+	end
+	
 end
 
 -- Draw target character stats
-function GameUI.drawTargetStats(targetFaceset, targetChar, fontTiny, fontMed, uiImages)
-    if not targetChar then return end
-    local offset = targetFaceset:getWidth() * 4 + 32
-    local facesetX = VIRTUAL_WIDTH - offset
-    local facesetY = VIRTUAL_HEIGHT - offset
+function GameUI.drawTargetStats(targetFaceset, targetChar, fontTiny, fontSmall, uiImages)
+	-- Faceset
+	local facesetScale = 4
+	local facesetX = VIRTUAL_WIDTH - TILESIZE - targetFaceset:getWidth() * facesetScale
+	local facesetY = VIRTUAL_HEIGHT - TILESIZE - targetFaceset:getHeight() * facesetScale
+	if targetFaceset then
+		love.graphics.draw(targetFaceset, facesetX, facesetY, 0, facesetScale, facesetScale)
+	end
 
-    love.graphics.setFont(fontMed)
-    local nameY = facesetY
-    local textX = fontMed:getWidth(targetChar.class) + offset + 8
+	-- Name
+	love.graphics.setFont(fontSmall)
+	if targetChar and targetChar.class then
+		local nameX = facesetX - fontSmall:getWidth(targetChar.class) - TILESIZE / 4
+		love.graphics.print(targetChar.class, nameX, facesetY)
+	end
 
-    local margin = 8
-    local statLineHeight = 15
+	-- Hearts
+	local heartsX = facesetX - uiImages.heart:getWidth() - 4
+	local heartsY = VIRTUAL_HEIGHT - TILESIZE - uiImages.receptacle:getHeight() * 1.9 -- AP scale
+	local heartSpacing = 4
+	local heartsPerRow = 4
 
-    if uiImages then
-        -- Health bar (hearts) - two rows of 4 containers each, to the left of faceset
-        local heartImage = uiImages.heart
-        if #heartQuads == 0 then
-            for i = 1, 5 do
-                heartQuads[i] = love.graphics.newQuad((i-1)*16, 0, 16, 16, heartImage:getDimensions())
-            end
-        end
-        local numHearts = math.min(8, math.ceil(targetChar.maxHP / 4))
-        local heartSpacing = 18
-        local heartsX = facesetX - margin - heartSpacing * 4  -- to the left, 4 columns
-        local heartsY = nameY + fontMed:getHeight(targetChar.class) + margin
+	if uiImages.heart and targetChar then
+		-- Calculate number of heart containers based on maxHP (1 heart = 4 HP)
+		local heartsToShow = math.ceil(targetChar.maxHP / 4)
 
-        -- Attributes (positioned below hearts, last row aligned to faceset bottom)
-        local fontHeight = fontTiny:getHeight()
-        local lastTextY = facesetY + targetFaceset:getHeight() * 4 - fontHeight
-        local statsY = lastTextY - 4 * statLineHeight
-        local attrX = heartsX  -- align with hearts
+		-- Create quads for each frame (5 frames: empty, 1/4, 1/2, 3/4, full)
+		local heartW = 16
+		local heartH = 16
+		local heartQuads = {
+			love.graphics.newQuad(0, 0, heartW, heartH, uiImages.heart:getDimensions()),      -- Frame 1: empty
+			love.graphics.newQuad(16, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 2: 1/4
+			love.graphics.newQuad(32, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 3: 1/2
+			love.graphics.newQuad(48, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 4: 3/4
+			love.graphics.newQuad(64, 0, heartW, heartH, uiImages.heart:getDimensions()),     -- Frame 5: full
+		}
 
-        -- Draw background panel
-        if uiImages.panel_1 then
-            local panelImage = uiImages.panel_1
-            local panelW, panelH = 144, 144  -- from config
-            -- Calculate bounding box
-            local padding = 32  -- tilesize padding inside panel
-            local approxTextWidth = fontTiny:getWidth("SPD: 99")  -- approximate max text width
-            local targetLeft = heartsX
-            local targetRight = math.max(facesetX + targetFaceset:getWidth() * 4, attrX + approxTextWidth)
-            local targetTop = nameY
-            local targetBottom = facesetY + targetFaceset:getHeight() * 4
-            -- Ensure panel doesn't enter the center gap (leave square gap centered)
-            local centerX = VIRTUAL_WIDTH / 2
-            local gapSize = 144  -- square gap
-            local gapRight = centerX + gapSize / 2
-            targetLeft = math.max(targetLeft, gapRight + margin)
-            -- Add padding to the panel area
-            local panelLeft = targetLeft - margin - padding
-            local panelTop = targetTop - margin - padding
-            local panelRight = targetRight + margin + padding
-            local panelBottom = targetBottom + margin + padding
-            local panelScaleX = (panelRight - panelLeft) / panelW
-            local panelScaleY = (panelBottom - panelTop) / panelH
-            love.graphics.setColor(1, 1, 1, 0.6)  -- increased transparency
-            love.graphics.draw(panelImage, panelLeft, panelTop, 0, panelScaleX, panelScaleY)
-            love.graphics.setColor(1, 1, 1, 1)
-        end
+		-- Draw each heart container
+		for i = 1, heartsToShow do
+			-- Calculate row and column for grid layout
+			local row = math.floor((i - 1) / heartsPerRow)
+			local col = (i - 1) % heartsPerRow
+			local x = heartsX + col * (heartW + heartSpacing)
+			local y = heartsY + row * (heartH + heartSpacing)
 
-        -- Draw hearts
-        for i = 1, numHearts do
-            local hpRemaining = targetChar.hp - (i-1)*4
-            local fillLevel = math.max(0, math.min(4, hpRemaining))
-            local frame = math.floor(fillLevel) + 1
-            local row = math.floor((i-1) / 4) + 1
-            local col = ((i-1) % 4) + 1
-            local x = heartsX + (col-1) * heartSpacing
-            local y = heartsY + (row-1) * heartSpacing
-            love.graphics.draw(heartImage, heartQuads[frame], x, y)
-        end
+			-- Determine heart frame based on HP
+			-- 1 HP = 1/4 heart, so 4 HP = 1 full heart
+			local hpPerHeart = 4
+			local hpThreshold = (i - 1) * hpPerHeart
+			local heartFrame = 1  -- Default empty frame
 
-        -- Draw attributes
-        love.graphics.setFont(fontTiny)
-        love.graphics.print("PWR: " .. targetChar.pwr, attrX, statsY + 0 * statLineHeight)
-        love.graphics.print("DEF: " .. targetChar.def, attrX, statsY + 1 * statLineHeight)
-        love.graphics.print("DEX: " .. targetChar.dex, attrX, statsY + 2 * statLineHeight)
-        love.graphics.print("SPD: " .. targetChar.spd, attrX, statsY + 3 * statLineHeight)
-        love.graphics.print("RNG: " .. targetChar.rng, attrX, statsY + 4 * statLineHeight)
-    end
+			if targetChar.hp > hpThreshold then
+				-- Heart has some HP
+				local hpInThisHeart = targetChar.hp - hpThreshold
+				if hpInThisHeart >= 4 then
+					heartFrame = 5  -- Full heart
+				elseif hpInThisHeart >= 3 then
+					heartFrame = 4  -- 3/4 full
+				elseif hpInThisHeart >= 2 then
+					heartFrame = 3  -- Half heart
+				elseif hpInThisHeart >= 1 then
+					heartFrame = 2  -- 1/4 full
+				end
+			end
 
-    -- Draw character name (after panel so it's on top)
-    love.graphics.setFont(fontMed)
-    love.graphics.print(targetChar.class, VIRTUAL_WIDTH - textX, nameY)
+			-- Draw the heart with the appropriate frame quad
+			love.graphics.draw(
+				uiImages.heart,
+				heartQuads[heartFrame],
+				x, y,
+				0
+			)
+		end
 
-    -- Draw faceset
-    love.graphics.draw(targetFaceset, facesetX, facesetY, 0, 4, 4)
+		-- Stats text below hearts
+		local statsX = heartsX
+		local heartRows = math.ceil(heartsToShow / heartsPerRow)
+		local heartsBottomY = heartsY + (heartRows - 1) * (heartH + heartSpacing) + heartH
+
+		-- Determine bottom alignment point (same as faceset)
+		local bottomY = VIRTUAL_HEIGHT - TILESIZE
+
+		-- Build stats lines
+		local statsLines = {
+			string.format("PWR: %d", targetChar.pwr or 0),
+			string.format("DEF: %d", targetChar.def or 0),
+			string.format("DEX: %d", targetChar.dex or 0),
+			string.format("SPD: %d", targetChar.spd or 0),
+			string.format("RNG: %d", targetChar.rng or 0),
+		}
+
+		-- Calculate line height and total height needed
+		love.graphics.setFont(fontTiny)
+		local lineHeight = fontTiny:getHeight() + 2
+		local totalStatsHeight = #statsLines * lineHeight
+
+		-- Calculate starting Y so last line aligns to bottomY
+		local startY = bottomY - totalStatsHeight
+
+		-- Draw each stat line
+		for idx, line in ipairs(statsLines) do
+			local y = startY + (idx - 1) * lineHeight
+			love.graphics.print(line, statsX, y)
+		end
+	end
 end
 
 -- Draw upcoming characters

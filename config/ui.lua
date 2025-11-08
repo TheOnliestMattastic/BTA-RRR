@@ -9,7 +9,7 @@ return {
 	heart 					= {path = uiDir .. "heart_16x16.png", 					frameW = 16, 	frameH = 16, 	frames = { "1-5", 1 }},
 	receptacle 				= {path = uiDir .. "receptacle_38x66.png", 				frameW = 38, 	frameH = 66},
 	actionPointRect 		= {path = uiDir .. "actionPointRectangle_22x10.png", 	frameW = 22, 	frameH = 10},
-	actionPointRound		= {path = uiDir .. "actionPointRound_11x10.png", 			frameW = 11, 	frameH = 10},
+	actionPointRound		= {path = uiDir .. "actionPointRound_11x10.png", 		frameW = 11, 	frameH = 10},
 
 	-- Patterns: Background patterns
 	patternBGbottom 		= {path = uiDir .. "BottomPatternBG_128x112.png", 		frameW = 128, 	frameH = 112, 	frames = { "1-3", 1 }},
@@ -46,8 +46,8 @@ return {
 	header_2 				= {path = uiDir .. "header_2.png", 						frameW = 96, 	frameH = 32},
 
 	-- Panels: Panel backgrounds
-	panel_1 				= {path = uiDir .. "panel_1.png", 						frameW = 144,	frameH = 144},
-	panel_2 				= {path = uiDir .. "panel_2.png", 						frameW = 144,	frameH = 144},
+	panel_1 				= {path = uiDir .. "panel_1.png", 						frameW = 144,	frameH = 144, 	frames = { "1-3", 1 }},
+	panel_2 				= {path = uiDir .. "panel_2.png", 						frameW = 48,	frameH = 144, 	frames = { "1-3", 1 }},
 	panel_3 				= {path = uiDir .. "panel_3.png", 						frameW = 72, 	frameH = 72},
 	panel_4 				= {path = uiDir .. "panel_4.png", 						frameW = 48, 	frameH = 48},
 	panel_5 				= {path = uiDir .. "panel_5.png", 						frameW = 48, 	frameH = 48},

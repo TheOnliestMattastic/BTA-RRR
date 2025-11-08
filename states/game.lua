@@ -208,10 +208,10 @@ function game.draw()
     -- Draw UI elements
     GameUI.drawMessage(game, fontSmall)
 	if activeFaceset then
-		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontMed, uiImages)
+		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontSmall, uiImages)
 	end
 	if targetFaceset then
-		GameUI.drawTargetStats(targetFaceset, game.targetChar, fontTiny_2, fontMed, uiImages)
+		GameUI.drawTargetStats(targetFaceset, game.targetChar, fontTiny_2, fontSmall, uiImages)
 	end
 	if upcomingFacesets then
 		GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
