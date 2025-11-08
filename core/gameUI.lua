@@ -15,22 +15,6 @@ end
 
 -- Draw active character stats
 function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, uiImages)
-	-- Panel
-	local panelSize = 24
-	local panelQuads = {}
-	for y = 0, 2 do
-		for x = 0, 2 do
-			table.insert(panelQuads, love.graphics.newQuad(x * panelSize, y * panelSize, panelSize, panelSize, uiImages.panel_3:getDimensions()))
-		end
-	end
-	local panelScale = 2.5
-	local panelX = TILESIZE / 4
-	local panelY = VIRTUAL_HEIGHT - TILESIZE - uiImages.panel_3:getHeight() * panelScale
-	love.graphics.setColor(1, 1, 1, 0.5)
-	love.graphics.draw(uiImages.panel_3, panelQuads[1], panelX, panelY, 0, panelScale)
-
-	love.graphics.setColor(1, 1, 1, 1)
-	
 	-- Faceset
 	local facesetX = TILESIZE
 	local facesetY = VIRTUAL_HEIGHT - TILESIZE - activeFaceset:getHeight() * facesetScale
