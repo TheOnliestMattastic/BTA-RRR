@@ -46,9 +46,9 @@ return {
 	header_2 				= {path = uiDir .. "header_2.png", 						frameW = 96, 	frameH = 32},
 
 	-- Panels: Panel backgrounds
-	panel_1 				= {path = uiDir .. "panel_1.png", 						frameW = 144,	frameH = 144, 	frames = { "1-3", 1 }},
-	panel_2 				= {path = uiDir .. "panel_2.png", 						frameW = 48,	frameH = 144, 	frames = { "1-3", 1 }},
-	panel_3 				= {path = uiDir .. "panel_3.png", 						frameW = 72, 	frameH = 72},
+	panel_1 				= {path = uiDir .. "panel_1.png", 						frameW = 144,	frameH = 144},
+	panel_2 				= {path = uiDir .. "panel_2.png", 						frameW = 144,	frameH = 144},
+	panel_3 				= {path = uiDir .. "panel_3.png", 						frameW = 24, 	frameH = 24, 	frames = { "1-3", "1-3" }},
 	panel_4 				= {path = uiDir .. "panel_4.png", 						frameW = 48, 	frameH = 48},
 	panel_5 				= {path = uiDir .. "panel_5.png", 						frameW = 48, 	frameH = 48},
 	panel_6 				= {path = uiDir .. "panel_6.png", 						frameW = 48, 	frameH = 48},

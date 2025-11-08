@@ -4,7 +4,7 @@ local GameUI = {}
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 local TILESIZE = 32
-
+local facesetScale = 4
 -- Draw message overlay
 function GameUI.drawMessage(game, fontSmall)
     if game.message then
@@ -15,8 +15,23 @@ end
 
 -- Draw active character stats
 function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, uiImages)
+	-- Panel
+	local panelSize = 24
+	local panelQuads = {}
+	for y = 0, 2 do
+		for x = 0, 2 do
+			table.insert(panelQuads, love.graphics.newQuad(x * panelSize, y * panelSize, panelSize, panelSize, uiImages.panel_3:getDimensions()))
+		end
+	end
+	local panelScale = 2.5
+	local panelX = TILESIZE / 4
+	local panelY = VIRTUAL_HEIGHT - TILESIZE - uiImages.panel_3:getHeight() * panelScale
+	love.graphics.setColor(1, 1, 1, 0.5)
+	love.graphics.draw(uiImages.panel_3, panelQuads[1], panelX, panelY, 0, panelScale)
+
+	love.graphics.setColor(1, 1, 1, 1)
+	
 	-- Faceset
-	local facesetScale = 4
 	local facesetX = TILESIZE
 	local facesetY = VIRTUAL_HEIGHT - TILESIZE - activeFaceset:getHeight() * facesetScale
     if activeFaceset then
@@ -128,7 +143,6 @@ end
 -- Draw target character stats
 function GameUI.drawTargetStats(targetFaceset, targetChar, fontTiny, fontSmall, uiImages)
 	-- Faceset
-	local facesetScale = 4
 	local facesetX = VIRTUAL_WIDTH - TILESIZE - targetFaceset:getWidth() * facesetScale
 	local facesetY = VIRTUAL_HEIGHT - TILESIZE - targetFaceset:getHeight() * facesetScale
 	if targetFaceset then
