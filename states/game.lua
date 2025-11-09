@@ -1,25 +1,31 @@
 -- states/game.lua
+-- Main gameplay state: Turn-based tactical combat on a grid map
 local gameInit = require "core.gameInit"
 local TurnManager = require "core.turnManager"
 local GameUI = require "core.gameUI"
 
+-- Game state and entities
 local game = {}
 local characters = {}
 local charsByName = {}
 local map
 local state
+
+-- Selection and targeting
 game.selected = nil
 game.activeChar = nil
 game.targetChar = nil
 game.message = nil
+
+-- UI and rendering
 local fontXLarge, fontLarge, fontMed, fontSmall, fontTiny_2
 local CharactersConfig
-
 local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 local gameCanvas
 local scale, translateX, translateY
 
+-- Utility: Calculate scaling to fit virtual resolution in window
 local function computeScale()
     local w = love.graphics.getWidth()
     local h = love.graphics.getHeight()
@@ -28,7 +34,7 @@ local function computeScale()
     translateY = (h - VIRTUAL_HEIGHT * scale) / 2
 end
 
--- Initialize dependencies
+-- Dependency references from game initialization module
 local registry = gameInit.registry
 local tilesets = gameInit.tilesets
 local activeFX = gameInit.activeFX
@@ -37,10 +43,9 @@ local facesets = registry.facesets
 local uiImages = registry.ui
 local fonts = registry.fonts
 
--- Load: Initialize game state, map, and characters
+-- Init: Set up map, characters, and game state
 function game.load()
-	-- Build map layout from a tileset spritesheet (use TilesetRegistry)
-	-- Get the tileset (tag must match config/tilesets.lua)
+	-- Load: Tileset configuration
 	local tilesetTag = "grass"
 	local tileset = tilesets:getTileset(tilesetTag)
 	CharactersConfig = gameInit.CharactersConfig
@@ -48,13 +53,13 @@ function game.load()
 	local GameState = gameInit.GameState
 	local Map = gameInit.Map
 
-	-- Validate tileset
+	-- Validate: Tileset exists and has valid dimensions
 	if not tileset or not tileset.image then
         error("Tileset or tileset.image is nil for " .. tilesetTag)
         return
     end
 
-    -- compute how many frames (cols/rows) the tileset contains
+    -- Calculate: Number of tile frames in spritesheet grid
     local atlasCols = math.floor(tileset.image:getWidth() / tileset.frameW)
     local atlasRows = math.floor(tileset.image:getHeight() / tileset.frameH)
     if atlasCols == 0 or atlasRows == 0 then
@@ -62,15 +67,13 @@ function game.load()
         return
     end
 
-    -- choose map size
+    -- Setup: Map dimensions and RNG
     local tileSize = 32
     local mapCols = 16
     local mapRows = 16
-
-    -- seed rng once (optional)
     math.randomseed(os.time())
 
-    -- build randomized layout where each cell is a string "col,row" matching Map expectations
+    -- Build: Randomized map layout (each cell is "col,row" coordinates from tileset)
     local layout = {}
     for row = 1, mapRows do
         layout[row] = {}
@@ -80,25 +83,23 @@ function game.load()
         end
     end
 
-    -- Initialize map and handle potential errors
+    -- Create: Map, canvas, and game state
     map = Map.new(tileSize, layout, tilesets, tilesetTag)
     gameCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
     state = GameState.new()
-
     gameInit.init(game, characters, state)
 
-    -- Create characters
+    -- Create: Character 1 (ninjaBlack, Team 0)
     local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
 	for k, v in pairs(ninjaStats) do stats[k] = v end
     stats.team = 0
-
-    -- Create characters
     local ninjaBlack = Character.new("ninjaBlack", 2, 4, stats, CharactersConfig.ninjaBlack.tags)
     ninjaBlack:setAnimations(registry:getCharacter("ninjaBlack"))
     table.insert(characters, ninjaBlack)
     charsByName.ninjaBlack = ninjaBlack
 
+    -- Create: Character 2 (gladiatorBlue, Team 1)
     local gladiatorStats = CharactersConfig.gladiatorBlue.stats
     stats = {}
     for k, v in pairs(gladiatorStats) do stats[k] = v end
@@ -108,13 +109,13 @@ function game.load()
     table.insert(characters, gladiatorBlue)
     charsByName.gladiatorBlue = gladiatorBlue
 
-    -- Calculate initiative and sort turn order
+    -- Setup: Initiative order (SPD + random)
     for _, char in ipairs(characters) do
         char.initiative = char.spd + math.random(1, 20)
     end
     table.sort(characters, function(a, b) return a.initiative > b.initiative end)
 
-    -- Get fonts from registry
+    -- Load: Fonts from registry
     fontXLarge = fonts.fontXLarge
     fontLarge = fonts.fontLarge
     fontMed = fonts.fontMed
@@ -122,35 +123,34 @@ function game.load()
 	fontTiny_2 = fonts.fontTiny_2
 end
 
--- Update: Handle game logic and animations
+-- Update: Game logic and animations
 function game.update(dt)
-	-- Check win/loss and clamp AP
+	-- Check: Win condition and manage AP pools
 	state:clampAP()
 	state:checkWin()
 
-	-- Update characters
+	-- Update: Character animations and states
 	for _, character in ipairs(characters) do
 		if character.update then pcall(character.update, character, dt) end
 	end
 
-	-- Update FX
+	-- Update: Active visual effects
 	for _, activeEffect in ipairs(activeFX) do
 		if activeEffect.fx and activeEffect.fx.anim and activeEffect.fx.anim.update then pcall(activeEffect.fx.anim.update, activeEffect.fx.anim, dt) end
 	end
 
-	-- Remove completed FX
+	-- Cleanup: Remove finished effects
 	local toRemove = {}
 	for i, activeEffect in ipairs(activeFX) do
 		if activeEffect.fx.anim.status == "paused" then
 			table.insert(toRemove, 1, i)
 		end
 	end
-
 	for _, i in ipairs(toRemove) do
 		table.remove(activeFX, i)
 	end
 
-	-- Update action menu button states
+	-- Update: Action menu button hover states based on mouse position
 	computeScale()
 	local mx, my = love.mouse.getPosition()
 	local vmx = (mx - translateX) / scale
@@ -158,58 +158,60 @@ function game.update(dt)
 	GameUI.updateActionMenu(vmx, vmy, uiImages)
 end
 
+-- Draw: Game world, characters, and UI
 function game.draw()
-
-	-- Compute scaling for virtual screen
 	computeScale()
 
-	-- Draw to canvas
+	-- Draw: Render to virtual canvas
 	love.graphics.setCanvas(gameCanvas)
 	love.graphics.clear(0.3, 0.4, 0.4)  -- game background
 
-	-- Draw map --
+	-- Get: Mouse position in virtual coords
 	local mx, my = love.mouse.getPosition()
 	local vmx = (mx - translateX) / scale
 	local vmy = (my - translateY) / scale
+
+	-- Draw: Tilemap with hover highlighting
 	map:draw(vmx, vmy)
 
-	-- Highlight movement range for active character --
+	-- Draw: Movement range overlay for selected character
 	map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
 
-	-- Highlight attack range if target selected --
+	-- Draw: Attack range overlay if target is selected
 	if game.targetChar then
 		map:highlightAttackRange(game.activeChar)
 	end
 
+	-- Draw: All characters and their animations
 	for _, character in ipairs(characters) do
-		-- Character:draw will handle anim drawing if character has anim/sheet set
 		pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
 	end
 
-	-- Reset color for faceset rendering
+	-- Draw: Visual effects (damage numbers, hit flashes, etc.)
 	love.graphics.setColor(1, 1, 1, 1)
-
 	for _,activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
     end
 
-	-- Turn Management
+	-- Update: Active character and turn order
 	local previousActive = game.activeChar
 	game.activeChar = TurnManager.getActiveCharacter(state, characters)
 	if game.activeChar ~= previousActive and game.activeChar then
 		game.activeChar:gainAP()
 	end
-	game.selected = game.activeChar  -- Auto-select active character
+	game.selected = game.activeChar  -- Auto-select active character at turn start
+	
+	-- Get: Names for faceset lookups
 	local activeName = game.activeChar and game.activeChar.class
 	local targetName = game.targetChar and game.targetChar.class
 	local upcomingNames = TurnManager.getUpcomingNames(state, characters, 8)
 
-	-- Prepare: Faceset data for drawing
+	-- Prepare: Faceset images and positions
 	local activeFaceset = facesets[activeName]
 	local targetFaceset = facesets[targetName]
 	local upcomingFacesets, upcomingYs = GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
 
-    -- Draw UI elements
+    -- Draw: UI overlays (stats, action menu, turn order)
     GameUI.drawMessage(game, fontSmall)
 	if activeFaceset then
 		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontSmall, uiImages)
@@ -222,41 +224,44 @@ function game.draw()
 		GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
 	end
 
+	-- Draw: Scale and center canvas to fit window
 	love.graphics.setCanvas()
-
-    -- Draw scaled canvas
     if scale and scale > 0 then
         love.graphics.draw(gameCanvas, translateX, translateY, 0, scale, scale)
     end
-
 end
 
+-- Handle window resize
 function game.resize(w, h)
     computeScale()
 end
 
+-- Input: Handle left mouse press for actions and buttons
 function game.mousepressed(x, y, button)
     if state.over then return end
     computeScale()
     if button ~= 1 or scale <= 0 then return end
 
-    -- Convert to virtual coordinates
+    -- Convert screen coords to virtual coords
     local vx = (x - translateX) / scale
     local vy = (y - translateY) / scale
     
-    -- Check action menu buttons first
+    -- Input: Check action menu buttons first (press state for visual feedback)
     local buttonPressed = GameUI.actionMenuMousePressed(vx, vy, uiImages)
     if buttonPressed then return end
     
+    -- Input: Check map tile hover
     local hovered = map:getHoveredTile(vx, vy)
     if not hovered then return end
     local col, row = hovered[1], hovered[2]
 
+    -- Input: Check if clicked on a character
     local clicked = GameHelpers.findCharacterAt(col, row)
 
+    -- Input: Handle character selection (changes selected character)
     if GameHelpers.handleSelection(clicked) then return end
 
-    -- Move selected character to empty tile (only if within highlighted movement range)
+    -- Input: Move to empty tile if within speed range
     if not clicked then
         local dist = math.abs(col - game.selected.x) + math.abs(row - game.selected.y)
         if dist <= game.selected.spd then
@@ -268,34 +273,37 @@ function game.mousepressed(x, y, button)
         return
     end
 
-    -- Check if selected can attack target
+    -- Input: Attempt attack on clicked character
     local canAttack, reason = game.selected:canBasicAttack(clicked)
     if not canAttack then
         game.message = reason or "Cannot attack"
         return
     end
 
-    -- Set target and perform attack
+    -- Action: Set target and perform attack
     game.targetChar = clicked
     GameHelpers.performAttack(game.selected, clicked)
 end
 
+-- Input: Handle left mouse release for button activation
 function game.mousereleased(x, y, button)
     if button ~= 1 then return end
     computeScale()
     if scale <= 0 then return end
     
+    -- Convert screen coords to virtual coords
     local vx = (x - translateX) / scale
     local vy = (y - translateY) / scale
     
-    -- Check action menu button release
+    -- Input: Check action menu button release (activation only on release)
     local buttonReleased = GameUI.actionMenuMouseReleased(vx, vy, uiImages)
     if buttonReleased then
         game.message = "Button " .. buttonReleased .. " activated"
-        -- TODO: Implement actual button actions here
+        -- TODO: Implement actual button actions (attack, heal, defend, etc.)
     end
 end
 
+-- Input: Handle keyboard shortcuts
 function game.keyreleased(key)
     if key == "escape" then
         love.event.quit()
