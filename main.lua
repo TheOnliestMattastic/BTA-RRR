@@ -50,6 +50,10 @@ function love.mousereleased(x, y, button, istouch)
     if currentState and currentState.mousereleased then currentState.mousereleased(x, y, button, istouch) end
 end
 
+function love.mousemoved(x, y, dx, dy)
+    if currentState and currentState.mousemoved then currentState.mousemoved(x, y, dx, dy) end
+end
+
 function love.keypressed(key)
     if currentState and currentState.keypressed then currentState.keypressed(key) end
 end

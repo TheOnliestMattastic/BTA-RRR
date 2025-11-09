@@ -28,6 +28,7 @@ local scale, translateX, translateY
 
 -- Input handling
 local inputHandler
+local inputFocus = "keyboard"  -- "keyboard" or "mouse" - which input system has focus
 
 -- Utility: Calculate scaling to fit virtual resolution in window
 local function computeScale()
@@ -126,6 +127,9 @@ function game.load()
 
 	-- Init: Input handler
 	inputHandler = InputHandler.new(game)
+	
+	-- Init: Hide cursor initially (keyboard has focus)
+	love.mouse.setVisible(false)
 end
 
 -- Update: Game logic and animations
@@ -160,7 +164,7 @@ function game.update(dt)
 	local mx, my = love.mouse.getPosition()
 	local vmx = (mx - translateX) / scale
 	local vmy = (my - translateY) / scale
-	GameUI.updateActionMenu(vmx, vmy, uiImages, inputHandler.keyboardFocusButton)
+	GameUI.updateActionMenu(vmx, vmy, uiImages, inputHandler.keyboardFocusButton, inputFocus)
 end
 
 -- Draw: Game world, characters, and UI
@@ -243,9 +247,17 @@ function game.resize(w, h)
     computeScale()
 end
 
+-- Input: Handle mouse move (gain focus when user moves mouse)
+function game.mousemoved(x, y)
+	if inputFocus ~= "mouse" then
+		inputFocus = "mouse"
+		love.mouse.setVisible(true)
+	end
+end
+
 -- Input: Handle left mouse press for actions and buttons
 function game.mousepressed(x, y, button)
-    if state.over then return end
+    if state.over or inputFocus ~= "mouse" then return end
     computeScale()
     if button ~= 1 or scale <= 0 then return end
 
@@ -294,7 +306,7 @@ end
 
 -- Input: Handle left mouse release for button activation
 function game.mousereleased(x, y, button)
-    if button ~= 1 then return end
+    if button ~= 1 or inputFocus ~= "mouse" then return end
     computeScale()
     if scale <= 0 then return end
     
@@ -314,6 +326,13 @@ end
 function game.keypressed(key)
     if state.over then return end
     
+    -- Gain keyboard focus on any key press
+    if inputFocus ~= "keyboard" then
+        inputFocus = "keyboard"
+        love.mouse.setVisible(false)
+        return  -- Skip processing this frame's input on focus switch
+    end
+    
     -- Return: Track Enter key press for button (show pressed state)
     if key == "return" then
         GameUI.actionMenuState.isPressed = true
@@ -323,7 +342,7 @@ end
 
 -- Input: Handle keyboard shortcuts
 function game.keyreleased(key)
-    if state.over then return end
+    if state.over or inputFocus ~= "keyboard" then return end
     
     -- Escape: Quit game
     if key == "escape" then

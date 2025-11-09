@@ -287,7 +287,7 @@ function GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
 end
 
 -- Update action menu button states based on mouse position and keyboard focus
-function GameUI.updateActionMenu(vx, vy, uiImages, keyboardFocus)
+function GameUI.updateActionMenu(vx, vy, uiImages, keyboardFocus, inputFocus)
 	local buttonScale = 3
 	local buttonImg = uiImages.button_1
 	local buttonW = 100
@@ -300,17 +300,21 @@ function GameUI.updateActionMenu(vx, vy, uiImages, keyboardFocus)
 	-- Use keyboard focus if provided, otherwise default to Navigate (button 0)
 	local focusButton = keyboardFocus or GameUI.actionMenuState.keyboardFocus
 	
-	-- Reset states: default to keyboard focus button
-	GameUI.actionMenuState.hoveredButton = focusButton
+	-- Reset states: default to normal
 	for i = 0, 3 do
-		GameUI.actionMenuState.buttonStates[i + 1] = 0  -- Default to normal
+		GameUI.actionMenuState.buttonStates[i + 1] = 0
 	end
-	GameUI.actionMenuState.buttonStates[focusButton + 1] = 1  -- Default button hovered by keyboard
 	GameUI.actionMenuState.keyboardFocus = focusButton  -- Update stored keyboard focus
 	
-	-- Check if keyboard-focused button is being pressed (Enter key held)
-	if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == focusButton then
-		GameUI.actionMenuState.buttonStates[focusButton + 1] = 3  -- Pressed state
+	-- If keyboard has focus, highlight the focused button
+	if inputFocus == "keyboard" then
+		GameUI.actionMenuState.hoveredButton = focusButton
+		GameUI.actionMenuState.buttonStates[focusButton + 1] = 1  -- Hover state for keyboard focus
+		
+		-- Check if keyboard-focused button is being pressed (Enter key held)
+		if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == focusButton then
+			GameUI.actionMenuState.buttonStates[focusButton + 1] = 3  -- Pressed state
+		end
 	end
 	
 	-- Check which button is actually hovered by mouse (mouse overrides keyboard focus)
