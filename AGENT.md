@@ -160,14 +160,21 @@ Renders all on-screen UI elements: stats panels, action menu, upcoming turn orde
 - **Active Stats**: `drawActiveStats(faceset, char, fontTiny, fontSmall, uiImages)` – Renders active character panel (left) with faceset, name, AP, HP hearts
 - **Target Stats**: `drawTargetStats(faceset, char, fontTiny, fontSmall, uiImages)` – Renders target character panel (left, below active) with stats
 - **Upcoming Turn Order**: `drawUpcoming(facesets, yPositions)` – Renders next 8 characters in turn order (right side)
-- **Action Menu**: `drawActionMenu(activeChar, font, uiImages)` – Renders 4 action buttons (right side)
+- **Action Menu**: `drawActionMenu(activeChar, font, uiImages)` – Renders 4 labeled action buttons (right side)
+
+**Action Menu Details:**
+- Buttons labeled (top to bottom): "Navigate", "Actions", "Abilities", "Concentrate"
+- Buttons use press-on-release pattern: show hover state on mouse over, pressed state while held, activate on release
+- `updateActionMenu(vx, vy, uiImages)` – Updates button hover/pressed states each frame
+- `actionMenuMousePressed(vx, vy, uiImages)` – Tracks button press for press-on-release behavior
+- `actionMenuMouseReleased(vx, vy, uiImages)` – Triggers button action on release (if valid)
 
 **Panel Details:**
 - Active/target stats use a 3x3 grid panel (`panel_3` sprite) tiled for flexible height
 - Action buttons positioned right of map with 32px padding from screen edge
 - Turn order positioned on far right
 
-Key: All UI positioning is data-driven from `config/ui.lua`.
+Key: All UI positioning and assets are data-driven from `config/ui.lua`.
 
 ### core/assetRegistry.lua
 
@@ -249,15 +256,20 @@ Key: All UI sprites and fonts are centralized; update here to reskin the game.
 
 ### states/menu.lua
 
-Main menu state. Renders title, start button, and background.
+Main menu state. Renders title, start button, and background using data from `config/ui.lua`.
 
-- **Load**: Initializes fonts and UI sprites
-- **Update**: Handles button hover/press logic
-- **Draw**: Renders title, button with hover state, background pattern
-- **Input**: Detects button clicks to transition to game state
+- **Load**: Loads button sprite and fonts from `config/ui.lua`; creates animation quads for button states
+- **Update**: Tracks mouse position to determine button hover/press state
+- **Draw**: Renders title, button with current state (normal/hover/pressed), centered on screen
+- **Input**: Uses press-on-release pattern; button activates only on release if originally pressed on button
 - **Resize**: Updates virtual scaling on window resize
 
-Key: Simple pass-through to `states/game.lua` when "Start" is pressed.
+**Button Behavior:**
+- Press-on-release: Button shows visual press state while held, only activates when released over button
+- Supports both mouse clicks and Enter key for activation
+- Escape key quits the game
+
+Key: Demonstrates best practice of loading UI config centrally; simple pass-through to `states/game.lua` when "Start" is pressed.
 
 ### states/game.lua
 

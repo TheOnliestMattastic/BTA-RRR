@@ -2,13 +2,14 @@
 -- Main menu state: Title screen with start button
 local menu = {}
 local gameInit = require("core.gameInit")
+local uiConfig = require("config.ui")
 
 -- Button state tracking
 local btnState = 0  -- 0=normal, 1=hover, 3=pressed
 local buttonImg
 local buttonQuads = {}
 local isPressed = false
-local buttonFrameW, buttonFrameH
+local buttonConfig = uiConfig.button_2
 
 -- UI and scaling
 local fonts = gameInit.registry.fonts
@@ -30,17 +31,18 @@ end
 -- Init: Load button assets and fonts
 function menu.load()
 	menuCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
-	local uiConfig = require("config.ui")
-	buttonImg = love.graphics.newImage(uiConfig.button_2.path)
-	buttonFrameW = uiConfig.button_2.frameW
-	buttonFrameH = uiConfig.button_2.frameH
+	
+	-- Load: Button from config
+	buttonImg = love.graphics.newImage(buttonConfig.path)
 	
 	-- Create quads for each button state (normal, hover, pressed)
 	for i = 0, 3 do
-		buttonQuads[i] = love.graphics.newQuad(i * buttonFrameW, 0, buttonFrameW, buttonFrameH, buttonImg)
+		buttonQuads[i] = love.graphics.newQuad(i * buttonConfig.frameW, 0, buttonConfig.frameW, buttonConfig.frameH, buttonImg)
 	end
-	fontXLarge = fonts.fontXLarge
-	fontLarge = fonts.fontLarge
+	
+	-- Load: Fonts from config
+	fontXLarge = love.graphics.newFont(uiConfig.fontXLarge.path, uiConfig.fontXLarge.size)
+	fontLarge = love.graphics.newFont(uiConfig.fontLarge.path, uiConfig.fontLarge.size)
 end
 
 -- Update: Handle mouse and keyboard input for button state
@@ -86,7 +88,7 @@ function menu.draw()
 	local buttonH = VIRTUAL_HEIGHT / 4
 	local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
 	local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
-	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / buttonFrameW, buttonH / buttonFrameH)
+	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / buttonConfig.frameW, buttonH / buttonConfig.frameH)
 
 	-- Draw: Button text with press offset
 	love.graphics.setFont(fontLarge)
