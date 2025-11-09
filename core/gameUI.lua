@@ -286,10 +286,9 @@ function GameUI.drawActionMenu(activeChar, font, uiImages)
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonW, 0, buttonW, buttonH, buttonImg)
 	end
-	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[0], 0, buttonScale, buttonScale)
-	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[1], 0, buttonScale, buttonScale)
-	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[2], 0, buttonScale, buttonScale)
-	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[3], 0, buttonScale, buttonScale)
+	for i = 0, 3 do
+		love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[i], 0, buttonScale, buttonScale)
+	end
 end
 
 return GameUI

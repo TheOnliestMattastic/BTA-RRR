@@ -1,139 +1,465 @@
-# AGENT.md - Battle Tactics Arena: Refactored & Remastered
+# AGENT.md – Battle Tactics Arena: Refactored & Remastered
 
-This is the AGENT.md file for the BTAR-R project. It serves as the ground truth for commands, style, structure, and best practices. Use this to maintain consistency across the codebase.
+This is the ground truth for the BTAR-R project. It documents the current codebase structure, best practices, and communication guidelines.
 
 ## Project Overview
 
-Battle Tactics Arena (BTAR-R) is a 2D turn-based tactical RPG prototype built with Lua and LÖVE2D. The game features grid-based combat, character classes, AP economy, and modular architecture.
+**Battle Tactics Arena (BTAR-R)** is a 2D turn-based tactical RPG prototype built with Lua and LÖVE2D. The game features:
 
-Key folders:
+- Grid-based combat on randomized tilesets
+- Multiple character classes (ninja, gladiator, mage, ranger, etc.)
+- Action Point (AP) economy for strategic gameplay
+- Animated characters and visual effects powered by `anim8`
+- Modular, data-driven architecture
 
-- `/core`: Game logic modules (character, map, gameState, ui, etc.)
-- `/config`: Data-driven definitions (characters, fx, tilesets)
-- `/states`: Game states (menu, game)
-- `/assets`: Sprites, tilesets, UI elements, fonts
-- `/lib`: Third-party libraries (anim8)
+**Core Concept**: Two players alternate turns on the same machine, spending AP to move, attack, or heal. First team to eliminate all enemies wins.
+
+### Directory Structure
+
+```
+/assets          → Sprites, tilesets, facesets, UI, fonts
+/core            → Game logic modules (character, map, gameState, UI, combat)
+/config          → Data-driven definitions (characters, tilesets, FX, UI)
+/states          → Game state controllers (menu, game)
+/lib             → Third-party libraries (anim8)
+main.lua         → Entry point with state machine
+conf.lua         → LÖVE configuration (version, window defaults)
+```
+
+---
+
+## AI Assistant Role: Coding Mentor
+
+I act as your **Coding Mentor** and specialist guide for this project. While you are the project manager and decision-maker, I serve to:
+
+- **Teach Best Practices**: Explain architectural decisions, design patterns, and why certain approaches are preferred over others.
+- **Provide Guidance**: Offer recommendations on code structure, refactoring opportunities, and improvements.
+- **Correct Issues**: Flag potential bugs, performance concerns, and anti-patterns when encountered.
+- **Explain Trade-offs**: When multiple valid approaches exist (e.g., explicit code vs. loops), explain the reasoning behind recommended choices.
+- **Support Learning**: Provide rationale behind decisions so you understand the "why" behind recommendations, not just the "what."
+
+All guidance respects your final say as project manager, but I will actively mentor and suggest improvements.
+
+---
 
 ## Code Style and Structure
 
 ### Best Practices
 
-- Use modular design: separate concerns into different files/modules.
-- Avoid global variables; use local tables and require statements.
-- Data-driven configs: add new content via config files without touching core logic.
-- Encapsulate entities: use metatables for OOP-like structures.
-- Comment blocks: add short, descriptive comments for each major block.
-- Error handling: use pcall for risky operations (e.g., drawing, updating).
-- Consistent naming: camelCase for variables/functions, PascalCase for modules.
+- **Modular Design**: Separate concerns into focused modules; avoid monolithic files.
+- **Local Scope**: Minimize global variables; use `local` for all variables and functions.
+- **Data-Driven Configs**: Define content (characters, tilesets, FX, UI) in `/config` without touching core logic.
+- **OOP Patterns**: Use metatables for encapsulation (e.g., `Module.__index = Module`).
+- **Descriptive Comments**: Use ADHD-friendly reminder comments at the start of code blocks.
+- **Error Handling**: Wrap risky operations (drawing, updates) in `pcall()` where appropriate.
+- **Naming Conventions**: 
+  - `camelCase` for variables and functions
+  - `PascalCase` for module names
+  - `SCREAMING_SNAKE_CASE` for constants
 
 ### ADHD-Friendly Reminder Comments
 
-Add short reminder comments at the start of each code block to jumpstart memory. Examples:
+Add short, context-setting comments at the start of major code blocks:
 
-- `-- Init: Load modules and set up game state`
-- `-- Draw: Render map, characters, and UI`
-- `-- Update: Handle animations and game logic`
+```lua
+-- Init: Load modules and set up game state
+-- Draw: Render map, characters, and UI
+-- Update: Handle animations and game logic
+```
 
-These comments should be 1-2 words followed by a colon and brief description.
+Format: 1-2 words, colon, brief description.
+
+---
 
 ## Core Modules
 
 ### core/gameInit.lua
 
-- **Init Block**: `-- Load: Require all core modules and configs`
-- **Setup Block**: `-- Create: Instantiate registries and load assets`
-- **Init Function**: `-- Bootstrap: Initialize game state and helpers`
+Bootstraps the game by initializing registries and loading all assets.
+
+- **Load Modules**: Requires all core modules and config files
+- **Create Registries**: Instantiates `AssetRegistry` and populates it with tilesets, characters, FX, UI, fonts
+- **Init Function**: Called by `states/game.lua` to set up game state helpers
+
+Key: This is the single entry point for asset management.
 
 ### core/character.lua
 
-- **Constructor**: `-- Create: New character with stats and sprites`
-- **Update**: `-- Animate: Update walking and animation states`
-- **Draw**: `-- Render: Draw character sprite if alive`
-- **Combat**: `-- Damage: Reduce HP and check death`
-- **Heal**: `-- Restore: Increase HP up to max`
-- **Movement**: `-- Move: Animate movement to target position`
-- **Animation**: `-- Set: Configure animations from registry`
-- **Checks**: `-- Ally: Check team alignment`
-- **Attack**: `-- Can Attack: Validate basic attack possibility`
+Encapsulates individual character data and behavior.
+
+- **Constructor**: `Character.new(class, x, y, stats, tags)` – Creates a character with position, stats, and sprites
+- **Update**: Handles walking animation and state transitions
+- **Draw**: Renders character sprite at grid position; respects alive/dead state
+- **Damage**: `takeDamage(amount)` – Reduces HP and checks for death
+- **Heal**: `heal(amount)` – Restores HP up to max
+- **Movement**: `moveTo(x, y)` – Animates character walk to new tile
+- **Animation**: `setAnimations(charDef)` – Sets up idle/walk/attack animations from registry
+- **Checks**: `isAlly(otherChar)` – Compares team alignment
+- **Attack**: `canBasicAttack(target)` – Validates attack feasibility
+
+Key: Characters are fully encapsulated. All interactions go through methods.
 
 ### core/gameState.lua
 
-- **Constructor**: `-- New State: Initialize turns and AP`
-- **Turn Logic**: `-- Current Team: Determine active player`
-- **AP Management**: `-- Spend: Deduct action points`
-- **Turn End**: `-- Next: Advance turn and reset AP`
-- **Clamp**: `-- Cap: Limit AP to max values`
-- **Win Check**: `-- Victory: Check for game over conditions`
+Manages game state: turns, AP, team management, and win conditions.
+
+- **Constructor**: `GameState.new()` – Initializes turn counter and AP pools
+- **Turn Logic**: `currentTeam()` – Returns "green" or "red" based on turn parity
+- **AP Management**: `spendAP(amount)` – Deducts AP from active team
+- **Turn Progression**: `endTurn()` – Advances turn counter and resets AP
+- **AP Clamping**: `clampAP()` – Limits AP to max (5) per team
+- **Win Condition**: `checkWin()` – Sets `over=true` and `winner` when a team is eliminated
+
+Key: Separates game logic from rendering and input.
 
 ### core/map.lua
 
-- **Constructor**: `-- Build: Create map with layout and tileset`
-- **Draw**: `-- Render: Draw tiles and highlight hover`
-- **Hover**: `-- Detect: Check mouse over tile`
-- **Highlight**: `-- Range: Show movement area for selected character`
+Manages the tile grid and hover/range highlighting.
+
+- **Constructor**: Positions map relative to turn order UI (32px padding)
+- **Draw**: Renders all tiles using tileset grid; highlights hovered tiles
+- **Hover Detection**: `getHoveredTile(mx, my)` – Returns `{col, row}` or `nil`
+- **Movement Range**: `highlightMovementRange(char, isOccupied)` – Draws movement area
+- **Attack Range**: `highlightAttackRange(char)` – Draws attackable tiles
+
+Key: Assumes 32px tiles; all coordinates are grid-based (0-indexed).
 
 ### core/turnManager.lua
 
-- **Active Index**: `-- Get: Current turn's active character index`
-- **Active Character**: `-- Retrieve: Active character based on turn`
-- **Upcoming Names**: `-- List: Names of upcoming characters in turn order`
+Utility module for retrieving turn information.
+
+- **Active Index**: `getActiveIndex(state, characters)` – Returns current character's index
+- **Active Character**: `getActiveCharacter(state, characters)` – Returns current character object
+- **Upcoming Names**: `getUpcomingNames(state, characters, count)` – Returns list of next N characters' classes
+- **Facesets**: `prepareUpcomingFacesets(names, facesets)` – Pairs names with faceset images
+
+Key: Reduces coupling between gameState and character list logic.
+
+### core/gameLogic.lua
+
+Houses combat and game mechanics.
+
+**Combat module:**
+- `Combat.inRange(attacker, target)` – Checks Manhattan distance against attacker's range
+- `Combat.resolveHit(attacker, defender)` – Rolls accuracy and dodge; returns "hit", "miss", or "dodge"
+- `Combat.computeDamage(attacker, defender)` – Calculates damage (power - defense, minimum 1)
+- `Combat.isAlly(char1, char2)` – Checks if characters are on same team
+
+**GameHelpers module:**
+- `findCharacterAt(col, row)` – Returns character at grid position or `nil`
+- `handleSelection(clickedChar)` – Manages character selection logic
+- `performAttack(attacker, target)` – Executes attack, applies damage, manages AP
+
+Key: Centralizes all mechanical calculations; all formulas configurable at module top.
 
 ### core/gameUI.lua
 
-- **Draw Message**: `-- Overlay: Display game messages`
-- **Draw Character Stats**: `-- UI: Render faceset and stats for characters`
-- **Draw Active/Target/Upcoming**: `-- Display: Turn-based UI elements`
+Renders all on-screen UI elements: stats panels, action menu, upcoming turn order.
 
-### states/menu.lua
+- **Message Overlay**: `drawMessage(game, font)` – Displays temporary messages at screen top
+- **Active Stats**: `drawActiveStats(faceset, char, fontTiny, fontSmall, uiImages)` – Renders active character panel (left) with faceset, name, AP, HP hearts
+- **Target Stats**: `drawTargetStats(faceset, char, fontTiny, fontSmall, uiImages)` – Renders target character panel (left, below active) with stats
+- **Upcoming Turn Order**: `drawUpcoming(facesets, yPositions)` – Renders next 8 characters in turn order (right side)
+- **Action Menu**: `drawActionMenu(activeChar, font, uiImages)` – Renders 4 action buttons (right side)
 
-- **Load**: `-- Init: Load UI assets and canvas`
-- **Update**: `-- Logic: Handle button hover/press`
-- **Draw**: `-- UI: Render title, button, and background`
-- **Resize**: `-- Scale: Update virtual scaling`
+**Panel Details:**
+- Active/target stats use a 3x3 grid panel (`panel_3` sprite) tiled for flexible height
+- Action buttons positioned right of map with 32px padding from screen edge
+- Turn order positioned on far right
 
-### states/game.lua
+Key: All UI positioning is data-driven from `config/ui.lua`.
 
-- **Load**: `-- Setup: Initialize map, characters, and state`
-- **Update**: `-- Tick: Update characters, FX, and UI`
-- **Draw**: `-- Display: Render map, characters, and overlays`
-- **Input**: `-- Click: Handle mouse presses for selection/movement/attacks`
+### core/assetRegistry.lua
+
+Centralized registry for all game assets.
+
+- **Tilesets**: `loadTilesets()` – Loads tileset sprites and creates anim8 grids
+- **Characters**: `loadCharacters()` – Loads character sprites, facesets, and animation definitions
+- **FX**: `loadFX()` – Loads effect sprites and animations
+- **UI**: `loadUI()` – Loads button, panel, and icon sprites
+- **Fonts**: `loadFonts()` – Loads TTF fonts at specified sizes
+- **Getters**: `getTileset(tag)`, `getCharacter(class)`, `getUI(tag)`, etc.
+
+Key: Single source of truth for all asset loading; prevents duplicate loads.
+
+---
 
 ## Config Files
 
-Use config files to define data without code changes.
-
 ### config/characters.lua
 
-- Define classes with paths, stats, and animations.
-- Stats: hp, pwr, def, dex, spd, rng.
+Defines all playable character classes. Each entry includes:
 
-### Other Configs
+- `path` – Path to sprite sheet (16x16 frames)
+- `faceset` – Path to portrait image (38x38)
+- `stats` – `{hp, pwr, def, dex, spd, rng}`
+- `animations` – Dictionary of animation names → frame specs
+- `tags` – Optional flags (e.g., `{slash = true}`)
 
-- `fx.lua`: Effect definitions
-- `tilesets.lua`: Tile assets
+**Current Classes:**
+- `ninjaBlack`, `ninjaBlue`, `ninjaRed`, `ninjaGreen` (4 variants)
+- `gladiatorBlue`, `gladiatorRed` (2 variants)
+- Extensible: Add new classes here without touching core logic
+
+Key: All character data is immutable; stats are copied to character instances at runtime.
+
+### config/tilesets.lua
+
+Defines tileset sprites used for map generation.
+
+Each entry includes:
+- `path` – Path to sprite sheet
+- `frameW`, `frameH` – Tile dimensions (typically 16x16)
+- `frames` – Optional animation frames for animated tiles
+
+Key: Maps are generated with random tile picks from configured tilesets.
+
+### config/fx.lua
+
+Defines visual effects (damage numbers, hit flash, etc.).
+
+Each entry includes:
+- `path` – Sprite sheet path
+- `frameW`, `frameH` – Frame dimensions
+- `frames` – Animation frame spec (e.g., `{"1-5", 1}`)
+- `duration` – Animation duration in seconds
+
+Key: FX are data-driven; new effects don't require code changes.
+
+### config/ui.lua
+
+Defines all UI assets: buttons, panels, bars, icons, and fonts.
+
+- **Bars**: Meters for HP, AP, resources
+- **Patterns**: Background patterns and decorative borders
+- **Buttons**: Interactive buttons with multiple states (idle, hover, press)
+- **Cursors**: Mouse cursor variants
+- **Frames**: Border and frame elements
+- **Headers**: Section headers
+- **Panels**: Background panels (including 3x3 tileable `panel_3`)
+- **Arrows**: Directional indicators
+- **Tabs**: Tab elements for menus
+- **Fonts**: Font definitions (alagard.ttf and NormalFont.ttf, sizes 12-96)
+
+Key: All UI sprites and fonts are centralized; update here to reskin the game.
+
+---
+
+## Game States
+
+### states/menu.lua
+
+Main menu state. Renders title, start button, and background.
+
+- **Load**: Initializes fonts and UI sprites
+- **Update**: Handles button hover/press logic
+- **Draw**: Renders title, button with hover state, background pattern
+- **Input**: Detects button clicks to transition to game state
+- **Resize**: Updates virtual scaling on window resize
+
+Key: Simple pass-through to `states/game.lua` when "Start" is pressed.
+
+### states/game.lua
+
+Main gameplay state. Manages map, characters, input, and game flow.
+
+- **Load**: Initializes map, characters, and game state
+- **Update**: Updates character animations, FX, and game logic
+- **Draw**: Renders map, characters, FX, and UI elements
+- **Input**: Handles mouse clicks for character selection, movement, and attacks
+- **Resize**: Updates virtual scaling
+
+**Input Flow:**
+1. Click character → select (auto-highlight movement range)
+2. Click empty tile → move selected character (if within range)
+3. Click enemy → attack (if in range and AP available)
+4. End turn → `state:endTurn()` advances to next team
+
+Key: Input is grid-based; all coordinates converted from screen to virtual to grid.
+
+---
+
+## Virtual Resolution System
+
+Game renders to a fixed **1024×768** virtual canvas, then scaled to window size.
+
+**Variables:**
+- `VIRTUAL_WIDTH = 1024`
+- `VIRTUAL_HEIGHT = 768`
+- `scale` = ratio of window to virtual dimensions
+- `translateX`, `translateY` = offset to center scaled canvas
+
+**Mouse Coordinate Conversion:**
+```lua
+local vx = (screenX - translateX) / scale
+local vy = (screenY - translateY) / scale
+```
+
+Key: All drawing and input use virtual coordinates; no hard-coded screen positions.
+
+---
+
+## Turn Order and AP Economy
+
+### Turn System
+
+- Turn counter increments each turn (`state.turn`)
+- Teams alternate: odd turns = green, even turns = red
+- When a team's turn begins, all characters on that team gain `maxAP` (5)
+
+### Action Points (AP)
+
+- Each character spends AP to perform actions
+- **Movement**: No AP cost in current version
+- **Attack**: Costs 1 AP (defined in `gameLogic.CONFIG`)
+- **Heal**: Costs 2 AP (defined in `gameLogic.CONFIG`)
+- AP clamped to max 5; AP pools regenerate on turn start
+
+Key: AP is team-based, not per-character. All green units share one AP pool.
+
+---
+
+## Combat System
+
+### Attack Resolution
+
+1. **Range Check**: Is target within `attacker.rng`?
+2. **Accuracy Roll**: Compare `hitChance = 60 + attacker.dex * 8` against 0-100
+3. **Dodge Roll**: Compare `dodgeChance = defender.dex * 5` against 0-100
+4. **Result**: "hit", "miss", or "dodge"
+5. **Damage**: `max(1, attacker.pwr - defender.def)`
+6. **Apply**: Reduce target HP; trigger death if HP ≤ 0
+
+Key: All formulas configurable in `gameLogic.CONFIG`.
+
+---
+
+## Asset Loading Workflow
+
+1. **gameInit.lua** calls `AssetRegistry:loadTilesets()`, `loadCharacters()`, etc.
+2. Config modules define data (no images loaded here)
+3. Registry instantiates sprites, grids, and animations
+4. Game state holds registry reference; modules access via `registry:getXYZ(tag)`
+5. No asset is loaded twice; registry acts as cache
+
+Key: Separation of data definition (config) from asset instantiation (registry).
+
+---
+
+## Development Guidelines
+
+### Adding a New Character Class
+
+1. Add entry to `config/characters.lua` with stats and animation frames
+2. Place sprite sheet in `assets/sprites/chars/{className}/SpriteSheet.png` (16×16 frames)
+3. Place faceset in same directory as `Faceset.png` (38×38)
+4. Reference in `states/game.lua` to spawn (or add to level definition)
+
+### Adding a New Tileset
+
+1. Add entry to `config/tilesets.lua` with image path and frame dimensions
+2. Place sprite sheet in `assets/sprites/tilesets/`
+3. Pass tileset tag to `Map.new()` when creating map
+
+### Adding a New UI Element
+
+1. Add sprite to `assets/sprites/ui/`
+2. Add entry to `config/ui.lua` with frame dimensions
+3. Load via `registry:getUI(tag)` in `gameUI.lua` or state files
+
+### Adding a New Effect
+
+1. Add sprite sheet to `assets/sprites/fx/`
+2. Add entry to `config/fx.lua` with animation frames
+3. Trigger effect in `gameLogic.lua` when appropriate (e.g., on hit)
+
+### Refactoring Code
+
+- When moving repeated code to a loop: ensure clarity; explain trade-offs if the loop is less obvious
+- When consolidating logic: prioritize readability over brevity
+- When adding a method: consider whether it belongs in a utility module (e.g., `GameHelpers`) or in the entity itself
+- When renaming: update `AGENT.md` to reflect changes
+
+---
 
 ## Commands and Scripts
 
-- **Run Game**: `./love.appimage .` (from project root)
-- **Debug**: Set LOCAL_LUA_DEBUGGER_VSCODE=1 and run with "debug" arg
-- **Build**: No build step; LÖVE runs directly from source
-- **UI**: Custom drawing with LÖVE functions; no external UI libs
+### Running the Game
 
-## Next Steps
+```bash
+cd /home/mattastic/gitHub/BTAR-R
+./love.appimage .
+```
 
-1. **Add More Character Classes**: Define in `config/characters.lua` and implement special abilities in `core/character.lua`.
-2. **Implement Special Attacks**: Extend `Combat.lua` with skills beyond basic attacks.
-3. **Add AI Opponent**: Create AI logic for enemy turns.
-4. **Polish UI**: Enhance `states/menu.lua` and add in-game UI elements.
-5. **Save/Load System**: Implement game state persistence.
-6. **Multiplayer**: Add network support for online play.
-7. **Sound Effects**: Integrate audio using LÖVE's sound module.
-8. **Testing**: Add unit tests for core modules using a Lua testing framework.
-9. **Documentation**: Expand README and add API docs for modules.
+Or with LÖVE installed:
+```bash
+love .
+```
+
+### Debugging
+
+Set environment variable and run with debug launcher (VSCode):
+```bash
+export LOCAL_LUA_DEBUGGER_VSCODE=1
+love . debug
+```
+
+### Building
+
+No build step; LÖVE runs directly from source. To distribute, use LÖVE's fusing mechanism or package as .love file.
+
+---
+
+## Performance Notes
+
+- **Drawing**: All UI elements use `pcall()` to handle rendering errors gracefully
+- **Animations**: `anim8` library handles sprite animation; animations are reused across characters
+- **Registries**: Assets are loaded once and cached; no redundant file I/O
+- **Grid Queries**: Movement range and attack range use linear scans; optimize later if needed (e.g., quadtree for large maps)
+
+---
+
+## Known Limitations and TODOs
+
+### Current State (As of November 2025)
+
+- **Two characters only**: Game currently spawns ninjaBlack (green) vs gladiatorBlue (red)
+- **Hardcoded map**: 16×16 grass tileset; no level selection UI
+- **No special abilities**: All characters use basic attack; no class-specific skills
+- **No AI**: Both players must be human (pass & play only)
+- **No persistence**: No save/load system
+
+### Future Roadmap
+
+1. **Character Selection**: Allow players to choose characters before match
+2. **Special Abilities**: Implement unique attacks for each class
+3. **AI Opponent**: Add CPU-controlled team
+4. **Level Selection**: Load different maps and tilesets
+5. **Sound/Music**: Integrate audio system
+6. **Save/Load**: Persist game progress
+7. **Multiplayer**: Network support (future)
+8. **Unit Tests**: Add test coverage for core modules
+9. **Balance Pass**: Tweak stats and formulas based on playtesting
+
+---
 
 ## Maintenance Notes
 
-- Keep code modular; avoid monolithic files.
-- Update this AGENT.md when adding new features or changing structure.
-- Regularly refactor: move repeated code to helpers.
-- Profile performance: Use LÖVE's debug tools for FPS and memory.
+- **Update AGENT.md** whenever architecture changes or new modules are added
+- **Keep `/config` in sync** with actual assets; invalid paths break the game
+- **Comment-as-you-code**: Use ADHD-friendly reminder comments throughout
+- **Modular over clever**: Prefer clear, separable code to clever one-liners
+- **Data-driven over hard-coded**: When in doubt, move it to a config file
+- **Profile before optimizing**: Measure FPS and memory before premature optimization
+
+---
+
+## Key Takeaways
+
+This codebase is built on three pillars:
+
+1. **Modularity**: Separate concerns; each module does one thing well
+2. **Data-Driven Design**: Game content lives in config files, not code
+3. **Clarity**: Code is written for humans; comments explain the "why"
+
+The refactor journey from a monolithic `inGame.lua` to modular `/core` demonstrates growth in software design. This repo is both a functional game and a **portfolio piece** showcasing professional coding practices.
