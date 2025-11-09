@@ -31,15 +31,15 @@ end
 -- Init: Load button assets and fonts
 function menu.load()
 	menuCanvas = love.graphics.newCanvas(VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
-	
+
 	-- Load: Button from config
 	buttonImg = love.graphics.newImage(buttonConfig.path)
-	
+
 	-- Create quads for each button state (normal, hover, pressed)
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonConfig.frameW, 0, buttonConfig.frameW, buttonConfig.frameH, buttonImg)
 	end
-	
+
 	-- Load: Fonts from config
 	fontXLarge = love.graphics.newFont(uiConfig.fontXLarge.path, uiConfig.fontXLarge.size)
 	fontLarge = love.graphics.newFont(uiConfig.fontLarge.path, uiConfig.fontLarge.size)

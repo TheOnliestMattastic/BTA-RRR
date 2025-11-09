@@ -38,13 +38,19 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, 
 		love.graphics.print(activeChar.class, nameX, facesetY)
 	end
 
-	-- AP
+	-- AP Receptacle
 	local apScale = 1.9
 	local apX = facesetX + activeFaceset:getWidth() * facesetScale
 	local apY = VIRTUAL_HEIGHT - TILESIZE - uiImages.receptacle:getHeight() * apScale
 	if uiImages then
 		love.graphics.draw(uiImages.receptacle, apX, apY, 0, apScale, apScale)
 	end
+
+	-- AP Points
+	local pointS = 1.9
+	local pointX = apX + uiImages.receptacle:getWidth() * apScale / 3.45
+	local pointY = apY + (uiImages.receptacle:getHeight() * apScale / 6) * 3.9
+	love.graphics.draw(uiImages.actionPointRect, pointX, pointY, 0, pointS, pointS)
 
 	-- Hearts
 	local heartsX = apX + uiImages.receptacle:getWidth() * apScale + TILESIZE / 8
@@ -130,7 +136,6 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, 
 			love.graphics.print(line, statsX, y)
 		end
 	end
-	
 end
 
 -- Draw target character stats
