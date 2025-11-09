@@ -269,21 +269,27 @@ end
 
 function GameUI.drawActionMenu(activeChar, font, uiImages)
 	local buttonScale = 3
-	local buttonX = TILESIZE * 3
-	local buttonY = {}
-	for pos = 0, 3, 1 do
-		buttonY[pos] = TILESIZE + (pos * uiImages.button_1:getHeight() * buttonScale) + (TILESIZE * pos)
-	end
 	local buttonImg = uiImages.button_1
 	local buttonW = 100
 	local buttonH = 35
+	local scaledButtonW = buttonW * buttonScale
+	local scaledButtonH = buttonH * buttonScale
+	
+	-- Position buttons to the right of map with 32px padding from right edge
+	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
+	local buttonY = {}
+	for pos = 0, 3, 1 do
+		buttonY[pos] = TILESIZE + (pos * scaledButtonH) + (TILESIZE * pos)
+	end
+	
+	local buttonQuads = {}
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonW, 0, buttonW, buttonH, buttonImg)
 	end
 	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[0], 0, buttonScale, buttonScale)
 	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[1], 0, buttonScale, buttonScale)
-	love.graphics.draw(uiImages.button_1, buttonQuads[1],buttonX, buttonY[2], 0, buttonScale, buttonScale)
-	love.graphics.draw(uiImages.button_1, buttonQuads[1],buttonX, buttonY[3], 0, buttonScale, buttonScale)
+	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[2], 0, buttonScale, buttonScale)
+	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[3], 0, buttonScale, buttonScale)
 end
 
 return GameUI

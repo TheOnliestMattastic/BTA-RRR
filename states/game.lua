@@ -64,7 +64,7 @@ function game.load()
 
     -- choose map size
     local tileSize = 32
-    local mapCols = 18
+    local mapCols = 16
     local mapRows = 16
 
     -- seed rng once (optional)

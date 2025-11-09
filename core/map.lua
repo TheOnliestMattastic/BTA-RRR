@@ -14,9 +14,10 @@ function Map.new(tileSize, layout, tilesetRegistry, tilesetTag)
     self.width = self.cols * self.tileSize
     self.height = self.rows * self.tileSize
 
-    -- Position map in top-right with one tile padding
+    -- Position map left-center with 32px padding from turn order menu
     local VIRTUAL_WIDTH = 1024
-    self.offsetX = VIRTUAL_WIDTH - self.width - self.tileSize
+    local TURN_ORDER_WIDTH = 104  -- Approximate width of turn order UI
+    self.offsetX = TURN_ORDER_WIDTH + 32
     self.offsetY = self.tileSize
 
     return self
