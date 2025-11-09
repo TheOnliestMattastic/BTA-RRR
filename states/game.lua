@@ -155,12 +155,12 @@ function game.update(dt)
 		table.remove(activeFX, i)
 	end
 
-	-- Update: Action menu button hover states based on mouse position
+	-- Update: Action menu button hover states based on mouse position and keyboard focus
 	computeScale()
 	local mx, my = love.mouse.getPosition()
 	local vmx = (mx - translateX) / scale
 	local vmy = (my - translateY) / scale
-	GameUI.updateActionMenu(vmx, vmy, uiImages)
+	GameUI.updateActionMenu(vmx, vmy, uiImages, inputHandler.keyboardFocusButton)
 end
 
 -- Draw: Game world, characters, and UI
@@ -310,6 +310,17 @@ function game.mousereleased(x, y, button)
     end
 end
 
+-- Input: Handle keyboard press (for press-on-release button behavior)
+function game.keypressed(key)
+    if state.over then return end
+    
+    -- Return: Track Enter key press for button (show pressed state)
+    if key == "return" then
+        GameUI.actionMenuState.isPressed = true
+        GameUI.actionMenuState.pressedButton = inputHandler.keyboardFocusButton
+    end
+end
+
 -- Input: Handle keyboard shortcuts
 function game.keyreleased(key)
     if state.over then return end
@@ -320,6 +331,19 @@ function game.keyreleased(key)
     -- Space: End turn
     elseif key == "space" then
         inputHandler:endTurn()
+    -- Menu Navigation: j/k to navigate action menu
+    elseif key == "j" then
+        inputHandler:navigateMenu("down")
+    elseif key == "k" then
+        inputHandler:navigateMenu("up")
+    -- Return: Activate current menu button (on release)
+    elseif key == "return" then
+        if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == inputHandler.keyboardFocusButton then
+            GameUI.actionMenuState.activeButton = inputHandler.keyboardFocusButton
+            game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " activated"
+        end
+        GameUI.actionMenuState.isPressed = false
+        GameUI.actionMenuState.pressedButton = nil
     -- Vim/Arrow keys: Move character (stored for future keypressed logic)
     elseif inputHandler:getDirection(key) then
         -- Direction input handled in keypressed when implemented

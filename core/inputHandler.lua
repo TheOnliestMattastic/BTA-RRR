@@ -10,6 +10,7 @@ function InputHandler.new(context)
 	return setmetatable({
 		context = context,  -- Reference to game or menu state
 		isButtonPressed = false,  -- Track press-on-release for buttons
+		keyboardFocusButton = 0,  -- Track keyboard focus on action menu (0=Navigate, 1=Actions, etc.)
 	}, InputHandler)
 end
 
@@ -76,6 +77,15 @@ end
 -- Input: Query if button is pressed (menu state)
 function InputHandler:isPressed()
 	return self.isButtonPressed
+end
+
+-- Action: Navigate menu up/down via keyboard (j/k)
+function InputHandler:navigateMenu(direction)
+	if direction == "up" or direction == "k" then
+		self.keyboardFocusButton = math.max(0, self.keyboardFocusButton - 1)
+	elseif direction == "down" or direction == "j" then
+		self.keyboardFocusButton = math.min(3, self.keyboardFocusButton + 1)
+	end
 end
 
 return InputHandler

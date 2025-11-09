@@ -12,6 +12,7 @@ GameUI.actionMenuState = {
 	hoveredButton = nil,
 	pressedButton = nil,
 	activeButton = nil,  -- Track which button is currently active
+	keyboardFocus = 0,  -- Track keyboard focus for menu navigation
 	isPressed = false
 }
 
@@ -285,8 +286,8 @@ function GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
     return upcomingFacesets, upcomingYs
 end
 
--- Update action menu button states based on mouse position
-function GameUI.updateActionMenu(vx, vy, uiImages)
+-- Update action menu button states based on mouse position and keyboard focus
+function GameUI.updateActionMenu(vx, vy, uiImages, keyboardFocus)
 	local buttonScale = 3
 	local buttonImg = uiImages.button_1
 	local buttonW = 100
@@ -296,13 +297,23 @@ function GameUI.updateActionMenu(vx, vy, uiImages)
 	
 	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
 	
-	-- Reset states
-	GameUI.actionMenuState.hoveredButton = nil
+	-- Use keyboard focus if provided, otherwise default to Navigate (button 0)
+	local focusButton = keyboardFocus or GameUI.actionMenuState.keyboardFocus
+	
+	-- Reset states: default to keyboard focus button
+	GameUI.actionMenuState.hoveredButton = focusButton
 	for i = 0, 3 do
 		GameUI.actionMenuState.buttonStates[i + 1] = 0  -- Default to normal
 	end
+	GameUI.actionMenuState.buttonStates[focusButton + 1] = 1  -- Default button hovered by keyboard
+	GameUI.actionMenuState.keyboardFocus = focusButton  -- Update stored keyboard focus
 	
-	-- Check which button is hovered
+	-- Check if keyboard-focused button is being pressed (Enter key held)
+	if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == focusButton then
+		GameUI.actionMenuState.buttonStates[focusButton + 1] = 3  -- Pressed state
+	end
+	
+	-- Check which button is actually hovered by mouse (mouse overrides keyboard focus)
 	for i = 0, 3 do
 		local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
 		if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
