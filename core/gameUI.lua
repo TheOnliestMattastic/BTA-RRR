@@ -5,6 +5,8 @@ local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 local TILESIZE = 32
 local facesetScale = 4
+local buttonQuads = {}
+
 -- Draw message overlay
 function GameUI.drawMessage(game, fontSmall)
     if game.message then
@@ -263,6 +265,25 @@ function GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
         end
     end
     return upcomingFacesets, upcomingYs
+end
+
+function GameUI.drawActionMenu(activeChar, font, uiImages)
+	local buttonScale = 3
+	local buttonX = TILESIZE * 3
+	local buttonY = {}
+	for pos = 0, 3, 1 do
+		buttonY[pos] = TILESIZE + (pos * uiImages.button_1:getHeight() * buttonScale) + (TILESIZE * pos)
+	end
+	local buttonImg = uiImages.button_1
+	local buttonW = 100
+	local buttonH = 35
+	for i = 0, 3 do
+		buttonQuads[i] = love.graphics.newQuad(i * buttonW, 0, buttonW, buttonH, buttonImg)
+	end
+	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[0], 0, buttonScale, buttonScale)
+	love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[1], 0, buttonScale, buttonScale)
+	love.graphics.draw(uiImages.button_1, buttonQuads[1],buttonX, buttonY[2], 0, buttonScale, buttonScale)
+	love.graphics.draw(uiImages.button_1, buttonQuads[1],buttonX, buttonY[3], 0, buttonScale, buttonScale)
 end
 
 return GameUI
