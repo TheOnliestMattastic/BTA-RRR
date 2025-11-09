@@ -304,18 +304,18 @@ Key: All drawing and input use virtual coordinates; no hard-coded screen positio
 ### Turn System
 
 - Turn counter increments each turn (`state.turn`)
-- Teams alternate: odd turns = green, even turns = red
-- When a team's turn begins, all characters on that team gain `maxAP` (5)
+- Turn order is based on characters SPD stat.
+- When a character's turn begins, they recieve up to 3 AP. 
 
 ### Action Points (AP)
 
 - Each character spends AP to perform actions
-- **Movement**: No AP cost in current version
+- **Movement**: No AP cost in current version (will implement later)
 - **Attack**: Costs 1 AP (defined in `gameLogic.CONFIG`)
 - **Heal**: Costs 2 AP (defined in `gameLogic.CONFIG`)
 - AP clamped to max 5; AP pools regenerate on turn start
 
-Key: AP is team-based, not per-character. All green units share one AP pool.
+Key: AP is currently team-based, but needs to be refactored to be characger-based.
 
 ---
 
