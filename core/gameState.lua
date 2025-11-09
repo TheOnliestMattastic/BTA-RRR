@@ -5,53 +5,43 @@ GameState.__index = GameState
 function GameState.new()
     local self = setmetatable({}, GameState)
 
-    -- turn = 1 (odd = Green, even = Red)
+    -- Turn tracking
     self.turn = 1
-    self.ap = { green = 3, red = 3 }
-    self.remaining = { green = 6, red = 6 }
+    self.turnOrder = {}  -- Set by TurnManager
     self.over = false
     self.winner = nil
 
     return self
 end
 
--- Whose turn is it?
-function GameState:currentTeam()
-    return (self.turn % 2 == 0) and "red" or "green"
+-- Get active character from turn order
+function GameState:getActiveCharacter()
+    if #self.turnOrder == 0 then return nil end
+    local idx = (self.turn - 1) % #self.turnOrder + 1
+    return self.turnOrder[idx]
 end
 
--- Spend AP
-function GameState:spendAP(amount)
-    local team = self:currentTeam()
-    if self.ap[team] >= amount then
-        self.ap[team] = self.ap[team] - amount
-        return true
-    end
-    return false
-end
-
--- End turn
+-- End turn and advance to next character
 function GameState:endTurn()
-    local team = self:currentTeam()
     self.turn = self.turn + 1
-    self.ap[self:currentTeam()] = 3 -- reset AP for next team
 end
 
--- Clamp AP (max 5)
-function GameState:clampAP()
-    self.ap.green = math.min(self.ap.green, 5)
-    self.ap.red   = math.min(self.ap.red, 5)
+-- Clamp AP for all characters (max 4)
+function GameState:clampAP(characters)
+    for _, char in ipairs(characters) do
+        char.ap = math.min(char.ap, char.maxAP)
+    end
 end
 
 -- Update win condition
 function GameState:checkWin()
-    if self.remaining.green <= 0 then
-        self.over = true
-        self.winner = "Red"
-    elseif self.remaining.red <= 0 then
-        self.over = true
-        self.winner = "Green"
-    end
+    -- if self.remaining.green <= 0 then
+    --     self.over = true
+    --     self.winner = "Red"
+    -- elseif self.remaining.red <= 0 then
+    --     self.over = true
+    --     self.winner = "Green"
+    -- end
 end
 
 return GameState

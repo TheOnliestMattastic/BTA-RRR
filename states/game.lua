@@ -109,11 +109,9 @@ function game.load()
     table.insert(characters, gladiatorBlue)
     charsByName.gladiatorBlue = gladiatorBlue
 
-    -- Setup: Initiative order (SPD + random)
-    for _, char in ipairs(characters) do
-        char.initiative = char.spd + math.random(1, 20)
-    end
-    table.sort(characters, function(a, b) return a.initiative > b.initiative end)
+    -- Setup: Initiative order (D&D-style: d20 + SPD)
+    local initiativeRolls = TurnManager.rollInitiative(characters)
+    TurnManager.setTurnOrder(state, characters, initiativeRolls)
 
     -- Load: Fonts from registry
     fontXLarge = fonts.fontXLarge
@@ -126,7 +124,7 @@ end
 -- Update: Game logic and animations
 function game.update(dt)
 	-- Check: Win condition and manage AP pools
-	state:clampAP()
+	state:clampAP(characters)
 	state:checkWin()
 
 	-- Update: Character animations and states
@@ -214,7 +212,7 @@ function game.draw()
     -- Draw: UI overlays (stats, action menu, turn order)
     GameUI.drawMessage(game, fontSmall)
 	if activeFaceset then
-		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontSmall, uiImages)
+		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontSmall, uiImages, game.activeChar.ap)
 		GameUI.drawActionMenu(game.activeChar, fontMed, uiImages)
 	end
 	if targetFaceset then

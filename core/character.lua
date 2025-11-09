@@ -85,9 +85,9 @@ function Character:heal(amount)
     self.hp = math.min(self.hp + amount, self.maxHP)
 end
 
--- Gain action points per turn
+-- Gain action points at turn start (2 AP per turn, max 4)
 function Character:gainAP(amount)
-    self.ap = math.min(self.ap + (amount or 3), self.maxAP)
+    self.ap = math.min(self.ap + (amount or 2), self.maxAP)
 end
 
 -- Spend action points

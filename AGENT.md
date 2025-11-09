@@ -101,16 +101,15 @@ Key: Characters are fully encapsulated. All interactions go through methods.
 
 ### core/gameState.lua
 
-Manages game state: turns, AP, team management, and win conditions.
+Manages game state: turn progression, turn order, and win conditions.
 
-- **Constructor**: `GameState.new()` – Initializes turn counter and AP pools
-- **Turn Logic**: `currentTeam()` – Returns "green" or "red" based on turn parity
-- **AP Management**: `spendAP(amount)` – Deducts AP from active team
-- **Turn Progression**: `endTurn()` – Advances turn counter and resets AP
-- **AP Clamping**: `clampAP()` – Limits AP to max (4) per team
+- **Constructor**: `GameState.new()` – Initializes turn counter and empty turn order
+- **Active Character**: `getActiveCharacter()` – Returns character at current position in turn order
+- **Turn Progression**: `endTurn()` – Advances turn counter to next character in initiative order
+- **AP Clamping**: `clampAP(characters)` – Limits each character's AP to max (4)
 - **Win Condition**: `checkWin()` – Sets `over=true` and `winner` when a team is eliminated
 
-Key: Separates game logic from rendering and input.
+Key: Separates game logic from rendering and input. Turn order is set by TurnManager during game init.
 
 ### core/map.lua
 
@@ -126,14 +125,16 @@ Key: Assumes 32px tiles; all coordinates are grid-based (0-indexed).
 
 ### core/turnManager.lua
 
-Utility module for retrieving turn information.
+Manages turn order and initiative calculations.
 
-- **Active Index**: `getActiveIndex(state, characters)` – Returns current character's index
+- **Initiative Rolls**: `rollInitiative(characters)` – Rolls d20 for each character, adds SPD stat, returns sorted results (highest first)
+- **Set Turn Order**: `setTurnOrder(state, characters, initiativeRolls)` – Reorders characters based on initiative rolls
+- **Active Index**: `getActiveIndex(state, characters)` – Returns current character's index in turn order
 - **Active Character**: `getActiveCharacter(state, characters)` – Returns current character object
 - **Upcoming Names**: `getUpcomingNames(state, characters, count)` – Returns list of next N characters' classes
 - **Facesets**: `prepareUpcomingFacesets(names, facesets)` – Pairs names with faceset images
 
-Key: Reduces coupling between gameState and character list logic.
+Key: Handles initiative calculation (d20 + SPD modifier) and maintains turn order throughout the game.
 
 ### core/gameLogic.lua
 
@@ -157,7 +158,7 @@ Key: Centralizes all mechanical calculations; all formulas configurable at modul
 Renders all on-screen UI elements: stats panels, action menu, upcoming turn order.
 
 - **Message Overlay**: `drawMessage(game, font)` – Displays temporary messages at screen top
-- **Active Stats**: `drawActiveStats(faceset, char, fontTiny, fontSmall, uiImages)` – Renders active character panel (left) with faceset, name, AP, HP hearts
+- **Active Stats**: `drawActiveStats(faceset, char, fontTiny, fontSmall, uiImages, currentAP)` – Renders active character panel (left) with faceset, name, AP, HP hearts
 - **Target Stats**: `drawTargetStats(faceset, char, fontTiny, fontSmall, uiImages)` – Renders target character panel (left, below active) with stats
 - **Upcoming Turn Order**: `drawUpcoming(facesets, yPositions)` – Renders next 8 characters in turn order (right side)
 - **Action Menu**: `drawActionMenu(activeChar, font, uiImages)` – Renders 4 labeled action buttons (right side)
@@ -316,18 +317,21 @@ Key: All drawing and input use virtual coordinates; no hard-coded screen positio
 ### Turn System
 
 - Turn counter increments each turn (`state.turn`)
-- Turn order is based on characters SPD stat.
-- When a character's turn begins, they recieve up to 3 AP. 
+- Initiative order is calculated at game start using D&D-style rolls: d20 + character SPD modifier
+- Turn order is maintained by `state.turnOrder[]`, set by TurnManager during game initialization
+- When a character's turn begins, they gain 2 AP via `gainAP()`
 
 ### Action Points (AP)
 
-- Each character spends AP to perform actions
+- Each character has individual AP tracking (`character.ap`, max 4 per `character.maxAP`)
+- **Starting AP**: Gain 2 AP per turn (clamped to max 4)
+- **Reserved AP**: Players can reserve unused AP for next turn (implementation pending)
 - **Movement**: No AP cost in current version (will implement later)
 - **Attack**: Costs 1 AP (defined in `gameLogic.CONFIG`)
 - **Heal**: Costs 2 AP (defined in `gameLogic.CONFIG`)
-- AP clamped to max 4; AP pools regenerate on turn start
+- AP is clamped to max 4 each frame by `GameState:clampAP(characters)`
 
-Key: AP is currently team-based, but needs to be refactored to be characger-based.
+Key: AP is now per-character, updated dynamically, and displayed via AP points in the UI.
 
 ---
 

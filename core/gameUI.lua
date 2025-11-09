@@ -23,7 +23,7 @@ function GameUI.drawMessage(game, fontSmall)
 end
 
 -- Draw active character stats
-function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, uiImages)
+function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, uiImages, currentAP)
 	-- Faceset
 	local facesetX = TILESIZE
 	local facesetY = VIRTUAL_HEIGHT - TILESIZE - activeFaceset:getHeight() * facesetScale
@@ -51,8 +51,9 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, 
 	local pointX = apX + uiImages.receptacle:getWidth() * apScale / 3.45
 	local pointY = apY + (uiImages.receptacle:getHeight() * apScale / 6) * 3.9
 	local pointSpacing = uiImages.actionPointRect:getHeight() * pointS
+	local apToDisplay = currentAP or 0
 	
-	for i = 0, 3 do
+	for i = 0, apToDisplay - 1 do
 		love.graphics.draw(uiImages.actionPointRect, pointX, pointY - (i * pointSpacing), 0, pointS, pointS)
 	end
 
