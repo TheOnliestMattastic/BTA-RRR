@@ -3,6 +3,7 @@
 local gameInit = require "core.gameInit"
 local TurnManager = require "core.turnManager"
 local GameUI = require "core.gameUI"
+local InputHandler = require "core.inputHandler"
 
 -- Game state and entities
 local game = {}
@@ -24,6 +25,9 @@ local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 local gameCanvas
 local scale, translateX, translateY
+
+-- Input handling
+local inputHandler
 
 -- Utility: Calculate scaling to fit virtual resolution in window
 local function computeScale()
@@ -119,6 +123,9 @@ function game.load()
     fontMed = fonts.fontMed
     fontSmall = fonts.fontSmall
 	fontTiny_2 = fonts.fontTiny_2
+
+	-- Init: Input handler
+	inputHandler = InputHandler.new(game)
 end
 
 -- Update: Game logic and animations
@@ -172,8 +179,10 @@ function game.draw()
 	-- Draw: Tilemap with hover highlighting
 	map:draw(vmx, vmy)
 
-	-- Draw: Movement range overlay for selected character
-	map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
+	-- Draw: Movement range overlay (only when "Navigate" button is active)
+	if GameUI.actionMenuState.activeButton == 0 then
+		map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
+	end
 
 	-- Draw: Attack range overlay if target is selected
 	if game.targetChar then
@@ -303,8 +312,17 @@ end
 
 -- Input: Handle keyboard shortcuts
 function game.keyreleased(key)
+    if state.over then return end
+    
+    -- Escape: Quit game
     if key == "escape" then
         love.event.quit()
+    -- Space: End turn
+    elseif key == "space" then
+        inputHandler:endTurn()
+    -- Vim/Arrow keys: Move character (stored for future keypressed logic)
+    elseif inputHandler:getDirection(key) then
+        -- Direction input handled in keypressed when implemented
     end
 end
 

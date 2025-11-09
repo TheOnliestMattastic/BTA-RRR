@@ -11,6 +11,7 @@ GameUI.actionMenuState = {
 	buttonStates = {0, 0, 0, 0},  -- 0=normal, 1=hover, 3=pressed
 	hoveredButton = nil,
 	pressedButton = nil,
+	activeButton = nil,  -- Track which button is currently active
 	isPressed = false
 }
 
@@ -356,6 +357,7 @@ function GameUI.actionMenuMouseReleased(vx, vy, uiImages)
 	
 	local buttonYPos = TILESIZE + (pressedButton * scaledButtonH) + (TILESIZE * pressedButton)
 	if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
+		GameUI.actionMenuState.activeButton = pressedButton  -- Track active button
 		return pressedButton
 	end
 	return nil

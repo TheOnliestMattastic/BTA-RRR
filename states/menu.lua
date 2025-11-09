@@ -3,12 +3,12 @@
 local menu = {}
 local gameInit = require("core.gameInit")
 local uiConfig = require("config.ui")
+local InputHandler = require("core.inputHandler")
 
 -- Button state tracking
 local btnState = 0  -- 0=normal, 1=hover, 3=pressed
 local buttonImg
 local buttonQuads = {}
-local isPressed = false
 local buttonConfig = uiConfig.button_2
 
 -- UI and scaling
@@ -18,6 +18,9 @@ local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 local menuCanvas
 local scale, translateX, translateY
+
+-- Input handling
+local inputHandler
 
 -- Utility: Calculate scaling to fit virtual resolution in window
 local function computeScale()
@@ -43,6 +46,9 @@ function menu.load()
 	-- Load: Fonts from config
 	fontXLarge = love.graphics.newFont(uiConfig.fontXLarge.path, uiConfig.fontXLarge.size)
 	fontLarge = love.graphics.newFont(uiConfig.fontLarge.path, uiConfig.fontLarge.size)
+
+	-- Init: Input handler
+	inputHandler = InputHandler.new(menu)
 end
 
 -- Update: Handle mouse and keyboard input for button state
@@ -66,6 +72,9 @@ function menu.update(dt)
 	if (love.mouse.isDown(1) and hovered) or love.keyboard.isDown("return") then
 		btnState = 3
 	end
+	
+	-- Update: Input handler button press state
+	inputHandler:setButtonPressed(love.mouse.isDown(1) or love.keyboard.isDown("return"))
 end
 
 -- Draw: Render title and start button
@@ -123,13 +132,13 @@ function menu.mousepressed(x, y, button)
     local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
     local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
     if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
-        isPressed = true
+        inputHandler:setButtonPressed(true)
     end
 end
 
 -- Input: Activate button on release (if originally pressed on button)
 function menu.mousereleased(x, y, button)
-    if button ~= 1 or not isPressed then return end
+    if button ~= 1 or not inputHandler:isPressed() then return end
     computeScale()
     local vx = (x - translateX) / scale
     local vy = (y - translateY) / scale
@@ -142,7 +151,7 @@ function menu.mousereleased(x, y, button)
     if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
         switchState("game")
     end
-    isPressed = false
+    inputHandler:setButtonPressed(false)
 end
 
 -- Input: Handle keyboard shortcuts

@@ -11,8 +11,11 @@ This is the ground truth for the BTAR-R project. It documents the current codeba
 - Action Point (AP) economy for strategic gameplay
 - Animated characters and visual effects powered by `anim8`
 - Modular, data-driven architecture
+- **Vim-style keybindings** (hjkl navigation) as a learning tool
 
 **Core Concept**: Two players alternate turns on the same machine, spending AP to move, attack, or heal. First team to eliminate all enemies wins.
+
+**Secondary Objective**: Serve as a practice environment for Vim-style text/object manipulation. Players learn navigational muscle memory through hjkl keybindings while enjoying a strategic tactical game.
 
 ### Directory Structure
 
@@ -190,6 +193,20 @@ Centralized registry for all game assets.
 
 Key: Single source of truth for all asset loading; prevents duplicate loads.
 
+### core/inputHandler.lua
+
+Centralized input handling for all game states (menu and game).
+
+- **Constructor**: `InputHandler.new(context)` – Creates handler tied to a game state reference
+- **Direction Detection**: `getVimDirection(key)` – Maps hjkl to directions
+- **Alternative Keys**: `getArrowDirection(key)` – Maps WASD and arrow keys to directions
+- **Direction Fallback**: `getDirection(key)` – Returns direction or nil (prioritizes Vim)
+- **Movement**: `moveCharacter(direction)` – Moves selected character on grid
+- **Turn Management**: `endTurn()` – Advances to next turn
+- **Button Tracking**: `setButtonPressed()`, `isPressed()` – Tracks press-on-release button state
+
+Key: Separates input logic from state files; supports multiple input methods (Vim-first, WASD/arrows as fallback).
+
 ---
 
 ## Config Files
@@ -266,6 +283,7 @@ Main menu state. Renders title, start button, and background using data from `co
 - **Resize**: Updates virtual scaling on window resize
 
 **Button Behavior:**
+
 - Press-on-release: Button shows visual press state while held, only activates when released over button
 - Supports both mouse clicks and Enter key for activation
 - Escape key quits the game
@@ -276,19 +294,22 @@ Key: Demonstrates best practice of loading UI config centrally; simple pass-thro
 
 Main gameplay state. Manages map, characters, input, and game flow.
 
-- **Load**: Initializes map, characters, and game state
+- **Load**: Initializes map, characters, game state, and input handler
 - **Update**: Updates character animations, FX, and game logic
 - **Draw**: Renders map, characters, FX, and UI elements
-- **Input**: Handles mouse clicks for character selection, movement, and attacks
+- **Input**: Handles mouse clicks and keyboard shortcuts via `InputHandler`
 - **Resize**: Updates virtual scaling
 
 **Input Flow:**
-1. Click character → select (auto-highlight movement range)
-2. Click empty tile → move selected character (if within range)
-3. Click enemy → attack (if in range and AP available)
-4. End turn → `state:endTurn()` advances to next team
 
-Key: Input is grid-based; all coordinates converted from screen to virtual to grid.
+1. **Mouse**: Click character → select (auto-highlight movement range)
+2. **Mouse**: Click empty tile → move selected character (if within range)
+3. **Mouse**: Click enemy → attack (if in range and AP available)
+4. **Keyboard**: hjkl (Vim) or arrows/WASD → move character
+5. **Keyboard**: Space → end turn
+6. **Keyboard**: Escape → quit game
+
+Key: Input is grid-based; all coordinates converted from screen to virtual to grid. Uses `InputHandler` for centralized control logic.
 
 ---
 
