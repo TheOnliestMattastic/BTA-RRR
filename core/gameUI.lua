@@ -50,7 +50,11 @@ function GameUI.drawActiveStats(activeFaceset, activeChar, fontTiny, fontSmall, 
 	local pointS = 1.9
 	local pointX = apX + uiImages.receptacle:getWidth() * apScale / 3.45
 	local pointY = apY + (uiImages.receptacle:getHeight() * apScale / 6) * 3.9
-	love.graphics.draw(uiImages.actionPointRect, pointX, pointY, 0, pointS, pointS)
+	local pointSpacing = uiImages.actionPointRect:getHeight() * pointS
+	
+	for i = 0, 3 do
+		love.graphics.draw(uiImages.actionPointRect, pointX, pointY - (i * pointSpacing), 0, pointS, pointS)
+	end
 
 	-- Hearts
 	local heartsX = apX + uiImages.receptacle:getWidth() * apScale + TILESIZE / 8

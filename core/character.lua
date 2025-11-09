@@ -16,7 +16,7 @@ function Character.new(class, x, y, stats, tags)
     -- Stats (hp, pwr, def, dex, spd, rng, alignment)
     self.maxHP = stats.hp or 12
     self.hp    = stats.hp or 12
-    self.maxAP = 5
+    self.maxAP = 4
     self.ap    = 0
     self.pwr   = stats.pwr or 5
     self.def  = stats.def or 2

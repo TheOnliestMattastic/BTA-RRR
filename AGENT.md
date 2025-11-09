@@ -107,7 +107,7 @@ Manages game state: turns, AP, team management, and win conditions.
 - **Turn Logic**: `currentTeam()` – Returns "green" or "red" based on turn parity
 - **AP Management**: `spendAP(amount)` – Deducts AP from active team
 - **Turn Progression**: `endTurn()` – Advances turn counter and resets AP
-- **AP Clamping**: `clampAP()` – Limits AP to max (5) per team
+- **AP Clamping**: `clampAP()` – Limits AP to max (4) per team
 - **Win Condition**: `checkWin()` – Sets `over=true` and `winner` when a team is eliminated
 
 Key: Separates game logic from rendering and input.
@@ -325,7 +325,7 @@ Key: All drawing and input use virtual coordinates; no hard-coded screen positio
 - **Movement**: No AP cost in current version (will implement later)
 - **Attack**: Costs 1 AP (defined in `gameLogic.CONFIG`)
 - **Heal**: Costs 2 AP (defined in `gameLogic.CONFIG`)
-- AP clamped to max 5; AP pools regenerate on turn start
+- AP clamped to max 4; AP pools regenerate on turn start
 
 Key: AP is currently team-based, but needs to be refactored to be characger-based.
 
