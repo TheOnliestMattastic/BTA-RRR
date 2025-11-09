@@ -150,8 +150,12 @@ function game.update(dt)
 		table.remove(activeFX, i)
 	end
 
-	-- Compute scaling for virtual screen
+	-- Update action menu button states
 	computeScale()
+	local mx, my = love.mouse.getPosition()
+	local vmx = (mx - translateX) / scale
+	local vmy = (my - translateY) / scale
+	GameUI.updateActionMenu(vmx, vmy, uiImages)
 end
 
 function game.draw()
@@ -227,12 +231,6 @@ function game.draw()
 
 end
 
--- function game.mousereleased(x, y, button)
---     if button ~= 1 or scale <= 0 then return end
---     local vx = (x - translateX) / scale
---     local vy = (y - translateY) / scale
--- end
-
 function game.resize(w, h)
     computeScale()
 end
@@ -245,6 +243,11 @@ function game.mousepressed(x, y, button)
     -- Convert to virtual coordinates
     local vx = (x - translateX) / scale
     local vy = (y - translateY) / scale
+    
+    -- Check action menu buttons first
+    local buttonPressed = GameUI.actionMenuMousePressed(vx, vy, uiImages)
+    if buttonPressed then return end
+    
     local hovered = map:getHoveredTile(vx, vy)
     if not hovered then return end
     local col, row = hovered[1], hovered[2]
@@ -275,6 +278,22 @@ function game.mousepressed(x, y, button)
     -- Set target and perform attack
     game.targetChar = clicked
     GameHelpers.performAttack(game.selected, clicked)
+end
+
+function game.mousereleased(x, y, button)
+    if button ~= 1 then return end
+    computeScale()
+    if scale <= 0 then return end
+    
+    local vx = (x - translateX) / scale
+    local vy = (y - translateY) / scale
+    
+    -- Check action menu button release
+    local buttonReleased = GameUI.actionMenuMouseReleased(vx, vy, uiImages)
+    if buttonReleased then
+        game.message = "Button " .. buttonReleased .. " activated"
+        -- TODO: Implement actual button actions here
+    end
 end
 
 function game.keyreleased(key)

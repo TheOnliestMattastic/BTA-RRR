@@ -5,7 +5,14 @@ local VIRTUAL_WIDTH = 1024
 local VIRTUAL_HEIGHT = 768
 local TILESIZE = 32
 local facesetScale = 4
-local buttonQuads = {}
+
+-- Action Menu Button States
+GameUI.actionMenuState = {
+	buttonStates = {0, 0, 0, 0},  -- 0=normal, 1=hover, 3=pressed
+	hoveredButton = nil,
+	pressedButton = nil,
+	isPressed = false
+}
 
 -- Draw message overlay
 function GameUI.drawMessage(game, fontSmall)
@@ -267,6 +274,83 @@ function GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
     return upcomingFacesets, upcomingYs
 end
 
+-- Update action menu button states based on mouse position
+function GameUI.updateActionMenu(vx, vy, uiImages)
+	local buttonScale = 3
+	local buttonImg = uiImages.button_1
+	local buttonW = 100
+	local buttonH = 35
+	local scaledButtonW = buttonW * buttonScale
+	local scaledButtonH = buttonH * buttonScale
+	
+	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
+	
+	-- Reset states
+	GameUI.actionMenuState.hoveredButton = nil
+	for i = 0, 3 do
+		GameUI.actionMenuState.buttonStates[i + 1] = 0  -- Default to normal
+	end
+	
+	-- Check which button is hovered
+	for i = 0, 3 do
+		local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
+		if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
+			GameUI.actionMenuState.hoveredButton = i
+			GameUI.actionMenuState.buttonStates[i + 1] = 1  -- Hover state
+			
+			-- Check if button is being held
+			if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == i then
+				GameUI.actionMenuState.buttonStates[i + 1] = 3  -- Pressed state
+			end
+			break
+		end
+	end
+end
+
+-- Handle action menu button press
+function GameUI.actionMenuMousePressed(vx, vy, uiImages)
+	local buttonScale = 3
+	local buttonW = 100
+	local buttonH = 35
+	local scaledButtonW = buttonW * buttonScale
+	local scaledButtonH = buttonH * buttonScale
+	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
+	
+	for i = 0, 3 do
+		local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
+		if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
+			GameUI.actionMenuState.isPressed = true
+			GameUI.actionMenuState.pressedButton = i
+			return i
+		end
+	end
+	return nil
+end
+
+-- Handle action menu button release
+function GameUI.actionMenuMouseReleased(vx, vy, uiImages)
+	if not GameUI.actionMenuState.isPressed then return nil end
+	
+	local buttonScale = 3
+	local buttonW = 100
+	local buttonH = 35
+	local scaledButtonW = buttonW * buttonScale
+	local scaledButtonH = buttonH * buttonScale
+	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
+	
+	local pressedButton = GameUI.actionMenuState.pressedButton
+	GameUI.actionMenuState.isPressed = false
+	GameUI.actionMenuState.pressedButton = nil
+	
+	if pressedButton == nil then return nil end
+	
+	local buttonYPos = TILESIZE + (pressedButton * scaledButtonH) + (TILESIZE * pressedButton)
+	if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
+		return pressedButton
+	end
+	return nil
+end
+
 function GameUI.drawActionMenu(activeChar, font, uiImages)
 	local buttonScale = 3
 	local buttonImg = uiImages.button_1
@@ -277,17 +361,18 @@ function GameUI.drawActionMenu(activeChar, font, uiImages)
 	
 	-- Position buttons to the right of map with 32px padding from right edge
 	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
-	local buttonY = {}
-	for pos = 0, 3, 1 do
-		buttonY[pos] = TILESIZE + (pos * scaledButtonH) + (TILESIZE * pos)
-	end
 	
+	-- Create quads for each button state (0=normal, 1=hover, 3=pressed)
 	local buttonQuads = {}
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonW, 0, buttonW, buttonH, buttonImg)
 	end
+	
+	-- Draw each button with its current state
 	for i = 0, 3 do
-		love.graphics.draw(uiImages.button_1, buttonQuads[1], buttonX, buttonY[i], 0, buttonScale, buttonScale)
+		local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
+		local buttonState = GameUI.actionMenuState.buttonStates[i + 1]
+		love.graphics.draw(uiImages.button_1, buttonQuads[buttonState], buttonX, buttonYPos, 0, buttonScale, buttonScale)
 	end
 end
 
