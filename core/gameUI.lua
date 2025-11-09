@@ -362,17 +362,34 @@ function GameUI.drawActionMenu(activeChar, font, uiImages)
 	-- Position buttons to the right of map with 32px padding from right edge
 	local buttonX = VIRTUAL_WIDTH - scaledButtonW - 32
 	
+	-- Button labels in order (top to bottom)
+	local buttonLabels = {
+		"Navigate",
+		"Actions",
+		"Abilities",
+		"Concentrate"
+	}
+	
 	-- Create quads for each button state (0=normal, 1=hover, 3=pressed)
 	local buttonQuads = {}
 	for i = 0, 3 do
 		buttonQuads[i] = love.graphics.newQuad(i * buttonW, 0, buttonW, buttonH, buttonImg)
 	end
 	
-	-- Draw each button with its current state
+	-- Draw: Each button with its current state
+	love.graphics.setFont(font)
 	for i = 0, 3 do
 		local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
 		local buttonState = GameUI.actionMenuState.buttonStates[i + 1]
 		love.graphics.draw(uiImages.button_1, buttonQuads[buttonState], buttonX, buttonYPos, 0, buttonScale, buttonScale)
+		
+		-- Draw: Button label centered on button
+		local label = buttonLabels[i + 1]
+		local textW = font:getWidth(label)
+		local textH = font:getHeight()
+		local textX = buttonX + (scaledButtonW - textW) / 2
+		local textY = buttonYPos + (scaledButtonH - textH) / 2 + (buttonState == 3 and 1 or 0)  -- Press offset
+		love.graphics.print(label, textX, textY)
 	end
 end
 
