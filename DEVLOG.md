@@ -98,3 +98,5 @@ I’ve started **rebuilding the game from the ground up** with best practices in
 - **Configuration Consolidation**: Updated `config/ui.lua` with refined panel dimensions, spacing, and font references to centralize UI layout constants.
 - **Game State Input Refactoring**: Streamlined input handling in `states/game.lua` to work more cleanly with the refactored UI drawing logic, improving code readability and separation of concerns.
 - **Turn Manager Integration**: Leveraged the existing `core/turnManager.lua` module more effectively to feed character data to UI rendering functions, reducing duplication.
+
+## November 9, 2025
