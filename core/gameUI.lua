@@ -289,7 +289,6 @@ end
 -- Update action menu button states based on mouse position and keyboard focus
 function GameUI.updateActionMenu(vx, vy, uiImages, keyboardFocus, inputFocus)
 	local buttonScale = 3
-	local buttonImg = uiImages.button_1
 	local buttonW = 100
 	local buttonH = 35
 	local scaledButtonW = buttonW * buttonScale
@@ -317,18 +316,20 @@ function GameUI.updateActionMenu(vx, vy, uiImages, keyboardFocus, inputFocus)
 		end
 	end
 	
-	-- Check which button is actually hovered by mouse (mouse overrides keyboard focus)
-	for i = 0, 3 do
-		local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
-		if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
-			GameUI.actionMenuState.hoveredButton = i
-			GameUI.actionMenuState.buttonStates[i + 1] = 1  -- Hover state
-			
-			-- Check if button is being held
-			if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == i then
-				GameUI.actionMenuState.buttonStates[i + 1] = 3  -- Pressed state
+	-- Check: Only highlight buttons by mouse hover when mouse has input focus
+	if inputFocus == "mouse" then
+		for i = 0, 3 do
+			local buttonYPos = TILESIZE + (i * scaledButtonH) + (TILESIZE * i)
+			if vx >= buttonX and vx <= buttonX + scaledButtonW and vy >= buttonYPos and vy <= buttonYPos + scaledButtonH then
+				GameUI.actionMenuState.hoveredButton = i
+				GameUI.actionMenuState.buttonStates[i + 1] = 1  -- Hover state
+				
+				-- Check if button is being held
+				if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == i then
+					GameUI.actionMenuState.buttonStates[i + 1] = 3  -- Pressed state
+				end
+				break
 			end
-			break
 		end
 	end
 end

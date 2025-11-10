@@ -24,7 +24,7 @@ function Map.new(tileSize, layout, tilesetRegistry, tilesetTag)
 end
 
 -- Draw the map
-function Map:draw(mouseX, mouseY)
+function Map:draw(mouseX, mouseY, inputFocus)
     self.hoveredTile = nil
     for rowIndex, row in ipairs(self.layout) do
         for colIndex, tileTag in ipairs(row) do
@@ -50,10 +50,10 @@ function Map:draw(mouseX, mouseY)
                 love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
             end
 
-            -- Highlight hovered tile
-            if self:isHovered(x, y, mouseX, mouseY) then
-            love.graphics.setColor(1, 1, 1, 0.4)
-            love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
+            -- Highlight: Only show tile hover when mouse has input focus
+            if inputFocus == "mouse" and self:isHovered(x, y, mouseX, mouseY) then
+                love.graphics.setColor(1, 1, 1, 0.4)
+                love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
             end
         end
     end

@@ -180,8 +180,8 @@ function game.draw()
 	local vmx = (mx - translateX) / scale
 	local vmy = (my - translateY) / scale
 
-	-- Draw: Tilemap with hover highlighting
-	map:draw(vmx, vmy)
+	-- Draw: Tilemap with hover highlighting (only when mouse has focus)
+	map:draw(vmx, vmy, inputFocus)
 
 	-- Draw: Movement range overlay (only when "Navigate" button is active)
 	if GameUI.actionMenuState.activeButton == 0 then

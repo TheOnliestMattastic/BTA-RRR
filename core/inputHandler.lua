@@ -21,6 +21,10 @@ function InputHandler:getVimDirection(key)
 	elseif key == "j" then return "down"
 	elseif key == "k" then return "up"
 	elseif key == "l" then return "right"
+	elseif key == "up" then return "up"
+	elseif key == "down" then return "down"
+	elseif key == "left" then return "left"
+	elseif key == "right" then return "right"
 	end
 	return nil
 end
