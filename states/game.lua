@@ -28,7 +28,7 @@ local scale, translateX, translateY
 
 -- Input handling
 local inputHandler
-local inputFocus = "keyboard"  -- "keyboard" or "mouse" - which input system has focus
+local inputFocus = "keyboard" -- "keyboard" or "mouse" - which input system has focus
 
 -- Utility: Calculate scaling to fit virtual resolution in window
 local function computeScale()
@@ -50,16 +50,16 @@ local fonts = registry.fonts
 
 -- Init: Set up map, characters, and game state
 function game.load()
-	-- Load: Tileset configuration
-	local tilesetTag = "grass"
-	local tileset = tilesets:getTileset(tilesetTag)
-	CharactersConfig = gameInit.CharactersConfig
-	local Character = gameInit.Character
-	local GameState = gameInit.GameState
-	local Map = gameInit.Map
+    -- Load: Tileset configuration
+    local tilesetTag = "grass"
+    local tileset = tilesets:getTileset(tilesetTag)
+    CharactersConfig = gameInit.CharactersConfig
+    local Character = gameInit.Character
+    local GameState = gameInit.GameState
+    local Map = gameInit.Map
 
-	-- Validate: Tileset exists and has valid dimensions
-	if not tileset or not tileset.image then
+    -- Validate: Tileset exists and has valid dimensions
+    if not tileset or not tileset.image then
         error("Tileset or tileset.image is nil for " .. tilesetTag)
         return
     end
@@ -97,7 +97,7 @@ function game.load()
     -- Create: Character 1 (ninjaBlack, Team 0)
     local ninjaStats = CharactersConfig.ninjaBlack.stats
     local stats = {}
-	for k, v in pairs(ninjaStats) do stats[k] = v end
+    for k, v in pairs(ninjaStats) do stats[k] = v end
     stats.team = 0
     local ninjaBlack = Character.new("ninjaBlack", 2, 4, stats, CharactersConfig.ninjaBlack.tags)
     ninjaBlack:setAnimations(registry:getCharacter("ninjaBlack"))
@@ -123,120 +123,123 @@ function game.load()
     fontLarge = fonts.fontLarge
     fontMed = fonts.fontMed
     fontSmall = fonts.fontSmall
-	fontTiny_2 = fonts.fontTiny_2
+    fontTiny_2 = fonts.fontTiny_2
 
-	-- Init: Input handler
-	inputHandler = InputHandler.new(game)
-	
-	-- Init: Hide cursor initially (keyboard has focus)
-	love.mouse.setVisible(false)
+    -- Init: Input handler
+    inputHandler = InputHandler.new(game)
+
+    -- Init: Hide cursor initially (keyboard has focus)
+    love.mouse.setVisible(false)
 end
 
 -- Update: Game logic and animations
 function game.update(dt)
-	-- Check: Win condition and manage AP pools
-	state:clampAP(characters)
-	state:checkWin()
+    -- Check: Win condition and manage AP pools
+    state:clampAP(characters)
+    state:checkWin()
 
-	-- Update: Character animations and states
-	for _, character in ipairs(characters) do
-		if character.update then pcall(character.update, character, dt) end
-	end
+    -- Update: Character animations and states
+    for _, character in ipairs(characters) do
+        if character.update then pcall(character.update, character, dt) end
+    end
 
-	-- Update: Active visual effects
-	for _, activeEffect in ipairs(activeFX) do
-		if activeEffect.fx and activeEffect.fx.anim and activeEffect.fx.anim.update then pcall(activeEffect.fx.anim.update, activeEffect.fx.anim, dt) end
-	end
+    -- Update: Active visual effects
+    for _, activeEffect in ipairs(activeFX) do
+        if activeEffect.fx and activeEffect.fx.anim and activeEffect.fx.anim.update then pcall(
+            activeEffect.fx.anim.update, activeEffect.fx.anim, dt) end
+    end
 
-	-- Cleanup: Remove finished effects
-	local toRemove = {}
-	for i, activeEffect in ipairs(activeFX) do
-		if activeEffect.fx.anim.status == "paused" then
-			table.insert(toRemove, 1, i)
-		end
-	end
-	for _, i in ipairs(toRemove) do
-		table.remove(activeFX, i)
-	end
+    -- Cleanup: Remove finished effects
+    local toRemove = {}
+    for i, activeEffect in ipairs(activeFX) do
+        if activeEffect.fx.anim.status == "paused" then
+            table.insert(toRemove, 1, i)
+        end
+    end
+    for _, i in ipairs(toRemove) do
+        table.remove(activeFX, i)
+    end
 
-	-- Update: Action menu button hover states based on mouse position and keyboard focus
-	computeScale()
-	local mx, my = love.mouse.getPosition()
-	local vmx = (mx - translateX) / scale
-	local vmy = (my - translateY) / scale
-	GameUI.updateActionMenu(vmx, vmy, uiImages, inputHandler.keyboardFocusButton, inputFocus)
+    -- Update: Action menu button hover states based on mouse position and keyboard focus
+    computeScale()
+    local mx, my = love.mouse.getPosition()
+    local vmx = (mx - translateX) / scale
+    local vmy = (my - translateY) / scale
+    GameUI.updateActionMenu(vmx, vmy, uiImages, inputHandler.keyboardFocusButton, inputFocus)
 end
 
 -- Draw: Game world, characters, and UI
 function game.draw()
-	computeScale()
+    computeScale()
 
-	-- Draw: Render to virtual canvas
-	love.graphics.setCanvas(gameCanvas)
-	love.graphics.clear(0.3, 0.4, 0.4)  -- game background
+    -- Draw: Render to virtual canvas
+    love.graphics.setCanvas(gameCanvas)
+    love.graphics.clear(0.3, 0.4, 0.4) -- game background
 
-	-- Get: Mouse position in virtual coords
-	local mx, my = love.mouse.getPosition()
-	local vmx = (mx - translateX) / scale
-	local vmy = (my - translateY) / scale
+    -- Get: Mouse position in virtual coords
+    local mx, my = love.mouse.getPosition()
+    local vmx = (mx - translateX) / scale
+    local vmy = (my - translateY) / scale
 
-	-- Draw: Tilemap with hover highlighting (only when mouse has focus)
-	map:draw(vmx, vmy, inputFocus)
+    -- Draw: Tilemap with hover highlighting (only when mouse has focus)
+    map:draw(vmx, vmy, inputFocus)
 
-	-- Draw: Movement range overlay (only when "Navigate" button is active)
-	if GameUI.actionMenuState.activeButton == 0 then
-		map:highlightMovementRange(game.selected, function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
-	end
-
-	-- Draw: Attack range overlay if target is selected
-	if game.targetChar then
-		map:highlightAttackRange(game.activeChar)
-	end
-
-	-- Draw: All characters and their animations
-	for _, character in ipairs(characters) do
-		pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
-	end
-
-	-- Draw: Visual effects (damage numbers, hit flashes, etc.)
-	love.graphics.setColor(1, 1, 1, 1)
-	for _,activeEffect in ipairs(activeFX) do
-        activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX, activeEffect.y * map.tileSize + map.offsetY)
+    -- Draw: Movement range overlay (only when "Navigate" button is active)
+    if GameUI.actionMenuState.activeButton == 0 then
+        map:highlightMovementRange(game.selected,
+            function(col, row) return GameHelpers.findCharacterAt(col, row) ~= nil end)
     end
 
-	-- Update: Active character and turn order
-	local previousActive = game.activeChar
-	game.activeChar = TurnManager.getActiveCharacter(state, characters)
-	if game.activeChar ~= previousActive and game.activeChar then
-		game.activeChar:gainAP()
-	end
-	game.selected = game.activeChar  -- Auto-select active character at turn start
-	
-	-- Get: Names for faceset lookups
-	local activeName = game.activeChar and game.activeChar.class
-	local targetName = game.targetChar and game.targetChar.class
-	local upcomingNames = TurnManager.getUpcomingNames(state, characters, 8)
+    -- Draw: Attack range overlay if target is selected
+    if game.targetChar then
+        map:highlightAttackRange(game.activeChar)
+    end
 
-	-- Prepare: Faceset images and positions
-	local activeFaceset = facesets[activeName]
-	local targetFaceset = facesets[targetName]
-	local upcomingFacesets, upcomingYs = GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
+    -- Draw: All characters and their animations
+    for _, character in ipairs(characters) do
+        pcall(function() character:draw(map.tileSize, map.offsetX, map.offsetY) end)
+    end
+
+    -- Draw: Visual effects (damage numbers, hit flashes, etc.)
+    love.graphics.setColor(1, 1, 1, 1)
+    for _, activeEffect in ipairs(activeFX) do
+        activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX,
+            activeEffect.y * map.tileSize + map.offsetY)
+    end
+
+    -- Update: Active character and turn order
+    local previousActive = game.activeChar
+    game.activeChar = TurnManager.getActiveCharacter(state, characters)
+    if game.activeChar ~= previousActive and game.activeChar then
+        game.activeChar:gainAP()
+    end
+    game.selected = game.activeChar -- Auto-select active character at turn start
+
+    -- Get: Names for faceset lookups
+    local activeName = game.activeChar and game.activeChar.class
+    local targetName = game.targetChar and game.targetChar.class
+    local upcomingNames = TurnManager.getUpcomingNames(state, characters, 8)
+
+    -- Prepare: Faceset images and positions
+    local activeFaceset = facesets[activeName]
+    local targetFaceset = facesets[targetName]
+    local upcomingFacesets, upcomingYs = GameUI.prepareUpcomingFacesets(upcomingNames, facesets)
 
     -- Draw: UI overlays (stats, action menu, turn order)
     GameUI.drawMessage(game, fontSmall)
-	if activeFaceset then
-		GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontSmall, uiImages, game.activeChar.ap)
-		GameUI.drawActionMenu(game.activeChar, fontMed, uiImages)
-	end
-	if targetFaceset then
-		GameUI.drawTargetStats(targetFaceset, game.targetChar, fontTiny_2, fontSmall, uiImages)
-	end
-	if upcomingFacesets then
-		GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
-	end
+    if activeFaceset then
+        GameUI.drawActiveStats(activeFaceset, game.activeChar, fontTiny_2, fontSmall, uiImages, game.activeChar.ap)
+        GameUI.drawActionMenu(game.activeChar, fontMed, uiImages)
+    end
+    if targetFaceset then
+        GameUI.drawTargetStats(targetFaceset, game.targetChar, fontTiny_2, fontSmall, uiImages)
+    end
+    if upcomingFacesets then
+        GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
+    end
 
-	-- Draw: Scale and center canvas to fit window
-	love.graphics.setCanvas()
+    -- Draw: Scale and center canvas to fit window
+    love.graphics.setCanvas()
     if scale and scale > 0 then
         love.graphics.draw(gameCanvas, translateX, translateY, 0, scale, scale)
     end
@@ -249,10 +252,10 @@ end
 
 -- Input: Handle mouse move (gain focus when user moves mouse)
 function game.mousemoved(x, y)
-	if inputFocus ~= "mouse" then
-		inputFocus = "mouse"
-		love.mouse.setVisible(true)
-	end
+    if inputFocus ~= "mouse" then
+        inputFocus = "mouse"
+        love.mouse.setVisible(true)
+    end
 end
 
 -- Input: Handle left mouse press for actions and buttons
@@ -264,11 +267,11 @@ function game.mousepressed(x, y, button)
     -- Convert screen coords to virtual coords
     local vx = (x - translateX) / scale
     local vy = (y - translateY) / scale
-    
+
     -- Input: Check action menu buttons first (press state for visual feedback)
     local buttonPressed = GameUI.actionMenuMousePressed(vx, vy, uiImages)
     if buttonPressed then return end
-    
+
     -- Input: Check map tile hover
     local hovered = map:getHoveredTile(vx, vy)
     if not hovered then return end
@@ -309,15 +312,22 @@ function game.mousereleased(x, y, button)
     if button ~= 1 or inputFocus ~= "mouse" then return end
     computeScale()
     if scale <= 0 then return end
-    
+
     -- Convert screen coords to virtual coords
     local vx = (x - translateX) / scale
     local vy = (y - translateY) / scale
-    
+
     -- Input: Check action menu button release (activation only on release)
     local buttonReleased = GameUI.actionMenuMouseReleased(vx, vy, uiImages)
     if buttonReleased then
-        game.message = "Button " .. buttonReleased .. " activated"
+        -- Toggle: Deactivate if button is already active, otherwise activate
+        if GameUI.actionMenuState.activeButton == buttonReleased then
+            GameUI.actionMenuState.activeButton = nil
+            game.message = "Button " .. buttonReleased .. " deactivated"
+        else
+            GameUI.actionMenuState.activeButton = buttonReleased
+            game.message = "Button " .. buttonReleased .. " activated"
+        end
         -- TODO: Implement actual button actions (attack, heal, defend, etc.)
     end
 end
@@ -325,14 +335,14 @@ end
 -- Input: Handle keyboard press (for press-on-release button behavior)
 function game.keypressed(key)
     if state.over then return end
-    
+
     -- Gain keyboard focus on any key press
     if inputFocus ~= "keyboard" then
         inputFocus = "keyboard"
         love.mouse.setVisible(false)
-        return  -- Skip processing this frame's input on focus switch
+        return -- Skip processing this frame's input on focus switch
     end
-    
+
     -- Return: Track Enter key press for button (show pressed state)
     if key == "return" then
         GameUI.actionMenuState.isPressed = true
@@ -343,27 +353,33 @@ end
 -- Input: Handle keyboard shortcuts
 function game.keyreleased(key)
     if state.over or inputFocus ~= "keyboard" then return end
-    
+
     -- Escape: Quit game
     if key == "escape" then
         love.event.quit()
-    -- Space: End turn
+        -- Space: End turn
     elseif key == "space" then
         inputHandler:endTurn()
-    -- Menu Navigation: j/k to navigate action menu
+        -- Menu Navigation: j/k to navigate action menu
     elseif key == "j" then
         inputHandler:navigateMenu("down")
     elseif key == "k" then
         inputHandler:navigateMenu("up")
-    -- Return: Activate current menu button (on release)
+        -- Return: Toggle current menu button (activate/deactivate on release)
     elseif key == "return" then
         if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == inputHandler.keyboardFocusButton then
-            GameUI.actionMenuState.activeButton = inputHandler.keyboardFocusButton
-            game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " activated"
+            -- Toggle: Deactivate if button is already active, otherwise activate
+            if GameUI.actionMenuState.activeButton == inputHandler.keyboardFocusButton then
+                GameUI.actionMenuState.activeButton = nil
+                game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " deactivated"
+            else
+                GameUI.actionMenuState.activeButton = inputHandler.keyboardFocusButton
+                game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " activated"
+            end
         end
         GameUI.actionMenuState.isPressed = false
         GameUI.actionMenuState.pressedButton = nil
-    -- Vim/Arrow keys: Move character (stored for future keypressed logic)
+        -- Vim/Arrow keys: Move character (stored for future keypressed logic)
     elseif inputHandler:getDirection(key) then
         -- Direction input handled in keypressed when implemented
     end
