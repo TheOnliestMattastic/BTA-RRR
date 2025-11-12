@@ -20,11 +20,21 @@ function Map.new(tileSize, layout, tilesetRegistry, tilesetTag)
     self.offsetX = TURN_ORDER_WIDTH + 32
     self.offsetY = self.tileSize
 
+    -- Breathing animation for cursor tile
+    self.breatheTime = 0
+    self.breatheSpeed = 2  -- seconds for full breathing cycle
+    self.breatheAmount = 2  -- pixels to scale (1-2px)
+
     return self
 end
 
+-- Update: Handle breathing animation
+function Map:update(dt)
+    self.breatheTime = (self.breatheTime + dt) % self.breatheSpeed
+end
+
 -- Draw the map
-function Map:draw(mouseX, mouseY, inputFocus)
+function Map:draw(mouseX, mouseY, inputFocus, uiImages)
     self.hoveredTile = nil
     for rowIndex, row in ipairs(self.layout) do
         for colIndex, tileTag in ipairs(row) do
@@ -50,10 +60,28 @@ function Map:draw(mouseX, mouseY, inputFocus)
                 love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
             end
 
-            -- Highlight: Only show tile hover when mouse has input focus
+            -- Highlight: Draw cursor tile with breathing effect when mouse hovers
             if inputFocus == "mouse" and self:isHovered(x, y, mouseX, mouseY) then
-                love.graphics.setColor(1, 1, 1, 0.4)
-                love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
+                if uiImages and uiImages.cursorTile then
+                    -- Base scale to fit cursor tile to 32x32 tile size (cursorTile is 26x26)
+                    local baseScale = self.tileSize / uiImages.cursorTile:getWidth()
+                    
+                    -- Calculate breathing effect (oscillates 0 to breatheAmount pixels)
+                    local breatheFactor = (math.sin((self.breatheTime / self.breatheSpeed) * math.pi * 2) + 1) / 2
+                    local breatheScale = breatheFactor * self.breatheAmount / self.tileSize
+                    local scale = baseScale + breatheScale
+                    
+                    -- Center the scaled sprite on the tile
+                    local cursorW = uiImages.cursorTile:getWidth()
+                    local cursorH = uiImages.cursorTile:getHeight()
+                    local scaledW = cursorW * scale
+                    local scaledH = cursorH * scale
+                    local offsetX = (self.tileSize - scaledW) / 2
+                    local offsetY = (self.tileSize - scaledH) / 2
+                    
+                    love.graphics.setColor(1, 1, 1, 1)
+                    love.graphics.draw(uiImages.cursorTile, x + offsetX, y + offsetY, 0, scale, scale)
+                end
             end
         end
     end

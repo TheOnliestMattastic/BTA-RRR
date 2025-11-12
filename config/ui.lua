@@ -36,6 +36,7 @@ return {
 	cursorV_2 				= {path = uiDir .. "cursorVertical_2.png", 				frameW = 26, 	frameH = 26, 	frames = { "1-5", 1 }},
 	cursorM_1 				= {path = uiDir .. "cursorMouse_1.png", 				frameW = 18, 	frameH = 17, 	frames = { "1-4", 1 }},
 	cursorM_2 				= {path = uiDir .. "cursorMouse_2.png", 				frameW = 23, 	frameH = 23, 	frames = { "1-4", 1 }},
+	cursorTile 				= {path = uiDir .. "HighlightSlot_26x26.png", 			frameW = 26, 	frameH = 26},
 
 	-- Frames: UI frames
 	frameEmpty 				= {path = uiDir .. "frameEmpty.png", 					frameW = 32, 	frameH = 32},

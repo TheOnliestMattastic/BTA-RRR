@@ -160,13 +160,16 @@ function game.update(dt)
         table.remove(activeFX, i)
     end
 
+    -- Update: Map animations (breathing cursor)
+    map:update(dt)
+
     -- Update: Action menu button hover states based on mouse position and keyboard focus
     computeScale()
     local mx, my = love.mouse.getPosition()
     local vmx = (mx - translateX) / scale
     local vmy = (my - translateY) / scale
     GameUI.updateActionMenu(vmx, vmy, uiImages, inputHandler.keyboardFocusButton, inputFocus)
-end
+    end
 
 -- Draw: Game world, characters, and UI
 function game.draw()
@@ -182,7 +185,7 @@ function game.draw()
     local vmy = (my - translateY) / scale
 
     -- Draw: Tilemap with hover highlighting (only when mouse has focus)
-    map:draw(vmx, vmy, inputFocus)
+    map:draw(vmx, vmy, inputFocus, uiImages)
 
     -- Draw: Movement range overlay (only when "Navigate" button is active)
     if GameUI.actionMenuState.activeButton == 0 then
