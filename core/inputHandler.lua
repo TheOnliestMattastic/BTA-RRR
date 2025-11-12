@@ -11,6 +11,9 @@ function InputHandler.new(context)
 		context = context,  -- Reference to game or menu state
 		isButtonPressed = false,  -- Track press-on-release for buttons
 		keyboardFocusButton = 0,  -- Track keyboard focus on action menu (0=Navigate, 1=Actions, etc.)
+		uiFocus = "menu",  -- "map" or "menu" - which UI element has focus for hjkl navigation
+		mapCursorX = nil,  -- Map cursor position (if nil, will snap to activeChar)
+		mapCursorY = nil,
 	}, InputHandler)
 end
 
@@ -85,11 +88,55 @@ end
 
 -- Action: Navigate menu up/down via keyboard (j/k)
 function InputHandler:navigateMenu(direction)
-	if direction == "up" or direction == "k" then
+	if direction == "up" then
 		self.keyboardFocusButton = math.max(0, self.keyboardFocusButton - 1)
-	elseif direction == "down" or direction == "j" then
+	elseif direction == "down" then
 		self.keyboardFocusButton = math.min(3, self.keyboardFocusButton + 1)
 	end
+end
+
+-- Action: Toggle focus between map and action menu (Tab key)
+function InputHandler:toggleFocus()
+	if self.uiFocus == "map" then
+		self.uiFocus = "menu"
+		self.keyboardFocusButton = 0  -- Reset menu focus to top button
+	else
+		self.uiFocus = "map"
+		-- Initialize map cursor to activeChar position if not already set
+		if not self.mapCursorX and self.context.activeChar then
+			self.mapCursorX = self.context.activeChar.x
+			self.mapCursorY = self.context.activeChar.y
+		end
+	end
+end
+
+-- Action: Move map cursor in given direction (hjkl when uiFocus == "map")
+function InputHandler:moveMapCursor(direction)
+	-- Initialize cursor to activeChar position on first move
+	if not self.mapCursorX and self.context.activeChar then
+		self.mapCursorX = self.context.activeChar.x
+		self.mapCursorY = self.context.activeChar.y
+	end
+	
+	if direction == "up" then
+		self.mapCursorY = math.max(0, self.mapCursorY - 1)
+	elseif direction == "down" then
+		self.mapCursorY = self.mapCursorY + 1
+	elseif direction == "left" then
+		self.mapCursorX = math.max(0, self.mapCursorX - 1)
+	elseif direction == "right" then
+		self.mapCursorX = self.mapCursorX + 1
+	end
+end
+
+-- Query: Get current focus ("map" or "menu")
+function InputHandler:getFocus()
+	return self.uiFocus
+end
+
+-- Query: Get map cursor position
+function InputHandler:getMapCursor()
+	return self.mapCursorX, self.mapCursorY
 end
 
 return InputHandler

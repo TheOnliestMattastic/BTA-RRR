@@ -34,8 +34,9 @@ function Map:update(dt)
 end
 
 -- Draw the map
-function Map:draw(mouseX, mouseY, inputFocus, uiImages)
-    self.hoveredTile = nil
+function Map:draw(mouseX, mouseY, inputFocus, uiImages, inputHandler)
+    self.hoveredTileX = nil
+    self.hoveredTileY = nil
     for rowIndex, row in ipairs(self.layout) do
         for colIndex, tileTag in ipairs(row) do
             local x = (colIndex - 1) * self.tileSize + self.offsetX
@@ -60,10 +61,19 @@ function Map:draw(mouseX, mouseY, inputFocus, uiImages)
                 love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
             end
 
-            -- Track: Store hovered tile position for cursor drawing later
+            -- Track: Store hovered tile position for cursor drawing later (mouse focus)
             if inputFocus == "mouse" and self:isHovered(x, y, mouseX, mouseY) then
                 self.hoveredTileX = x
                 self.hoveredTileY = y
+            end
+            
+            -- Track: Store keyboard cursor position (map focus)
+            if inputFocus == "keyboard" and inputHandler then
+                local cursorX, cursorY = inputHandler:getMapCursor()
+                if cursorX and cursorY and colIndex - 1 == cursorX and rowIndex - 1 == cursorY then
+                    self.hoveredTileX = x
+                    self.hoveredTileY = y
+                end
             end
         end
     end

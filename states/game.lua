@@ -184,8 +184,8 @@ function game.draw()
     local vmx = (mx - translateX) / scale
     local vmy = (my - translateY) / scale
 
-    -- Draw: Tilemap with hover highlighting (only when mouse has focus)
-    map:draw(vmx, vmy, inputFocus, uiImages)
+    -- Draw: Tilemap
+    map:draw(vmx, vmy, inputFocus, uiImages, inputHandler)
 
     -- Draw: Movement range overlay (only when "Navigate" button is active)
     if GameUI.actionMenuState.activeButton == 0 then
@@ -208,6 +208,11 @@ function game.draw()
     for _, activeEffect in ipairs(activeFX) do
         activeEffect.fx.anim:draw(activeEffect.fx.image, activeEffect.x * map.tileSize + map.offsetX,
             activeEffect.y * map.tileSize + map.offsetY)
+    end
+
+    -- Draw: Cursor tile (breathing animation overlay) - only when keyboard focus is on map
+    if inputFocus == "keyboard" and inputHandler:getFocus() == "map" then
+        map:drawCursor(uiImages)
     end
 
     -- Update: Active character and turn order
@@ -240,9 +245,6 @@ function game.draw()
     if upcomingFacesets then
         GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
     end
-
-    -- Draw: Cursor tile (foremost, after all other elements)
-    map:drawCursor(uiImages)
 
     -- Draw: Scale and center canvas to fit window
     love.graphics.setCanvas()
@@ -349,8 +351,8 @@ function game.keypressed(key)
         return -- Skip processing this frame's input on focus switch
     end
 
-    -- Return: Track Enter key press for button (show pressed state)
-    if key == "return" then
+    -- Menu: Track Enter key press for button (show pressed state) - only when menu focus
+    if inputHandler:getFocus() == "menu" and key == "return" then
         GameUI.actionMenuState.isPressed = true
         GameUI.actionMenuState.pressedButton = inputHandler.keyboardFocusButton
     end
@@ -358,37 +360,62 @@ end
 
 -- Input: Handle keyboard shortcuts
 function game.keyreleased(key)
-    if state.over or inputFocus ~= "keyboard" then return end
+	if state.over or inputFocus ~= "keyboard" then return end
 
-    -- Escape: Quit game
-    if key == "escape" then
-        love.event.quit()
-        -- Space: End turn
-    elseif key == "space" then
-        inputHandler:endTurn()
-        -- Menu Navigation: j/k to navigate action menu
-    elseif key == "j" then
-        inputHandler:navigateMenu("down")
-    elseif key == "k" then
-        inputHandler:navigateMenu("up")
-        -- Return: Toggle current menu button (activate/deactivate on release)
-    elseif key == "return" then
-        if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == inputHandler.keyboardFocusButton then
-            -- Toggle: Deactivate if button is already active, otherwise activate
-            if GameUI.actionMenuState.activeButton == inputHandler.keyboardFocusButton then
-                GameUI.actionMenuState.activeButton = nil
-                game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " deactivated"
-            else
-                GameUI.actionMenuState.activeButton = inputHandler.keyboardFocusButton
-                game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " activated"
-            end
-        end
-        GameUI.actionMenuState.isPressed = false
-        GameUI.actionMenuState.pressedButton = nil
-        -- Vim/Arrow keys: Move character (stored for future keypressed logic)
-    elseif inputHandler:getDirection(key) then
-        -- Direction input handled in keypressed when implemented
-    end
+	-- Global exceptions: Tab and Escape work anytime
+	if key == "tab" then
+		inputHandler:toggleFocus()
+		return
+	elseif key == "escape" then
+		love.event.quit()
+		return
+	end
+
+	-- Separate logic based on current focus
+	local focus = inputHandler:getFocus()
+
+	if focus == "map" then
+		-- Map focus: hjkl navigation and enter to select tile
+		local direction = inputHandler:getDirection(key)
+		if direction then
+			inputHandler:moveMapCursor(direction)
+		elseif key == "return" then
+			-- Move active character to cursor position
+			local cursorX, cursorY = inputHandler:getMapCursor()
+			if cursorX and cursorY and game.activeChar then
+				local dist = math.abs(cursorX - game.activeChar.x) + math.abs(cursorY - game.activeChar.y)
+				if dist <= game.activeChar.spd then
+					game.activeChar:moveTo(cursorX, cursorY)
+					game.message = "Moved to (" .. cursorX .. ", " .. cursorY .. ")"
+				else
+					game.message = "Out of movement range"
+				end
+			end
+		end
+
+	elseif focus == "menu" then
+		-- Menu focus: j/k navigation, enter to toggle button, space to end turn
+		if key == "j" then
+			inputHandler:navigateMenu("down")
+		elseif key == "k" then
+			inputHandler:navigateMenu("up")
+		elseif key == "space" then
+			inputHandler:endTurn()
+		elseif key == "return" then
+			-- Toggle current menu button (activate/deactivate on release)
+			if GameUI.actionMenuState.isPressed and GameUI.actionMenuState.pressedButton == inputHandler.keyboardFocusButton then
+				if GameUI.actionMenuState.activeButton == inputHandler.keyboardFocusButton then
+					GameUI.actionMenuState.activeButton = nil
+					game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " deactivated"
+				else
+					GameUI.actionMenuState.activeButton = inputHandler.keyboardFocusButton
+					game.message = "Button " .. (inputHandler.keyboardFocusButton) .. " activated"
+				end
+			end
+			GameUI.actionMenuState.isPressed = false
+			GameUI.actionMenuState.pressedButton = nil
+		end
+	end
 end
 
 return game
