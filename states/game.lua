@@ -241,6 +241,9 @@ function game.draw()
         GameUI.drawUpcoming(upcomingFacesets, upcomingYs)
     end
 
+    -- Draw: Cursor tile (foremost, after all other elements)
+    map:drawCursor(uiImages)
+
     -- Draw: Scale and center canvas to fit window
     love.graphics.setCanvas()
     if scale and scale > 0 then

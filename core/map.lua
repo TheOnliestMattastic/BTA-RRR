@@ -60,37 +60,43 @@ function Map:draw(mouseX, mouseY, inputFocus, uiImages)
                 love.graphics.rectangle("fill", x, y, self.tileSize, self.tileSize)
             end
 
-            -- Highlight: Draw cursor tile with breathing effect when mouse hovers
+            -- Track: Store hovered tile position for cursor drawing later
             if inputFocus == "mouse" and self:isHovered(x, y, mouseX, mouseY) then
-                if uiImages and uiImages.cursorTile then
-                    -- Base scale to fit cursor tile to 32x32 tile size (cursorTile is 26x26)
-                    local baseScale = self.tileSize / uiImages.cursorTile:getWidth()
-                    
-                    -- Calculate breathing effect (oscillates 0 to breatheAmount pixels)
-                    local breatheFactor = (math.sin((self.breatheTime / self.breatheSpeed) * math.pi * 2) + 1) / 2
-                    local breatheScale = breatheFactor * self.breatheAmount / self.tileSize
-                    local scale = baseScale + breatheScale
-                    
-                    -- Center the scaled sprite on the tile
-                    local cursorW = uiImages.cursorTile:getWidth()
-                    local cursorH = uiImages.cursorTile:getHeight()
-                    local scaledW = cursorW * scale
-                    local scaledH = cursorH * scale
-                    local offsetX = (self.tileSize - scaledW) / 2
-                    local offsetY = (self.tileSize - scaledH) / 2
-                    
-                    love.graphics.setColor(1, 1, 1, 1)
-                    love.graphics.draw(uiImages.cursorTile, x + offsetX, y + offsetY, 0, scale, scale)
-                end
+                self.hoveredTileX = x
+                self.hoveredTileY = y
             end
         end
     end
 end
 
-function Map:isHovered(x, y, mouseX, mouseY)
-    return mouseX > x and mouseX < x + self.tileSize
-       and mouseY > y and mouseY < y + self.tileSize
+-- Draw: Cursor tile with breathing effect (call this after all other draws)
+function Map:drawCursor(uiImages)
+    if self.hoveredTileX and self.hoveredTileY and uiImages and uiImages.cursorTile then
+        -- Base scale to fit cursor tile to 32x32 tile size (cursorTile is 26x26)
+        local baseScale = self.tileSize / uiImages.cursorTile:getWidth()
+        
+        -- Calculate breathing effect (oscillates 0 to breatheAmount pixels)
+        local breatheFactor = (math.sin((self.breatheTime / self.breatheSpeed) * math.pi * 2) + 1) / 2
+        local breatheScale = breatheFactor * self.breatheAmount / self.tileSize
+        local scale = baseScale + breatheScale
+        
+        -- Center the scaled sprite on the tile
+        local cursorW = uiImages.cursorTile:getWidth()
+        local cursorH = uiImages.cursorTile:getHeight()
+        local scaledW = cursorW * scale
+        local scaledH = cursorH * scale
+        local offsetX = (self.tileSize - scaledW) / 2
+        local offsetY = (self.tileSize - scaledH) / 2
+        
+        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.draw(uiImages.cursorTile, self.hoveredTileX + offsetX, self.hoveredTileY + offsetY, 0, scale, scale)
+    end
 end
+
+function Map:isHovered(x, y, mouseX, mouseY)
+     return mouseX > x and mouseX < x + self.tileSize
+        and mouseY > y and mouseY < y + self.tileSize
+ end
 
 function Map:getHoveredTile(mouseX, mouseY)
     for rowIndex = 1, self.rows do
