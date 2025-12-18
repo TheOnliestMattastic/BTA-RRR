@@ -8,7 +8,7 @@ MMMM  MMMM 88'  `88 88ooood8 M  MMMMM  M 88'  `88 88 88 88ooood8 Y8ooooo.   88
 MMMM  MMMM 88    88 88.  ... M. `MMM' .M 88    88 88 88 88.  ...       88   88   
 MMMM  MMMM dP    dP `88888P' MMb     dMM dP    dP dP dP `88888P' `88888P'   dP   
 MMMMMMMMMM                   MMMMMMMMMMM                                         
-                                                                                 
+                                                                                  
 M"""""`'"""`YM            dP     dP                       dP   oo                
 M  mm.  mm.  M            88     88                       88                     
 M  MMM  MMM  M .d8888b. d8888P d8888P .d8888b. .d8888b. d8888P dP .d8888b.       
@@ -19,22 +19,32 @@ MMMMMMMMMMMMMM
 ```
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-bd93f9?style=for-the-badge&logoColor=white&labelColor=6272a4)](https://creativecommons.org/licenses/by-sa/4.0/)
-![Language](https://img.shields.io/badge/Lua-LÖVE2D-bd93f9?style=for-the-badge&logo=githubpages&logoColor=white&labelColor=6272a4)
-![Status](https://img.shields.io/badge/Status-WIP-yellow?style=for-the-badge&logoColor=white&labelColor=6272a4)
+[![Language: Lua](https://img.shields.io/badge/Language-Lua-bd93f9?style=for-the-badge&logo=lua&logoColor=white&labelColor=6272a4)](https://www.lua.org/)
+[![Framework: LÖVE2D](https://img.shields.io/badge/Framework-LÖVE2D-bd93f9?style=for-the-badge&logoColor=white&labelColor=6272a4)](https://love2d.org/)
+[![Status: In Development](https://img.shields.io/badge/Status-In%20Development-yellow?style=for-the-badge&logoColor=white&labelColor=6272a4)]()
 
 ## 🔭 Overview
 
-**Battle Tactics Arena (BTA)** is a **2D turn‑based tactical RPG prototype** built with **Lua** and the **LÖVE2D framework**.  
+**Battle Tactics Arena (BTA)** is a **2D turn-based tactical RPG** built with **Lua** and the **LÖVE2D framework**. 
 
-Originally created as a class project, the game has been **rebuilt from the ground up** to showcase clean, modular design and professional coding practices.
+Originally created as a class project, the game has been **rebuilt from the ground up** to showcase clean, modular design and professional coding practices. This is both a **playable prototype** and a **portfolio piece** demonstrating architectural growth as a developer.
 
-## ✨ Features
+### Design Philosophy
 
-- Grid‑based tactical combat
-- Distinct character classes (ninja, gladiator, mage, ranger, etc.)
-- Action Point (AP) economy for movement, attacks, and heals
-- Animated sprites and FX powered by [`anim8`](https://github.com/kikito/anim8)
-- Modular architecture for easy extension
+BTAR-R follows **KISSME principles**:
+- **Keep It Stupidly Simple** — Code is explicit and easy to understand
+- **Modularize Everything** — Each concern lives in its own file
+- **Data-driven design** — Add new content without touching core logic
+- **Accessibility first** — Vim-style keybindings (hjkl) for keyboard accessibility
+
+## ✨ Core Features
+
+- **Grid-based tactical combat** — 32×32 tile maps with turn-based movement
+- **Character system** — Configurable classes with unique stats, sprites, and animations
+- **Action Point economy** — +2 AP per turn (max 4); costs: attack (1 AP), heal (2 AP)
+- **Combat resolution** — Accuracy, dodge, and damage calculations with visual feedback
+- **Animation system** — Sprite-based animations powered by [`anim8`](https://github.com/kikito/anim8)
+- **Modular architecture** — Clean separation of concerns for easy extension
 
 ## 🛠️ Refactor Journey
 
@@ -81,11 +91,20 @@ devlog.md      → Development log of the refactor
 
 ## ☄️ Skills Demonstrated
 
-- Lua scripting & LÖVE2D framework
-- Modular architecture & state management
-- Animation systems (`anim8`)
-- Data‑driven design
-- Documentation & developer storytelling
+- **Lua programming** — Clean, modular code with proper scoping and error handling
+- **Game architecture** — State machines, registries, and modular entity systems
+- **LÖVE2D framework** — Window management, graphics, input handling, virtual resolution
+- **Animation systems** — Sprite sheet management with `anim8` library
+- **Data-driven design** — Configs separate from logic for easy content creation
+- **Portfolio storytelling** — Clear documentation of architectural decisions and refactoring journey
+- **Version control** — Professional Git practices with meaningful commit history
+
+## 📖 Documentation
+
+- **AGENT.md** — Comprehensive project guide with architecture overview, code practices, and development workflow
+- **DEVLOG.md** — Development log documenting the refactor process and design decisions
+- **Inline comments** — ADHD-friendly code reminders for clarity and learning
+- **README** — Quick start guide and feature overview
 
 ## 🛸 License
 
@@ -93,12 +112,10 @@ This project is licensed under the [Creative Commons Attribution-ShareAlike 4.0 
 
 ## 👽 Contact
 
-Curious about my projects? Want to collaborate or hire for entry-level IT/support/dev roles? Shoot me an email or connect on GitHub—I reply quickly and love new challenges.
+Curious about my projects? Want to collaborate or hire?
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-bd93f9?style=for-the-badge&logo=githubpages&logoColor=white&labelColor=6272a4)](https://theonliestmattastic.github.io/)  
 [![GitHub](https://img.shields.io/badge/GitHub-Profile-bd93f9?style=for-the-badge&logo=github&logoColor=white&labelColor=6272a4)](https://github.com/theonliestmattastic)  
 [![Email](https://img.shields.io/badge/Email-matthew.poole485%40gmail.com-bd93f9?style=for-the-badge&logo=gmail&logoColor=white&labelColor=6272a4)](mailto:matthew.poole485@gmail.com)
 
 > “Sometimes the questions are complicated and the answers are simple.” — Dr. Seuss
-
-
