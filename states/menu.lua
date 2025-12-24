@@ -6,7 +6,7 @@ local uiConfig = require("config.ui")
 local InputHandler = require("core.inputHandler")
 
 -- Button state tracking
-local btnState = 0  -- 0=normal, 1=hover, 3=pressed
+local btnState = 0 -- 0=normal, 1=hover, 3=pressed
 local buttonImg
 local buttonQuads = {}
 local buttonConfig = uiConfig.button_2
@@ -24,11 +24,11 @@ local inputHandler
 
 -- Utility: Calculate scaling to fit virtual resolution in window
 local function computeScale()
-    local w = love.graphics.getWidth()
-    local h = love.graphics.getHeight()
-    scale = math.min(w / VIRTUAL_WIDTH, h / VIRTUAL_HEIGHT)
-    translateX = (w - VIRTUAL_WIDTH * scale) / 2
-    translateY = (h - VIRTUAL_HEIGHT * scale) / 2
+	local w = love.graphics.getWidth()
+	local h = love.graphics.getHeight()
+	scale = math.min(w / VIRTUAL_WIDTH, h / VIRTUAL_HEIGHT)
+	translateX = (w - VIRTUAL_WIDTH * scale) / 2
+	translateY = (h - VIRTUAL_HEIGHT * scale) / 2
 end
 
 -- Init: Load button assets and fonts
@@ -40,7 +40,8 @@ function menu.load()
 
 	-- Create quads for each button state (normal, hover, pressed)
 	for i = 0, 3 do
-		buttonQuads[i] = love.graphics.newQuad(i * buttonConfig.frameW, 0, buttonConfig.frameW, buttonConfig.frameH, buttonImg)
+		buttonQuads[i] =
+			love.graphics.newQuad(i * buttonConfig.frameW, 0, buttonConfig.frameW, buttonConfig.frameH, buttonImg)
 	end
 
 	-- Load: Fonts from config
@@ -72,7 +73,7 @@ function menu.update(dt)
 	if (love.mouse.isDown(1) and hovered) or love.keyboard.isDown("return") then
 		btnState = 3
 	end
-	
+
 	-- Update: Input handler button press state
 	inputHandler:setButtonPressed(love.mouse.isDown(1) or love.keyboard.isDown("return"))
 end
@@ -82,7 +83,7 @@ function menu.draw()
 	computeScale()
 
 	love.graphics.setCanvas(menuCanvas)
-	love.graphics.clear(0.3, 0.4, 0.4)  -- menu background
+	love.graphics.clear(0.3, 0.4, 0.4) -- menu background
 
 	-- Draw: Title text
 	love.graphics.setFont(fontXLarge)
@@ -97,7 +98,15 @@ function menu.draw()
 	local buttonH = VIRTUAL_HEIGHT / 4
 	local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
 	local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
-	love.graphics.draw(buttonImg, buttonQuads[btnState], buttonX, buttonY, 0, buttonW / buttonConfig.frameW, buttonH / buttonConfig.frameH)
+	love.graphics.draw(
+		buttonImg,
+		buttonQuads[btnState],
+		buttonX,
+		buttonY,
+		0,
+		buttonW / buttonConfig.frameW,
+		buttonH / buttonConfig.frameH
+	)
 
 	-- Draw: Button text with press offset
 	love.graphics.setFont(fontLarge)
@@ -105,7 +114,7 @@ function menu.draw()
 	local playW = fontLarge:getWidth(playText)
 	local playH = fontLarge:getHeight()
 	local playX = buttonX + (buttonW - playW) / 2
-	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 3 and 1 or 0)  -- Slight press offset
+	local playY = buttonY + (buttonH - playH) / 2 + (btnState == 3 and 1 or 0) -- Slight press offset
 	love.graphics.print(playText, playX, playY)
 
 	love.graphics.setCanvas()
@@ -118,49 +127,53 @@ end
 
 -- Handle window resize
 function menu.resize(w, h)
-    computeScale()
+	computeScale()
 end
 
 -- Input: Track button press (activates on release)
 function menu.mousepressed(x, y, button)
-    if button ~= 1 then return end
-    computeScale()
-    local vx = (x - translateX) / scale
-    local vy = (y - translateY) / scale
-    local buttonW = VIRTUAL_WIDTH / 2
-    local buttonH = VIRTUAL_HEIGHT / 4
-    local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
-    local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
-    if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
-        inputHandler:setButtonPressed(true)
-    end
+	if button ~= 1 then
+		return
+	end
+	computeScale()
+	local vx = (x - translateX) / scale
+	local vy = (y - translateY) / scale
+	local buttonW = VIRTUAL_WIDTH / 2
+	local buttonH = VIRTUAL_HEIGHT / 4
+	local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
+	local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
+	if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
+		inputHandler:setButtonPressed(true)
+	end
 end
 
 -- Input: Activate button on release (if originally pressed on button)
 function menu.mousereleased(x, y, button)
-    if button ~= 1 or not inputHandler:isPressed() then return end
-    computeScale()
-    local vx = (x - translateX) / scale
-    local vy = (y - translateY) / scale
-    local buttonW = VIRTUAL_WIDTH / 2
-    local buttonH = VIRTUAL_HEIGHT / 4
-    local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
-    local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
-    
-    -- Only activate if released over the button
-    if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
-        switchState("game")
-    end
-    inputHandler:setButtonPressed(false)
+	if button ~= 1 or not inputHandler:isPressed() then
+		return
+	end
+	computeScale()
+	local vx = (x - translateX) / scale
+	local vy = (y - translateY) / scale
+	local buttonW = VIRTUAL_WIDTH / 2
+	local buttonH = VIRTUAL_HEIGHT / 4
+	local buttonX = VIRTUAL_WIDTH / 2 - buttonW / 2
+	local buttonY = 3 * VIRTUAL_HEIGHT / 4 - buttonH / 2
+
+	-- Only activate if released over the button
+	if vx >= buttonX and vx <= buttonX + buttonW and vy >= buttonY and vy <= buttonY + buttonH then
+		SwitchState("game")
+	end
+	inputHandler:setButtonPressed(false)
 end
 
 -- Input: Handle keyboard shortcuts
 function menu.keyreleased(key)
-    if key == "escape" then
-        love.event.quit()
-    elseif key == "return" then
-        switchState("game")
-    end
+	if key == "escape" then
+		love.event.quit()
+	elseif key == "return" then
+		SwitchState("game")
+	end
 end
 
 return menu
