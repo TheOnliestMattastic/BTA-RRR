@@ -1,4 +1,4 @@
-# ⚔️ Battle Tactics Arena: Refactored & Remastered
+# ⚔️ Battle Tactics Arena: Remastered, Refactored, Reengineered
 
 ![Banner](./assets/media/BTARRR.png)
 
@@ -9,13 +9,13 @@
 
 ## 🔭 Overview
 
-**Battle Tactics Arena (BTA)** is a **2D turn-based tactical RPG** built with **Lua** and the **LÖVE2D framework**.
+**Battle Tactics Arena: Remastered, Refactored, Reengineered (BTA-RRR)** is a **2D turn-based tactical RPG** built with **Lua** and the **LÖVE2D framework**.
 
 Originally created as a class project, the game has been **rebuilt from the ground up** to showcase clean, modular design and professional coding practices. This is both a **playable prototype** and a **portfolio piece** demonstrating architectural growth as a developer.
 
 ### Design Philosophy
 
-BTAR-R follows **KISSME principles**:
+BTAR-RRR follows **KISSME principles**:
 
 - **Keep It Stupidly Simple** — Code is explicit and easy to understand
 - **Modularize Everything** — Each concern lives in its own file
